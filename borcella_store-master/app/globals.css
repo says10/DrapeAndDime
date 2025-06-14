@@ -1,0 +1,78 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* styles/globals.css */
+
+/* Ensure the background stretches to full height without affecting content */
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.related-products-container {
+  background: url('/background2.jpg') no-repeat center center/cover;
+  background-size: cover;
+  background-position: center;
+  width: 100%;
+  min-height: 100vh; /* Ensure it covers full viewport */
+}
+.navbar-container {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  padding: 10px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.9); /* Light background with transparency */
+  backdrop-filter: blur(10px); /* Smooth glass effect */
+  transition: all 0.3s ease-in-out;
+}
+
+.navbar-container.hidden {
+  display: none; /* Hide navbar on the homepage */
+}
+
+.navbar-container a {
+  color: black;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.navbar-container a:hover {
+  color: #ff3b30; /* Red highlight on hover */
+}
+
+.navbar-container input {
+  border: none;
+  outline: none;
+  background: transparent;
+}
+
+.navbar-container button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.navbar-container .menu-dropdown {
+  position: absolute;
+  top: 50px;
+  right: 10px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+}
+
+@media (max-width: 768px) {
+  .navbar-container {
+    padding: 10px 15px;
+  }
+}
+
+
+
+
+
