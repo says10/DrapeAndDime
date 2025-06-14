@@ -6,7 +6,6 @@ import { z } from "zod";
 import { useRouter } from "next/navigation";
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
-import { Toggle } from "@/components/ui/toggle"
 import { Bold, Italic, List, ListOrdered } from 'lucide-react'
 
 import { Separator } from "../ui/separator";
@@ -179,34 +178,34 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData }) => {
                 <FormControl>
                   <div className="border rounded-md">
                     <div className="border-b p-2 flex gap-2">
-                      <Toggle
-                        size="sm"
-                        pressed={editor?.isActive('bold')}
-                        onPressedChange={() => editor?.chain().focus().toggleBold().run()}
+                      <button
+                        type="button"
+                        onClick={() => editor?.chain().focus().toggleBold().run()}
+                        className="p-1 border rounded"
                       >
                         <Bold className="h-4 w-4" />
-                      </Toggle>
-                      <Toggle
-                        size="sm"
-                        pressed={editor?.isActive('italic')}
-                        onPressedChange={() => editor?.chain().focus().toggleItalic().run()}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => editor?.chain().focus().toggleItalic().run()}
+                        className="p-1 border rounded"
                       >
                         <Italic className="h-4 w-4" />
-                      </Toggle>
-                      <Toggle
-                        size="sm"
-                        pressed={editor?.isActive('bulletList')}
-                        onPressedChange={() => editor?.chain().focus().toggleBulletList().run()}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => editor?.chain().focus().toggleBulletList().run()}
+                        className="p-1 border rounded"
                       >
                         <List className="h-4 w-4" />
-                      </Toggle>
-                      <Toggle
-                        size="sm"
-                        pressed={editor?.isActive('orderedList')}
-                        onPressedChange={() => editor?.chain().focus().toggleOrderedList().run()}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => editor?.chain().focus().toggleOrderedList().run()}
+                        className="p-1 border rounded"
                       >
                         <ListOrdered className="h-4 w-4" />
-                      </Toggle>
+                      </button>
                     </div>
                     <EditorContent 
                       editor={editor} 
