@@ -36,17 +36,16 @@ const formSchema = z.object({
   colors: z.string(),
   price: z.coerce.number().min(0.1),
   expense: z.coerce.number().min(0.1),
-  quantity: z.coerce.number().min(0), // Quantity must be a non-negative number
-  isAvailable: z.boolean().optional(), // Optional as it defaults to true in schema
+  quantity: z.coerce.number().min(0),
+  isAvailable: z.boolean().optional(),
 });
 
 interface ProductFormProps {
-  initialData?: ProductType | null; // Must have "?" to make it optional
+  initialData?: ProductType | null;
 }
 
 const ProductForm: React.FC<ProductFormProps> = ({ initialData }) => {
   const router = useRouter();
-
   const [loading, setLoading] = useState(true);
   const [collections, setCollections] = useState<CollectionType[]>([]);
 
@@ -76,7 +75,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData }) => {
           collections: initialData.collections.map(
             (collection) => collection._id
           ),
-          isAvailable: initialData.isAvailable ?? true, // Ensure default is true if not provided
+          isAvailable: initialData.isAvailable ?? true,
         }
       : {
           title: "",
@@ -89,8 +88,8 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData }) => {
           colors: "",
           price: 0.1,
           expense: 0.1,
-          quantity: 0, // Default to 0 for new products
-          isAvailable: true, // Default to available
+          quantity: 0,
+          isAvailable: true,
         },
   });
 
@@ -116,7 +115,6 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData }) => {
     const newText = text.substring(0, start) + `**${selectedText}**` + text.substring(end);
     form.setValue('description', newText);
     
-    // Set cursor position after the bold text
     setTimeout(() => {
       textarea.focus();
       textarea.setSelectionRange(end + 4, end + 4);
@@ -329,48 +327,42 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData }) => {
                 )}
               />
             )}
- <FormField
-  control={form.control}
-  name="colors"
-  render={({ field }) => (
-    <FormItem>
-      <FormLabel>Colors</FormLabel>
-      <FormControl>
-        {/* Single text input for colors */}
-        <input
-          type="text"
-          placeholder="Colors"
-          value={field.value || ""}
-          onChange={(e) => field.onChange(e.target.value)}
-          className="border border-gray-300 p-2 rounded"
-        />
-      </FormControl>
-      <FormMessage className="text-red-1" />
-    </FormItem>
-  )}
-/>
-
-<FormField
-  control={form.control}
-  name="sizes"
-  render={({ field }) => (
-    <FormItem>
-      <FormLabel>Sizes</FormLabel>
-      <FormControl>
-        {/* Single text input for sizes */}
-        <input
-          type="text"
-          placeholder="Sizes"
-          value={field.value || ""}
-          onChange={(e) => field.onChange(e.target.value)}
-          className="border border-gray-300 p-2 rounded"
-        />
-      </FormControl>
-      <FormMessage className="text-red-1" />
-    </FormItem>
-  )}
-/>
-
+            <FormField
+              control={form.control}
+              name="colors"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Colors</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="text"
+                      placeholder="Colors"
+                      {...field}
+                      onKeyDown={handleKeyPress}
+                    />
+                  </FormControl>
+                  <FormMessage className="text-red-1" />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="sizes"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Sizes</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="text"
+                      placeholder="Sizes"
+                      {...field}
+                      onKeyDown={handleKeyPress}
+                    />
+                  </FormControl>
+                  <FormMessage className="text-red-1" />
+                </FormItem>
+              )}
+            />
             <FormField
               control={form.control}
               name="quantity"
@@ -390,24 +382,23 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData }) => {
               )}
             />
             <FormField
-  control={form.control}
-  name="isAvailable"
-  render={({ field }) => (
-    <FormItem>
-      <FormLabel>Available</FormLabel>
-      <FormControl>
-        <input
-          type="checkbox"
-          checked={field.value || false}
-          onChange={(e) => field.onChange(e.target.checked)}
-          className="w-5 h-5"
-        />
-      </FormControl>
-      <FormMessage className="text-red-1" />
-    </FormItem>
-  )}
-/>
-
+              control={form.control}
+              name="isAvailable"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Available</FormLabel>
+                  <FormControl>
+                    <input
+                      type="checkbox"
+                      checked={field.value || false}
+                      onChange={(e) => field.onChange(e.target.checked)}
+                      className="w-5 h-5"
+                    />
+                  </FormControl>
+                  <FormMessage className="text-red-1" />
+                </FormItem>
+              )}
+            />
           </div>
 
           <div className="flex gap-10">
