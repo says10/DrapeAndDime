@@ -24,10 +24,11 @@ import Delete from "../custom ui/Delete";
 import MultiText from "../custom ui/MultiText";
 import MultiSelect from "../custom ui/MultiSelect";
 import Loader from "../custom ui/Loader";
+import RichTextEditor from "../custom ui/RichTextEditor";
 
 const formSchema = z.object({
-  title: z.string().min(2).max(20),
-  description: z.string().min(2).max(500).trim(),
+  title: z.string().min(2).max(200),
+  description: z.string().min(2).max(2000),
   media: z.array(z.string()),
   category: z.string(),
   collections: z.array(z.string()),
@@ -35,6 +36,7 @@ const formSchema = z.object({
   sizes: z.string(),
   colors: z.string(),
   price: z.coerce.number().min(0.1),
+  originalPrice: z.coerce.number().min(0.1).optional(),
   expense: z.coerce.number().min(0.1),
   quantity: z.coerce.number().min(0), // Quantity must be a non-negative number
   isAvailable: z.boolean().optional(), // Optional as it defaults to true in schema
@@ -88,6 +90,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData }) => {
           sizes: "",
           colors: "",
           price: 0.1,
+          originalPrice: undefined,
           expense: 0.1,
           quantity: 0, // Default to 0 for new products
           isAvailable: true, // Default to available
@@ -165,11 +168,10 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData }) => {
               <FormItem>
                 <FormLabel>Description</FormLabel>
                 <FormControl>
-                  <Textarea
-                    placeholder="Description"
-                    {...field}
-                    rows={5}
-                    onKeyDown={handleKeyPress}
+                  <RichTextEditor
+                    value={field.value}
+                    onChange={field.onChange}
+                    placeholder="Write your product description here..."
                   />
                 </FormControl>
                 <FormMessage className="text-red-1" />
@@ -204,11 +206,45 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData }) => {
                 <FormItem>
                   <FormLabel>Price (₹)</FormLabel>
                   <FormControl>
+                    <div className="flex flex-col gap-2">
+                      <Input
+                        type="number"
+                        placeholder="Price"
+                        {...field}
+                        onKeyDown={handleKeyPress}
+                      />
+                      {form.watch("originalPrice") && (
+                        <div className="text-sm text-grey-2">
+                          Original Price: <span className="line-through">₹{form.watch("originalPrice")}</span>
+                        </div>
+                      )}
+                    </div>
+                  </FormControl>
+                  <FormMessage className="text-red-1" />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="originalPrice"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Original Price (₹)</FormLabel>
+                  <FormControl>
                     <Input
                       type="number"
-                      placeholder="Price"
+                      placeholder="Original Price (optional)"
                       {...field}
                       onKeyDown={handleKeyPress}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        // Only allow original price if it's higher than current price
+                        if (!value || parseFloat(value) > form.watch("price")) {
+                          field.onChange(value);
+                        } else {
+                          toast.error("Original price must be higher than current price");
+                        }
+                      }}
                     />
                   </FormControl>
                   <FormMessage className="text-red-1" />
