@@ -72,6 +72,7 @@ export const POST = async (
       sizes,
       colors,
       price,
+      originalPrice,
       quantity, // updated quantity
     } = await req.json();
 
@@ -118,6 +119,7 @@ export const POST = async (
         sizes,
         colors,
         price,
+        originalPrice,
         quantity,
         isAvailable, // update availability based on quantity
       },
