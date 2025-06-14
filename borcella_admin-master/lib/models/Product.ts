@@ -10,6 +10,7 @@ const ProductSchema = new mongoose.Schema({
   sizes: String,
   colors: String,
   price: { type:Number},
+  originalPrice: { type:Number},
   expense:{type:Number},
   quantity: { type:Number},
   isAvailable: { type: Boolean, default: true },

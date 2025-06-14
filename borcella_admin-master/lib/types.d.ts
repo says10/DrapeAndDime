@@ -17,6 +17,7 @@ type ProductType = {
   sizes: string;
   colors: string;
   price: number;
+  originalPrice: number;
   quantity: number;
   createdAt: Date;
   updatedAt: Date;

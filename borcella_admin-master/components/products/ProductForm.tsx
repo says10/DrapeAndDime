@@ -88,7 +88,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData }) => {
           sizes: "",
           colors: "",
           price: 0.1,
-          originalPrice: undefined,
+          originalPrice: 0.1,
           expense: 0.1,
           quantity: 0,
           isAvailable: true,
