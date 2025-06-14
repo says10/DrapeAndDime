@@ -30,7 +30,16 @@ const ProductInfo = ({ productInfo }: { productInfo: ProductType }) => {
       </div>
 
       {/* Price */}
-      <p className="text-heading3-bold">₹ {productInfo.price}</p>
+      <div className="flex items-center gap-2">
+        {productInfo.originalPrice && productInfo.originalPrice > productInfo.price && (
+          <span className="text-gray-500 line-through text-lg">
+            ₹ {productInfo.originalPrice}
+          </span>
+        )}
+        <span className="text-heading3-bold text-black-600">
+          ₹ {productInfo.price}
+        </span>
+      </div>
 
       {/* Description */}
       <div className="flex flex-col gap-2">

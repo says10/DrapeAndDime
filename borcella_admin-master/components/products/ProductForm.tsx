@@ -35,6 +35,7 @@ const formSchema = z.object({
   sizes: z.string(),
   colors: z.string(),
   price: z.coerce.number().min(0.1),
+  originalPrice: z.coerce.number().min(0.1).optional(),
   expense: z.coerce.number().min(0.1),
   quantity: z.coerce.number().min(0),
   isAvailable: z.boolean().optional(),
@@ -87,6 +88,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData }) => {
           sizes: "",
           colors: "",
           price: 0.1,
+          originalPrice: undefined,
           expense: 0.1,
           quantity: 0,
           isAvailable: true,
@@ -239,6 +241,24 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData }) => {
                     <Input
                       type="number"
                       placeholder="Price"
+                      {...field}
+                      onKeyDown={handleKeyPress}
+                    />
+                  </FormControl>
+                  <FormMessage className="text-red-1" />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="originalPrice"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>MRP (₹)</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      placeholder="MRP (optional)"
                       {...field}
                       onKeyDown={handleKeyPress}
                     />
