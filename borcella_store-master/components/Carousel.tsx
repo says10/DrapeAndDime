@@ -173,61 +173,79 @@ export default function Home({ collectionImages, collections }: HomeProps) {
     <>
       {/* Full-Screen Carousel */}
       {carouselVisible && (
-        <div style={styles.carouselContainer}>
-          <div style={styles.carouselBackground}>
+        <div className="relative w-full h-screen overflow-hidden">
+          {/* Background Image Container */}
+          <div className="absolute inset-0 w-full h-full">
             {selectedImage && (
               <Image
                 src={selectedImage}
                 alt="Selected Collection"
                 fill
-                className="object-cover"
+                className="object-cover object-center"
                 priority
+                sizes="100vw"
+                quality={100}
               />
             )}
           </div>
 
           {/* Logo (Top Left) */}
-          <Link href="/">
-            <Image src="/logo.png" alt="Logo" width={130} height={100} className="absolute top-[10px] left-[10px] z-[5]" />
+          <Link href="/" className="absolute top-4 left-4 z-10">
+            <Image 
+              src="/logo.png" 
+              alt="Logo" 
+              width={130} 
+              height={100} 
+              className="object-contain"
+              priority
+            />
           </Link>
 
           {/* Login Icon (Top Right) */}
-          <Link href="/sign-in">
-            <CircleUserRound className="absolute top-[10px] right-[10px] z-[5] text-white cursor-pointer" />
+          <Link href="/sign-in" className="absolute top-4 right-4 z-10">
+            <CircleUserRound className="text-white w-8 h-8 cursor-pointer hover:text-gray-200 transition-colors" />
           </Link>
 
           {/* Carousel Cards */}
-          <div style={styles.carouselCards}>
+          <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex gap-4 justify-center items-center w-full px-4">
             {collectionImages.map((image, index) => (
               <div
                 key={index}
-                style={styles.carouselCard}
+                className={`relative w-24 h-24 cursor-pointer transition-transform duration-300 hover:scale-110 ${
+                  selectedImage === image ? 'ring-2 ring-white' : ''
+                }`}
                 onClick={() => handleImageClick(image, index)}
               >
                 <Image
                   src={image}
                   alt={`Collection Image ${index + 1}`}
-                  width={100}
-                  height={100}
-                  className="rounded-lg transition-transform duration-300 ease-in-out"
+                  fill
+                  className="rounded-lg object-cover"
+                  sizes="(max-width: 96px) 100vw, 96px"
                 />
               </div>
             ))}
           </div>
 
           {/* Explore All Button */}
-          <div style={styles.exploreAllContainer}>
-            <button style={styles.exploreAllButton} onClick={handleExploreAllClick}>
+          <div className="absolute bottom-32 left-1/2 transform -translate-x-1/2">
+            <button 
+              onClick={handleExploreAllClick}
+              className="bg-white text-black px-8 py-3 rounded-full font-semibold hover:bg-gray-100 transition-colors duration-300 shadow-lg"
+            >
               Explore All
             </button>
           </div>
         </div>
       )}
 
-      {/* Shop Now Button (after selecting image) */}
+      {/* Shop Now Button */}
       {showShopNowButton && (
-        <div style={{ ...styles.shopNowContainer, display: "block" }}>
-          <button onClick={handleShopNowClick} style={styles.shopNowButton}>
+        <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-20">
+          <button 
+            onClick={handleShopNowClick}
+            className="bg-black text-white px-8 py-3 rounded-full font-semibold hover:bg-gray-800 transition-colors duration-300 shadow-lg"
+          >
             View Collection
           </button>
         </div>

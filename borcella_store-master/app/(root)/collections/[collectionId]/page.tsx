@@ -12,16 +12,19 @@ const CollectionDetails = async ({
 
   return (
     <div className="related-products-container px-10 py-5 flex flex-col items-center gap-8">
-      <Image
-        src={collectionDetails.image}
-        width={1500}
-        height={1000}
-        alt="collection"
-        className="w-full h-[400px] object-cover rounded-xl"
-      />
-      <p className=" text-heading3-bold text-grey-2">{collectionDetails.title}</p>
+      <div className="relative w-full h-[400px] bg-gray-100 rounded-xl flex items-center justify-center">
+        <Image
+          src={collectionDetails.image}
+          alt="collection"
+          fill
+          className="object-contain p-8"
+          sizes="100vw"
+          priority
+        />
+      </div>
+      <p className="text-heading3-bold text-grey-2">{collectionDetails.title}</p>
       <p className="text-body-normal text-grey-2 text-center max-w-[900px]">{collectionDetails.description}</p>
-      <div className="  flex flex-wrap gap-16 justify-center">
+      <div className="flex flex-wrap gap-16 justify-center">
         {collectionDetails.products.map((product: ProductType) => (
           <ProductCard key={product._id} product={product} />
         ))}

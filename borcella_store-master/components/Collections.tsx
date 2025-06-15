@@ -14,14 +14,16 @@ const Collections = async () => {
         <div className="flex flex-wrap items-center justify-center gap-8">
           {collections.map((collection: CollectionType) => (
             <Link href={`/collections/${collection._id}`} key={collection._id}>
-              <Image
-                key={collection._id}
-                src={collection.image}
-                alt={collection.title}
-                width={350}
-                height={200}
-                className="rounded-lg cursor-pointer"
-              />
+              <div className="relative w-[350px] h-[200px] bg-gray-100 rounded-lg flex items-center justify-center">
+                <Image
+                  src={collection.image}
+                  alt={collection.title}
+                  fill
+                  className="object-contain p-4 hover:scale-105 transition-transform duration-300"
+                  sizes="(max-width: 350px) 100vw, 350px"
+                  priority
+                />
+              </div>
             </Link>
           ))}
         </div>
