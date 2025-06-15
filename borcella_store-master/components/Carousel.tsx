@@ -227,11 +227,14 @@ export default function Home({ collectionImages, collections }: HomeProps) {
             ))}
           </div>
 
-          {/* Explore All Button */}
-          <div className="absolute bottom-32 left-1/2 transform -translate-x-1/2">
+          {/* Explore All Button - Moved to bottom right */}
+          <div className="absolute bottom-8 right-8 z-20">
             <button 
               onClick={handleExploreAllClick}
-              className="bg-white text-black px-8 py-3 rounded-full font-semibold hover:bg-gray-100 transition-colors duration-300 shadow-lg"
+              className="bg-white/90 backdrop-blur-sm text-black px-8 py-3 rounded-full font-semibold 
+                hover:bg-white transition-all duration-300 shadow-lg hover:shadow-xl
+                border border-gray-200 hover:border-gray-300
+                transform hover:-translate-y-0.5 active:translate-y-0"
             >
               Explore All
             </button>
@@ -241,10 +244,13 @@ export default function Home({ collectionImages, collections }: HomeProps) {
 
       {/* Shop Now Button */}
       {showShopNowButton && (
-        <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-20">
+        <div className="fixed bottom-8 right-8 z-20">
           <button 
             onClick={handleShopNowClick}
-            className="bg-black text-white px-8 py-3 rounded-full font-semibold hover:bg-gray-800 transition-colors duration-300 shadow-lg"
+            className="bg-black/90 backdrop-blur-sm text-white px-8 py-3 rounded-full font-semibold 
+              hover:bg-black transition-all duration-300 shadow-lg hover:shadow-xl
+              border border-gray-800 hover:border-gray-700
+              transform hover:-translate-y-0.5 active:translate-y-0"
           >
             View Collection
           </button>
