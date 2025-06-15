@@ -12,12 +12,12 @@ const CollectionDetails = async ({
 
   return (
     <div className="related-products-container px-10 py-5 flex flex-col items-center gap-8">
-      <div className="relative w-full h-[400px] bg-gray-100 rounded-xl flex items-center justify-center">
+      <div className="relative w-full h-[400px] rounded-xl overflow-hidden">
         <Image
           src={collectionDetails.image}
           alt="collection"
           fill
-          className="object-contain p-8"
+          className="object-cover"
           sizes="100vw"
           priority
         />
