@@ -102,73 +102,70 @@ import Link from "next/link";
 
 
 interface HomeProps {
-  productImages: string[]; // Array of image URLs (Cloudinary)
-  productIds?: string[]; // Array of product IDs (MongoDB)
-  products: ProductType[]; // Array of products from MongoDB (to be used for matching media[0])
+  collectionImages: string[]; // Array of collection image URLs
+  collections: CollectionType[]; // Array of collections
 }
 
-export default function Home({ productImages, products }: HomeProps) {
-  console.log("Product Images:", productImages); // Ensure images array is populated
-  console.log("Products:", products); // Debugging to check if products are passed correctly
+export default function Home({ collectionImages, collections }: HomeProps) {
+  console.log("Collection Images:", collectionImages);
+  console.log("Collections:", collections);
 
-  const [selectedImage, setSelectedImage] = useState<string | null>(productImages[0]);
-  const [carouselVisible, setCarouselVisible] = useState(true); // Controls carousel visibility
-  const [animationActive, setAnimationActive] = useState(true); // Controls animation for image slideshow
-  const [showShopNowButton, setShowShopNowButton] = useState(false); // Controls visibility of Shop Now button
-  const [selectedProductId, setSelectedProductId] = useState<string | null>(null); // Store selected product ID
-  const [selectedIndex, setSelectedIndex] = useState<number | null>(null); // Stores the clicked index
+  const [selectedImage, setSelectedImage] = useState<string | null>(collectionImages[0]);
+  const [carouselVisible, setCarouselVisible] = useState(true);
+  const [animationActive, setAnimationActive] = useState(true);
+  const [showShopNowButton, setShowShopNowButton] = useState(false);
+  const [selectedCollectionId, setSelectedCollectionId] = useState<string | null>(null);
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const router = useRouter();
 
   // Slideshow logic: Change image every 3 seconds
   useEffect(() => {
-    if (!animationActive) return; // Stop slideshow animation when animation is disabled
+    if (!animationActive) return;
 
     const interval = setInterval(() => {
       if (carouselVisible && selectedImage) {
-        const currentIndex = productImages.indexOf(selectedImage);
-        const nextIndex = (currentIndex + 1) % productImages.length;
-        setSelectedImage(productImages[nextIndex]);
+        const currentIndex = collectionImages.indexOf(selectedImage);
+        const nextIndex = (currentIndex + 1) % collectionImages.length;
+        setSelectedImage(collectionImages[nextIndex]);
       }
-    }, 3000); // Change every 3 seconds
+    }, 3000);
 
-    return () => clearInterval(interval); // Clear interval on component unmount
-  }, [selectedImage, carouselVisible, productImages, animationActive]);
+    return () => clearInterval(interval);
+  }, [selectedImage, carouselVisible, collectionImages, animationActive]);
 
-  // Handle image click: Match image URL to product media[0] URL and get corresponding productId
+  // Handle image click: Match image URL to collection image URL and get corresponding collectionId
   const handleImageClick = (image: string, index: number) => {
-    setSelectedImage(image); // Set the clicked image as the background
-    setSelectedIndex(index); // Store the clicked index
-    setAnimationActive(false); // Stop the animation when an image is clicked
-    setShowShopNowButton(true); // Show the Shop Now button when an image is selected
+    setSelectedImage(image);
+    setSelectedIndex(index);
+    setAnimationActive(false);
+    setShowShopNowButton(true);
 
-    // Check if products are available before proceeding
-    if (products && products.length > 0) {
-      // Find the corresponding productId by matching media[0] URL with the image URL
-      const matchedProduct = products.find((product) => product.media[0] === image);
-      if (matchedProduct) {
-        console.log("Matching Product ID:", matchedProduct._id); // Print the matched product ID
-        setSelectedProductId(matchedProduct._id); // Store the productId for future use
+    if (collections && collections.length > 0) {
+      const matchedCollection = collections.find((collection) => collection.image === image);
+      if (matchedCollection) {
+        console.log("Matching Collection ID:", matchedCollection._id);
+        setSelectedCollectionId(matchedCollection._id);
       } else {
-        console.error("No matching product found for image:", image);
+        console.error("No matching collection found for image:", image);
       }
     } else {
-      console.error("Products are not available or empty.");
+      console.error("Collections are not available or empty.");
     }
   };
 
   // Explore All Button Click Handler
   const handleExploreAllClick = () => {
-    setCarouselVisible(false); // Hide the carousel when "Explore All" is clicked
-    router.push("/home"); // Redirect to /home
+    setCarouselVisible(false);
+    router.push("/home");
   };
 
-  // Shop Now Button Click Handler (redirect using the stored productId)
+  // Shop Now Button Click Handler (redirect to collection page)
   const handleShopNowClick = () => {
-    if (selectedProductId) {
-      console.log("Redirecting to product ID:", selectedProductId); // Check if the product ID is correct
-      router.push(`/products/${selectedProductId}`); // Redirect to the product page using the stored productId
+    if (selectedCollectionId) {
+      console.log("Redirecting to collection ID:", selectedCollectionId);
+      router.push(`/collections/${selectedCollectionId}`);
     } else {
-      console.error("No product selected.");
+      console.error("No collection selected.");
     }
   };
 
@@ -181,38 +178,38 @@ export default function Home({ productImages, products }: HomeProps) {
             {selectedImage && (
               <Image
                 src={selectedImage}
-                alt="Selected Product"
-                layout="fill"
-                objectFit="cover"
-                style={styles.carouselBackgroundImage}
+                alt="Selected Collection"
+                fill
+                className="object-cover"
+                priority
               />
             )}
           </div>
 
           {/* Logo (Top Left) */}
           <Link href="/">
-            <Image src="/logo.png" alt="Logo" width={130} height={100} style={styles.logo} />
+            <Image src="/logo.png" alt="Logo" width={130} height={100} className="absolute top-[10px] left-[10px] z-[5]" />
           </Link>
 
           {/* Login Icon (Top Right) */}
           <Link href="/sign-in">
-            <CircleUserRound style={styles.loginIcon} />
+            <CircleUserRound className="absolute top-[10px] right-[10px] z-[5] text-white cursor-pointer" />
           </Link>
 
           {/* Carousel Cards */}
           <div style={styles.carouselCards}>
-            {productImages.map((image, index) => (
+            {collectionImages.map((image, index) => (
               <div
                 key={index}
                 style={styles.carouselCard}
-                onClick={() => handleImageClick(image, index)} // Pass the index here
+                onClick={() => handleImageClick(image, index)}
               >
                 <Image
                   src={image}
-                  alt={`Product Image ${index + 1}`}
+                  alt={`Collection Image ${index + 1}`}
                   width={100}
                   height={100}
-                  style={styles.carouselCardImage}
+                  className="rounded-lg transition-transform duration-300 ease-in-out"
                 />
               </div>
             ))}
@@ -231,7 +228,7 @@ export default function Home({ productImages, products }: HomeProps) {
       {showShopNowButton && (
         <div style={{ ...styles.shopNowContainer, display: "block" }}>
           <button onClick={handleShopNowClick} style={styles.shopNowButton}>
-            Shop Now
+            View Collection
           </button>
         </div>
       )}
