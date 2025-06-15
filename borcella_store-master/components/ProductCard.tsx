@@ -27,10 +27,11 @@ const ProductCard = ({ product, updateSignedInUser }: ProductCardProps ) => {
         <p className="text-base-bold">{product.title}</p>
         <p className="text-small-medium text-grey-2">{product.category}</p>
       </div>
-      <div className="flex justify-between items-center">
+      <div className="flex items-center gap-2">
         <p className="text-body-bold">₹{product.price}</p>
-        <HeartFavorite product={product} updateSignedInUser={updateSignedInUser} />
+        <p className="text-small-medium text-grey-2 line-through">₹{product.originalPrice}</p>
       </div>
+      <HeartFavorite product={product} updateSignedInUser={updateSignedInUser} />
     </Link>
   );
 };
