@@ -242,9 +242,9 @@ export default function Home({ collectionImages, collections }: HomeProps) {
         </div>
       )}
 
-      {/* Shop Now Button */}
+      {/* Shop Now Button - Kept in original position */}
       {showShopNowButton && (
-        <div className="fixed bottom-8 right-8 z-20">
+        <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-20">
           <button 
             onClick={handleShopNowClick}
             className="bg-black/90 backdrop-blur-sm text-white px-8 py-3 rounded-full font-semibold 

@@ -16,12 +16,12 @@ const ProductCard = ({ product, updateSignedInUser }: ProductCardProps ) => {
       href={`/products/${product._id}`}
       className="w-[220px] flex flex-col gap-2"
     >
-      <div className="relative w-full h-[250px] bg-gray-50 rounded-lg flex items-center justify-center">
+      <div className="relative w-full h-[250px] rounded-lg overflow-hidden">
         <Image
           src={product.media[0]}
           alt="product"
           fill
-          className="object-contain p-4"
+          className="object-cover"
           sizes="(max-width: 220px) 100vw, 220px"
           priority
         />
