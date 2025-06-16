@@ -18,15 +18,22 @@ const Navbar = () => {
   const [dropdownMenu, setDropdownMenu] = useState(false);
   const [query, setQuery] = useState("");
 
+  // Check if we're on the exact home page (not /home)
   const isHomePage = pathname === "/";
 
   return (
-    <div className={`${styles["sticky-navbar"]} flex items-center justify-between px-4 py-2 bg-white shadow-sm`}>
+    <div className={`${styles["sticky-navbar"]} ${isHomePage ? styles["home-page"] : ""} flex items-center justify-between px-4 py-2 ${!isHomePage ? "bg-white shadow-sm" : ""}`}>
       <div className={styles["sticky-navbar-trigger"]} />
 
       {/* Logo */}
       <Link href="/">
-        <Image src="/logo.png" alt="logo" width={130} height={100} />
+        <Image 
+          src="/logo.png" 
+          alt="logo" 
+          width={130} 
+          height={100}
+          className={isHomePage ? "brightness-0 invert" : ""} // Make logo white on home page
+        />
       </Link>
 
       {!isHomePage && (
@@ -39,15 +46,15 @@ const Navbar = () => {
       )}
 
       {/* Search Bar */}
-      <div className="flex gap-3 border border-grey-2 px-3 py-1 items-center rounded-lg">
+      <div className={`flex gap-3 border ${isHomePage ? "border-white/20" : "border-grey-2"} px-3 py-1 items-center rounded-lg`}>
         <input
-          className="outline-none max-sm:max-w-[120px]"
+          className={`outline-none max-sm:max-w-[120px] ${isHomePage ? "text-white placeholder-white/70 bg-transparent" : ""}`}
           placeholder="Search..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
         />
         <button disabled={query === ""} onClick={() => router.push(`/search/${query}`)}>
-          <Search className="cursor-pointer h-4 w-4 hover:text-red-1" />
+          <Search className={`cursor-pointer h-4 w-4 ${isHomePage ? "text-white" : "hover:text-red-1"}`} />
         </button>
       </div>
 
@@ -61,7 +68,7 @@ const Navbar = () => {
         )}
 
         {/* Mobile Menu */}
-        <Menu className="cursor-pointer lg:hidden" onClick={() => setDropdownMenu(!dropdownMenu)} />
+        <Menu className={`cursor-pointer lg:hidden ${isHomePage ? "text-white" : ""}`} onClick={() => setDropdownMenu(!dropdownMenu)} />
 
         {dropdownMenu && (
           <div className="absolute top-12 right-5 flex flex-col gap-4 p-3 rounded-lg border bg-white text-base-bold lg:hidden">
@@ -82,7 +89,11 @@ const Navbar = () => {
           <Link href="/sign-in">
             <CircleUserRound className="w-6 h-6 hover:text-red-1" />
           </Link>
-        ) : null}
+        ) : (
+          <Link href="/sign-in">
+            <CircleUserRound className="w-6 h-6 text-white hover:text-white/80" />
+          </Link>
+        )}
       </div>
     </div>
   );

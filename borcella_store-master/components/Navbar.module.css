@@ -4,6 +4,14 @@
   left: 0;
   width: 100%;
   z-index: 1000;
+  transition: all 0.3s ease;
+}
+
+.sticky-navbar.home-page {
+  background: transparent;
+}
+
+.sticky-navbar:not(.home-page) {
   background: white;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
