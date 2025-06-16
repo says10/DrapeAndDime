@@ -134,7 +134,7 @@ const ProductInfo = ({ productInfo }: { productInfo: ProductType }) => {
 
       {/* Availability Message */}
       <p className={`text-lg font-semibold ${isOutOfStock ? "text-red-600" : "text-green-600"}`}>
-        {isOutOfStock ? "Out of Stock ❌" : `In Stock ✅ (${maxStock} available)`}
+        {isOutOfStock ? "Sold out " : `Last (${maxStock} available)`}
       </p>
 
       {/* Add to Cart Button (Disabled if Out of Stock) */}

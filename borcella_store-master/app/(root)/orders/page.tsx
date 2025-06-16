@@ -80,7 +80,7 @@ const Orders = () => {
             <h2 className="text-xl font-semibold text-gray-900 mb-2">No Orders Yet</h2>
             <p className="text-gray-600 mb-6">Start shopping to see your orders here</p>
             <button
-              onClick={() => router.push("/products")}
+              onClick={() => router.push("/home")}
               className="px-6 py-3 bg-gray-900 text-white rounded-xl hover:bg-gray-800 transition-colors"
             >
               Browse Products

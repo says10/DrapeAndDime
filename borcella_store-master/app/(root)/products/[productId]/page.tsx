@@ -227,7 +227,7 @@ const ProductDetails = ({ params }: { params: { productId: string } }) => {
                 {relatedProducts?.length > 0 ? (
                   relatedProducts.map((product: ProductType) => (
                     <div key={product._id} className="transform transition-all duration-300 hover:scale-[1.02]">
-                      <ProductCard product={product} />
+                      <ProductCard product={product} showHeart={false} />
                     </div>
                   ))
                 ) : (
