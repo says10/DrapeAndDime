@@ -1,7 +1,12 @@
-import { Toaster } from "react-hot-toast";
+import { Toaster } from "sonner";
 
 const ToasterProvider = () => {
-  return <Toaster />;
+  return <Toaster 
+    position="top-right"
+    richColors
+    closeButton
+    duration={4000}
+  />;
 }
 
 export default ToasterProvider;
