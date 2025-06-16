@@ -2,18 +2,42 @@
 
 import { useState } from "react";
 import HeartFavorite from "./HeartFavorite";
-import { MinusCircle, PlusCircle } from "lucide-react";
+import { MinusCircle, PlusCircle, ShoppingBag } from "lucide-react";
 import useCart from "@/lib/hooks/useCart"; // Ensure correct import
 import FormattedText from "./FormattedText";
+import { toast } from "sonner";
 
 const ProductInfo = ({ productInfo }: { productInfo: ProductType }) => {
   const [selectedColor, setSelectedColor] = useState<string>(productInfo.colors || "");
   const [selectedSize, setSelectedSize] = useState<string>(productInfo.sizes || "");
   const [quantity, setQuantity] = useState<number>(1);
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
 
   const cart = useCart();
   const maxStock = productInfo.quantity;
   const isOutOfStock = maxStock === 0;
+
+  const handleAddToCart = () => {
+    if (!isOutOfStock) {
+      setIsAddingToCart(true);
+      try {
+        cart.addItem({
+          item: productInfo,
+          quantity,
+          color: selectedColor,
+          size: selectedSize,
+        });
+        toast.success("Added to cart!", {
+          description: `${productInfo.title} has been added to your cart.`,
+          duration: 3000,
+        });
+      } catch (error) {
+        toast.error("Failed to add to cart");
+      } finally {
+        setIsAddingToCart(false);
+      }
+    }
+  };
 
   return (
     <div className="max-w-[400px] flex flex-col gap-4">
@@ -113,25 +137,39 @@ const ProductInfo = ({ productInfo }: { productInfo: ProductType }) => {
 
       {/* Add to Cart Button (Disabled if Out of Stock) */}
       <button
-        className={`outline text-base-bold py-3 rounded-lg transition ${
+        className={`group relative flex items-center justify-center gap-2 px-6 py-4 rounded-xl text-base font-medium transition-all duration-300 ${
           isOutOfStock
-            ? "bg-gray-300 text-gray-600 cursor-not-allowed"
-            : "hover:bg-black hover:text-white"
+            ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+            : "bg-gray-900 text-white hover:bg-gray-800 hover:shadow-lg active:scale-[0.98]"
         }`}
-        onClick={() => {
-          if (!isOutOfStock) {
-            cart.addItem({
-              item: productInfo,
-              quantity,
-              color: selectedColor,
-              size: selectedSize,
-            });
-          }
-        }}
-        disabled={isOutOfStock}
+        onClick={handleAddToCart}
+        disabled={isOutOfStock || isAddingToCart}
       >
-        {isOutOfStock ? "Sold Out ❌" : "Add To Cart 🛒"}
+        {isAddingToCart ? (
+          <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+        ) : (
+          <>
+            <ShoppingBag className="w-5 h-5" />
+            {isOutOfStock ? "Sold Out" : "Add to Cart"}
+          </>
+        )}
+        {!isOutOfStock && (
+          <span className="absolute inset-0 rounded-xl bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        )}
       </button>
+
+      {/* Stock Status */}
+      <p className={`text-sm font-medium ${
+        isOutOfStock 
+          ? "text-red-600 bg-red-50 px-3 py-2 rounded-lg" 
+          : "text-green-600 bg-green-50 px-3 py-2 rounded-lg"
+      }`}>
+        {isOutOfStock ? (
+          "Currently out of stock"
+        ) : (
+          `${maxStock} units available`
+        )}
+      </p>
     </div>
   );
 };

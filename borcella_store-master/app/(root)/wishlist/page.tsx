@@ -5,44 +5,87 @@ import ProductCard from "@/components/ProductCard"
 import { getProductDetails } from "@/lib/actions/actions"
 import { useUser } from "@clerk/nextjs"
 import { use, useEffect, useState } from "react"
-import { Heart } from "lucide-react"
+import { Heart, AlertCircle } from "lucide-react"
+import { useRouter } from "next/navigation"
 
 const Wishlist = () => {
-  const { user } = useUser()
+  const router = useRouter()
+  const { user, isLoaded: isUserLoaded } = useUser()
 
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [signedInUser, setSignedInUser] = useState<UserType | null>(null)
   const [wishlist, setWishlist] = useState<ProductType[]>([])
 
   const getUser = async () => {
+    if (!user?.id) {
+      setLoading(false)
+      return
+    }
+
     try {
-      const res = await fetch("/api/users")
+      const res = await fetch(`/api/users?userId=${user.id}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+
+      if (!res.ok) {
+        throw new Error(`Failed to fetch user: ${res.status}`)
+      }
+
       const data = await res.json()
       setSignedInUser(data)
-      setLoading(false)
     } catch (err) {
-      console.log("[users_GET", err)
+      console.error("[users_GET]", err)
+      setError("Failed to load user data. Please try again.")
+    } finally {
+      setLoading(false)
     }
   }
 
   useEffect(() => {
-    if (user) {
+    if (isUserLoaded) {
+      if (!user) {
+        router.push("/sign-in")
+        return
+      }
       getUser()
     }
-  }, [user])
+  }, [user, isUserLoaded, router])
 
   const getWishlistProducts = async () => {
-    setLoading(true)
+    if (!signedInUser?.wishlist?.length) {
+      setWishlist([])
+      setLoading(false)
+      return
+    }
 
-    if (!signedInUser) return
+    try {
+      setLoading(true)
+      setError(null)
 
-    const wishlistProducts = await Promise.all(signedInUser.wishlist.map(async (productId) => {
-      const res = await getProductDetails(productId)
-      return res
-    }))
+      const wishlistProducts = await Promise.all(
+        signedInUser.wishlist.map(async (productId) => {
+          try {
+            const product = await getProductDetails(productId)
+            return product
+          } catch (err) {
+            console.error(`Error fetching product ${productId}:`, err)
+            return null
+          }
+        })
+      )
 
-    setWishlist(wishlistProducts)
-    setLoading(false)
+      const validProducts = wishlistProducts.filter((product): product is ProductType => product !== null)
+      setWishlist(validProducts)
+    } catch (err) {
+      console.error("[wishlist_GET]", err)
+      setError("Failed to load wishlist items. Please try again.")
+    } finally {
+      setLoading(false)
+    }
   }
 
   useEffect(() => {
@@ -55,7 +98,31 @@ const Wishlist = () => {
     setSignedInUser(updatedUser)
   }
 
-  if (loading) return <Loader />
+  if (!isUserLoaded || loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-white to-gray-50/50">
+        <Loader />
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-white to-gray-50/50">
+        <div className="text-center p-8 bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-100 max-w-md mx-4">
+          <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
+          <h2 className="text-xl font-semibold text-gray-900 mb-2">Something went wrong</h2>
+          <p className="text-gray-600 mb-6">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-6 py-3 bg-gray-900 text-white rounded-xl hover:bg-gray-800 transition-colors"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-gray-50/50">
@@ -82,14 +149,18 @@ const Wishlist = () => {
 
           {/* Products Grid */}
           {wishlist.length === 0 ? (
-            <div className="text-center py-16 bg-white/50 rounded-lg border border-gray-100 shadow-sm">
-              <Heart className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-              <p className="text-gray-500 font-medium tracking-wide text-lg">
-                Your wishlist is empty
-              </p>
-              <p className="text-gray-400 mt-2">
+            <div className="text-center py-16 bg-white/80 backdrop-blur-sm rounded-2xl border border-gray-100 shadow-lg">
+              <Heart className="w-16 h-16 text-gray-300 mx-auto mb-6" />
+              <h2 className="text-xl font-semibold text-gray-800 mb-3">Your wishlist is empty</h2>
+              <p className="text-gray-600">
                 Add items to your wishlist to save them for later
               </p>
+              <button
+                onClick={() => router.push('/products')}
+                className="mt-8 px-6 py-3 bg-gray-900 text-white rounded-xl hover:bg-gray-800 transition-colors"
+              >
+                Browse Products
+              </button>
             </div>
           ) : (
             <div className="grid grid-flow-row grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 auto-rows-fr">
