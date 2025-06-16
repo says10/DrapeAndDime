@@ -1,188 +1,172 @@
 import React from "react";
+import { Mail, Instagram, Leaf, Heart, Star, Truck, Shield, ArrowRight } from "lucide-react";
 
 const About: React.FC = () => {
   return (
-    <div style={styles.pageWrapper}>
-      <div style={styles.pageContainer}>
+    <div className="min-h-screen bg-gradient-to-br from-white via-gray-50/50 to-gray-100/50">
+      {/* Premium Pattern Overlay */}
+      <div className="absolute inset-0 opacity-[0.03]" style={{
+        backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+      }} />
+
+      <div className="relative max-w-[1920px] mx-auto px-8 py-24">
         {/* Hero Section */}
-        <section style={styles.heroSection}>
-          <h1 style={styles.heroTitle}>
-            Welcome to <span style={styles.brandName}>Drape & Dime</span>
+        <section className="max-w-4xl mx-auto mb-24 text-center">
+          <h1 className="text-5xl font-bold mb-6 tracking-tight">
+            Welcome to{" "}
+            <span className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent">
+              Drape & Dime
+            </span>
           </h1>
-          <p style={styles.heroSubtitle}>
-            Where style meets comfort, and trends meet affordability.
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
+            Where style meets comfort, and trends meet affordability. Crafting fashion that speaks to your soul.
           </p>
+          <div className="w-24 h-1 bg-gradient-to-r from-gray-200 via-gray-900 to-gray-200 mx-auto mt-8 rounded-full" />
         </section>
 
-        {/* About Us Content */}
-        <div style={styles.contentContainer}>
-          <h2 style={styles.sectionTitle}>Our Story</h2>
-          <p style={styles.paragraph}>
-            At <strong>Drape & Dime</strong>, we are more than just a fashion brand. We are a movement, redefining
-            style with a perfect blend of elegance and affordability. Every piece we offer is handpicked to ensure
-            premium quality, comfort, and an effortless fashion statement.
-          </p>
+        {/* Main Content */}
+        <div className="max-w-4xl mx-auto space-y-24">
+          {/* Our Story Section */}
+          <section className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-lg border border-gray-100 p-12">
+            <h2 className="text-3xl font-bold mb-8 tracking-tight bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent">
+              Our Story
+            </h2>
+            <p className="text-lg text-gray-600 leading-relaxed">
+              At <span className="font-semibold text-gray-900">Drape & Dime</span>, we are more than just a fashion brand. 
+              We are a movement, redefining style with a perfect blend of elegance and affordability. 
+              Every piece we offer is handpicked to ensure premium quality, comfort, and an effortless fashion statement.
+            </p>
+          </section>
 
           {/* Core Values Section */}
-          <h2 style={styles.sectionTitle}>What We Stand For</h2>
-          <div style={styles.valuesContainer}>
-            <div style={styles.valueCard}>
-              <h3>🌱 Sustainability</h3>
-              <p>Eco-friendly materials and ethical sourcing are at our core.</p>
-            </div>
-            <div style={styles.valueCard}>
-              <h3>🔍 Attention to Detail</h3>
-              <p>Every stitch, fabric, and fit is crafted to perfection.</p>
-            </div>
-            <div style={styles.valueCard}>
-              <h3>💖 Customer First</h3>
-              <p>Your happiness is our success. We strive for top-tier service.</p>
-            </div>
-          </div>
+          <section>
+            <h2 className="text-3xl font-bold mb-12 text-center tracking-tight bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent">
+              What We Stand For
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-lg border border-gray-100 hover:shadow-xl transition-shadow">
+                <div className="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center mb-6">
+                  <Leaf className="w-6 h-6 text-green-600" />
+                </div>
+                <h3 className="text-xl font-semibold mb-4 text-gray-900">Sustainability</h3>
+                <p className="text-gray-600 leading-relaxed">
+                  Eco-friendly materials and ethical sourcing are at our core. We believe in fashion that respects our planet.
+                </p>
+              </div>
 
-          {/* Why Choose Us */}
-          <h2 style={styles.sectionTitle}>Why Choose Us?</h2>
-          <ul style={styles.list}>
-            <li>✅ Trendsetting designs that blend tradition and modernity.</li>
-            <li>✅ Fast and hassle-free shipping.</li>
-            <li>✅ Affordable pricing with uncompromised quality.</li>
-            <li>✅ Secure and seamless shopping experience.</li>
-          </ul>
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-lg border border-gray-100 hover:shadow-xl transition-shadow">
+                <div className="w-12 h-12 bg-amber-50 rounded-xl flex items-center justify-center mb-6">
+                  <Star className="w-6 h-6 text-amber-600" />
+                </div>
+                <h3 className="text-xl font-semibold mb-4 text-gray-900">Attention to Detail</h3>
+                <p className="text-gray-600 leading-relaxed">
+                  Every stitch, fabric, and fit is crafted to perfection. We obsess over the details so you don't have to.
+                </p>
+              </div>
+
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-lg border border-gray-100 hover:shadow-xl transition-shadow">
+                <div className="w-12 h-12 bg-red-50 rounded-xl flex items-center justify-center mb-6">
+                  <Heart className="w-6 h-6 text-red-600" />
+                </div>
+                <h3 className="text-xl font-semibold mb-4 text-gray-900">Customer First</h3>
+                <p className="text-gray-600 leading-relaxed">
+                  Your happiness is our success. We strive for top-tier service and an exceptional shopping experience.
+                </p>
+              </div>
+            </div>
+          </section>
+
+          {/* Why Choose Us Section */}
+          <section className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-lg border border-gray-100 p-12">
+            <h2 className="text-3xl font-bold mb-8 tracking-tight bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent">
+              Why Choose Us?
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="flex items-start gap-4">
+                <div className="w-8 h-8 rounded-full bg-gray-900 flex items-center justify-center flex-shrink-0">
+                  <span className="text-white text-sm">✓</span>
+                </div>
+                <p className="text-gray-600">Trendsetting designs that blend tradition and modernity</p>
+              </div>
+              <div className="flex items-start gap-4">
+                <div className="w-8 h-8 rounded-full bg-gray-900 flex items-center justify-center flex-shrink-0">
+                  <Truck className="w-4 h-4 text-white" />
+                </div>
+                <p className="text-gray-600">Fast and hassle-free shipping</p>
+              </div>
+              <div className="flex items-start gap-4">
+                <div className="w-8 h-8 rounded-full bg-gray-900 flex items-center justify-center flex-shrink-0">
+                  <span className="text-white text-sm">₹</span>
+                </div>
+                <p className="text-gray-600">Affordable pricing with uncompromised quality</p>
+              </div>
+              <div className="flex items-start gap-4">
+                <div className="w-8 h-8 rounded-full bg-gray-900 flex items-center justify-center flex-shrink-0">
+                  <Shield className="w-4 h-4 text-white" />
+                </div>
+                <p className="text-gray-600">Secure and seamless shopping experience</p>
+              </div>
+            </div>
+          </section>
 
           {/* Contact Section */}
-          <h2 style={styles.sectionTitle}>Get in Touch</h2>
-          <div style={styles.contactContainer}>
-            <a href="mailto:drapeanddime@gmail.com" style={styles.contactItem}>
-              <img src="/gmail.svg" alt="Gmail" style={styles.icon} />
-              drapeanddime@gmail.com
-            </a>
-            <a
-              href="https://www.instagram.com/drapeanddime?igsh=bjZyM3E2dHZzMDBs"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={styles.contactItem}
-            >
-              <img src="/instagram.svg" alt="Instagram" style={styles.icon} />
-              @drapeanddime
-            </a>
-          </div>
+          <section className="text-center">
+            <h2 className="text-3xl font-bold mb-12 tracking-tight bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent">
+              Get in Touch
+            </h2>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
+              <a
+                href="mailto:drapeanddime@gmail.com"
+                className="inline-flex items-center gap-3 px-8 py-4 bg-white rounded-xl shadow-lg border border-gray-100 hover:shadow-xl transition-all group"
+              >
+                <Mail className="w-5 h-5 text-gray-600 group-hover:text-gray-900" />
+                <span className="text-gray-600 group-hover:text-gray-900">drapeanddime@gmail.com</span>
+              </a>
+              <a
+                href="https://www.instagram.com/drapeanddime?igsh=bjZyM3E2dHZzMDBs"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-3 px-8 py-4 bg-white rounded-xl shadow-lg border border-gray-100 hover:shadow-xl transition-all group"
+              >
+                <Instagram className="w-5 h-5 text-gray-600 group-hover:text-gray-900" />
+                <span className="text-gray-600 group-hover:text-gray-900">@drapeanddime</span>
+              </a>
+            </div>
+          </section>
 
-          {/* Return Policy */}
-          <h2 style={styles.sectionTitle}>Return Policy</h2>
-          <p style={styles.paragraph}>
-            We want you to love your purchase! If you're not satisfied, you can <strong>return your item within 2 days</strong>.
-          </p>
-          <p style={styles.paragraph}>
-            📩 To initiate a return, email us at
-            <a href="mailto:drapeanddime@gmail.com" style={styles.emailLink}> drapeanddime@gmail.com</a>.
-          </p>
+          {/* Return Policy Section */}
+          <section className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-lg border border-gray-100 p-12">
+            <h2 className="text-3xl font-bold mb-8 tracking-tight bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent">
+              Return Policy
+            </h2>
+            <div className="space-y-6">
+              <p className="text-lg text-gray-600 leading-relaxed">
+                We want you to love your purchase! If you're not satisfied, you can{" "}
+                <span className="font-semibold text-gray-900">return your item within 2 days</span>.
+              </p>
+              <div className="flex items-center gap-3 text-gray-600">
+                <Mail className="w-5 h-5" />
+                <p>
+                  To initiate a return, email us at{" "}
+                  <a href="mailto:drapeanddime@gmail.com" className="text-gray-900 font-medium hover:underline">
+                    drapeanddime@gmail.com
+                  </a>
+                </p>
+              </div>
+            </div>
+          </section>
+
+          {/* Elegant Closing */}
+          <div className="text-center py-12">
+            <p className="text-2xl font-light text-gray-600 italic tracking-wide">
+              "Where fashion meets purpose, and style meets soul."
+            </p>
+            <div className="w-24 h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent mx-auto mt-8" />
+          </div>
         </div>
       </div>
     </div>
   );
-};
-
-// ✅ TypeScript Fix: Defined styles with React.CSSProperties
-const styles: Record<string, React.CSSProperties> = {
-  pageWrapper: {
-    backgroundImage: "url('/background2.jpg')",
-    backgroundSize: "cover",
-    backgroundPosition: "center",
-    backgroundRepeat: "no-repeat",
-    minHeight: "100vh",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    padding: "50px 20px",
-  },
-  pageContainer: {
-    fontFamily: "'Poppins', sans-serif",
-    backgroundColor: "#ffffff",
-    padding: "40px 20px",
-    maxWidth: "1000px",
-    width: "100%",
-    borderRadius: "10px",
-    boxShadow: "0px 10px 20px rgba(0, 0, 0, 0.1)",
-  },
-  heroSection: {
-    textAlign: "center",
-    padding: "30px 20px",
-    backgroundColor: "#222",
-    color: "white",
-    borderRadius: "8px",
-  },
-  heroTitle: {
-    fontSize: "36px",
-    fontWeight: "bold",
-  },
-  brandName: {
-    color: "#ff6600",
-  },
-  heroSubtitle: {
-    fontSize: "18px",
-    marginTop: "10px",
-  },
-  contentContainer: {
-    padding: "30px",
-  },
-  sectionTitle: {
-    fontSize: "24px",
-    fontWeight: "bold",
-    marginBottom: "10px",
-    color: "#333",
-  },
-  paragraph: {
-    fontSize: "16px",
-    lineHeight: "1.6",
-    marginBottom: "15px",
-    color: "#555",
-  },
-  valuesContainer: {
-    display: "flex",
-    gap: "15px",
-    justifyContent: "space-between",
-    flexWrap: "wrap", // ✅ Responsiveness
-    marginTop: "20px",
-  },
-  valueCard: {
-    backgroundColor: "#fff",
-    padding: "15px",
-    borderRadius: "8px",
-    boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
-    flex: "1",
-    textAlign: "center",
-    minWidth: "200px",
-  },
-  list: {
-    padding: "0",
-    marginLeft: "20px",
-    fontSize: "16px",
-    lineHeight: "1.6",
-  },
-  contactContainer: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "10px",
-    marginTop: "10px",
-  },
-  contactItem: {
-    display: "flex",
-    alignItems: "center",
-    textDecoration: "none",
-    fontSize: "16px",
-    color: "#333",
-    transition: "color 0.3s ease",
-  },
-  icon: {
-    width: "24px",
-    height: "24px",
-    marginRight: "8px",
-  },
-  emailLink: {
-    color: "#0077cc",
-    textDecoration: "none",
-    fontWeight: "bold",
-  },
 };
 
 export default About;

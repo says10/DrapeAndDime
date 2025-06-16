@@ -44,7 +44,7 @@ const ProductCard = ({ product, updateSignedInUser }: ProductCardProps) => {
         <h3 className="text-sm font-medium text-gray-900 mb-1">{product.title}</h3>
         <p className="text-sm text-gray-500 mb-2">{product.category}</p>
         <div className="flex items-center gap-2">
-          <span className="text-base font-medium text-gray-900">${product.price}</span>
+          <span className="text-base font-medium text-gray-900">₹{product.price}</span>
         </div>
       </div>
     </Link>
