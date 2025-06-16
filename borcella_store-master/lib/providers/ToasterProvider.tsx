@@ -1,12 +1,6 @@
-import { Toaster } from "sonner";
-
+// Temporary replacement to test if sonner is causing the sw.js issue
 const ToasterProvider = () => {
-  return <Toaster 
-    position="top-right"
-    richColors
-    closeButton
-    duration={4000}
-  />;
+  return <div id="toaster-container" />;
 }
 
 export default ToasterProvider;

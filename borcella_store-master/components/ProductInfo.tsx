@@ -5,7 +5,7 @@ import HeartFavorite from "./HeartFavorite";
 import { MinusCircle, PlusCircle, ShoppingBag } from "lucide-react";
 import useCart from "@/lib/hooks/useCart"; // Ensure correct import
 import FormattedText from "./FormattedText";
-import { toast } from "sonner";
+// import { toast } from "sonner"; // Temporarily commented out
 
 const ProductInfo = ({ productInfo }: { productInfo: ProductType }) => {
   const [selectedColor, setSelectedColor] = useState<string>(productInfo.colors || "");
@@ -27,12 +27,14 @@ const ProductInfo = ({ productInfo }: { productInfo: ProductType }) => {
           color: selectedColor,
           size: selectedSize,
         });
-        toast.success("Added to cart!", {
-          description: `${productInfo.title} has been added to your cart.`,
-          duration: 3000,
-        });
+        // toast.success("Added to cart!", {
+        //   description: `${productInfo.title} has been added to your cart.`,
+        //   duration: 3000,
+        // });
+        console.log("Added to cart:", productInfo.title); // Temporary console log
       } catch (error) {
-        toast.error("Failed to add to cart");
+        // toast.error("Failed to add to cart");
+        console.error("Failed to add to cart:", error); // Temporary console log
       } finally {
         setIsAddingToCart(false);
       }

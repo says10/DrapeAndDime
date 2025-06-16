@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { toast } from "sonner";
+// import { toast } from "sonner"; // Temporarily commented out
 import { persist, createJSONStorage } from "zustand/middleware";
 
 interface CartItem {
@@ -30,20 +30,22 @@ const useCart = create(
         );
 
         if (isExisting) {
-          return toast("Item already in cart");
+          return;
         }
 
         set({ cartItems: [...currentItems, { item, quantity, color, size }] });
-        toast.success("Item added to cart", { 
-          description: `${item.title} has been added to your cart.`
-        });
+        // toast.success("Item added to cart", { 
+        //   description: `${item.title} has been added to your cart.`
+        // });
+        console.log("Item added to cart:", item.title); // Temporary console log
       },
       removeItem: (idToRemove: string) => {
         const newCartItems = get().cartItems.filter(
           (cartItem) => cartItem.item._id !== idToRemove
         );
         set({ cartItems: newCartItems });
-        toast.success("Item removed from cart");
+        // toast.success("Item removed from cart");
+        console.log("Item removed from cart"); // Temporary console log
       },
       increaseQuantity: (idToIncrease: string) => {
         const newCartItems = get().cartItems.map((cartItem) =>
@@ -52,7 +54,8 @@ const useCart = create(
             : cartItem
         );
         set({ cartItems: newCartItems });
-        toast.success("Item quantity increased");
+        // toast.success("Item quantity increased");
+        console.log("Item quantity increased"); // Temporary console log
       },
       decreaseQuantity: (idToDecrease: string) => {
         const newCartItems = get().cartItems.map((cartItem) =>
@@ -61,7 +64,8 @@ const useCart = create(
             : cartItem
         );
         set({ cartItems: newCartItems });
-        toast.success("Item quantity decreased");
+        // toast.success("Item quantity decreased");
+        console.log("Item quantity decreased"); // Temporary console log
       },
       clearCart: () => set({ cartItems: [] }),
     }),
