@@ -9,6 +9,23 @@ import { CreditCard, Package, ShoppingBag, AlertCircle, Truck, XCircle } from "l
 import useCart from "@/lib/hooks/useCart"; // Adjust the path to where your store is located
 import { load } from '@cashfreepayments/cashfree-js'; // Import Cashfree SDK
 
+// Add this at the top of the file, after imports
+const customScrollbarStyles = `
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 2px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
+`
+
 const Payment = () => {
   const router = useRouter();
   const { cartItems } = useCart(); // Use cartItems from your Zustand store
@@ -196,7 +213,10 @@ const Payment = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-gray-50/50">
+    <div className="min-h-screen bg-gradient-to-br from-white via-gray-50/50 to-gray-100/50">
+      {/* Add the style tag without jsx global */}
+      <style dangerouslySetInnerHTML={{ __html: customScrollbarStyles }} />
+      
       <div className="relative">
         {/* Premium Pattern Background */}
         <div className="absolute inset-0 opacity-[0.02]" style={{
@@ -446,22 +466,6 @@ const Payment = () => {
           </div>
         </div>
       </div>
-
-      <style jsx global>{`
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 4px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: transparent;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: #e5e7eb;
-          border-radius: 4px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: #d1d5db;
-        }
-      `}</style>
     </div>
   );
 };
