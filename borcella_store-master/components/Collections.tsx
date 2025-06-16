@@ -2,6 +2,8 @@ import { getCollections } from "@/lib/actions/actions";
 import Image from "next/image";
 import Link from "next/link";
 
+const isVideo = (url: string) => /\.(mp4|webm|ogg)$/i.test(url);
+
 const Collections = async () => {
   const collections = await getCollections();
 
@@ -11,18 +13,29 @@ const Collections = async () => {
       {!collections || collections.length === 0 ? (
         <p className="text-body-bold">No collections found</p>
       ) : (
-        <div className="flex flex-wrap items-center justify-center gap-8">
+        <div className="flex flex-col w-full gap-8">
           {collections.map((collection: CollectionType) => (
-            <Link href={`/collections/${collection._id}`} key={collection._id}>
-              <div className="relative w-[350px] h-[200px] rounded-lg overflow-hidden">
-                <Image
-                  src={collection.image}
-                  alt={collection.title}
-                  fill
-                  className="object-cover hover:scale-105 transition-transform duration-300"
-                  sizes="(max-width: 350px) 100vw, 350px"
-                  priority
-                />
+            <Link href={`/collections/${collection._id}`} key={collection._id} className="w-full">
+              <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-gray-100">
+                {isVideo(collection.image) ? (
+                  <video
+                    src={collection.image}
+                    className="object-cover w-full h-full"
+                    style={{ aspectRatio: '16/9' }}
+                    muted
+                    playsInline
+                  />
+                ) : (
+                  <Image
+                    src={collection.image}
+                    alt={collection.title}
+                    fill
+                    className="object-cover hover:scale-105 transition-transform duration-300"
+                    sizes="100vw"
+                    priority
+                    style={{ aspectRatio: '16/9' }}
+                  />
+                )}
               </div>
             </Link>
           ))}

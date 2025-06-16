@@ -1,12 +1,38 @@
 "use client"; // Ensure this is client-side code
 
 import useCart from "@/lib/hooks/useCart";
-import { UserButton, useUser } from "@clerk/nextjs";
+// import { UserButton, useUser } from "@clerk/nextjs";
 import { CircleUserRound, Menu, Search, ShoppingCart } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
+
+/* Insert a new CSS block at the top of the file (or in your global CSS) */
+/* (You can also inline these styles in a <style> tag if you prefer.) */
+/*
+  .sticky-navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    transition: transform 0.3s ease-in-out;
+    transform: translateY(-100%);
+  }
+  .sticky-navbar:hover {
+    transform: translateY(0);
+  }
+  .sticky-navbar-trigger {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px; /* thin strip */
+    z-index: 1001; /* above the navbar */
+    background: transparent; /* or a subtle color */
+  }
+*/
 
 const Navbar = () => {
   const pathname = usePathname();
@@ -20,7 +46,9 @@ const Navbar = () => {
   const isHomePage = pathname === "/"; // Check if we are on the homepage
 
   return (
-    <div className={`navbar-container sticky top-0 z-10 py-2 px-10 flex justify-between items-center bg-white max-sm:px-2 ${isHomePage ? "hidden" : ""}`}>
+    <div className="sticky-navbar flex items-center justify-between px-4 py-2 bg-white shadow-sm">
+      <div className="sticky-navbar-trigger" />
+
       {/* Logo */}
       <Link href="/">
         <Image src="/logo.png" alt="logo" width={130} height={100} />

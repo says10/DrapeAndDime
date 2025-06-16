@@ -100,10 +100,21 @@ import Link from "next/link";
   },
 };
 
+interface CollectionType {
+  _id: string;
+  image: string; // can be image or video URL
+  name: string;
+  headline?: string;
+  ctaText?: string;
+}
 
 interface HomeProps {
-  collectionImages: string[]; // Array of collection image URLs
-  collections: CollectionType[]; // Array of collections
+  collectionImages: string[];
+  collections: CollectionType[];
+}
+
+function isVideo(url: string) {
+  return url.match(/\.(mp4|webm|ogg)$/i);
 }
 
 export default function Home({ collectionImages, collections }: HomeProps) {
@@ -173,10 +184,20 @@ export default function Home({ collectionImages, collections }: HomeProps) {
     <>
       {/* Full-Screen Carousel */}
       {carouselVisible && (
-        <div className="relative w-full h-screen overflow-hidden">
-          {/* Background Image Container */}
-          <div className="absolute inset-0 w-full h-full">
-            {selectedImage && (
+        <div className="relative w-full aspect-video overflow-hidden bg-gray-100">
+          {/* Background Media (Image or Video) */}
+          <div className="absolute inset-0 w-full h-full z-0">
+            {selectedImage && isVideo(selectedImage) ? (
+              <video
+                src={selectedImage}
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="object-cover w-full h-full"
+                style={{ aspectRatio: '16/9' }}
+              />
+            ) : selectedImage ? (
               <Image
                 src={selectedImage}
                 alt="Selected Collection"
@@ -185,12 +206,29 @@ export default function Home({ collectionImages, collections }: HomeProps) {
                 priority
                 sizes="100vw"
                 quality={100}
+                style={{ aspectRatio: '16/9' }}
               />
-            )}
+            ) : null}
+            {/* Overlay Gradient */}
+            <div className="absolute inset-0 bg-gradient-to-t from-pink-200/80 via-white/30 to-transparent z-10" />
           </div>
-
+          {/* Overlay Content */}
+          <div className="relative z-20 flex flex-col items-center justify-center w-full h-full text-center px-4">
+            <h1 className="text-3xl md:text-5xl font-extrabold text-pink-700 drop-shadow-lg mb-4">
+              {collections[selectedIndex ?? 0]?.headline || 'Discover the Latest in Women's Fashion'}
+            </h1>
+            <p className="text-lg md:text-2xl text-gray-700 mb-6">
+              {collections[selectedIndex ?? 0]?.name || 'Trendy, Elegant, and Comfortable Styles for Every Woman'}
+            </p>
+            <button
+              onClick={handleShopNowClick}
+              className="bg-pink-600 hover:bg-pink-700 text-white px-8 py-3 rounded-full font-semibold shadow-lg transition-all duration-300"
+            >
+              {collections[selectedIndex ?? 0]?.ctaText || 'Shop Now'}
+            </button>
+          </div>
           {/* Logo (Top Left) */}
-          <Link href="/" className="absolute top-4 left-4 z-10">
+          <Link href="/" className="absolute top-4 left-4 z-30">
             <Image 
               src="/logo.png" 
               alt="Logo" 
@@ -200,41 +238,47 @@ export default function Home({ collectionImages, collections }: HomeProps) {
               priority
             />
           </Link>
-
           {/* Login Icon (Top Right) */}
-          <Link href="/sign-in" className="absolute top-4 right-4 z-10">
-            <CircleUserRound className="text-white w-8 h-8 cursor-pointer hover:text-gray-200 transition-colors" />
+          <Link href="/sign-in" className="absolute top-4 right-4 z-30">
+            <CircleUserRound className="text-pink-700 w-8 h-8 cursor-pointer hover:text-pink-500 transition-colors" />
           </Link>
-
-          {/* Carousel Cards */}
-          <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex gap-4 justify-center items-center w-full px-4">
+          {/* Carousel Thumbnails */}
+          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-3 justify-center items-center w-full px-4 z-30">
             {collectionImages.map((image, index) => (
               <div
                 key={index}
-                className={`relative w-24 h-24 cursor-pointer transition-transform duration-300 hover:scale-110 ${
-                  selectedImage === image ? 'ring-2 ring-white' : ''
+                className={`relative w-16 h-16 md:w-24 md:h-24 cursor-pointer transition-transform duration-300 hover:scale-110 ${
+                  selectedImage === image ? 'ring-2 ring-pink-400' : ''
                 }`}
                 onClick={() => handleImageClick(image, index)}
               >
-                <Image
-                  src={image}
-                  alt={`Collection Image ${index + 1}`}
-                  fill
-                  className="rounded-lg object-cover"
-                  sizes="(max-width: 96px) 100vw, 96px"
-                />
+                {isVideo(image) ? (
+                  <video
+                    src={image}
+                    className="rounded-lg object-cover w-full h-full"
+                    style={{ aspectRatio: '1/1' }}
+                    muted
+                    playsInline
+                  />
+                ) : (
+                  <Image
+                    src={image}
+                    alt={`Collection Image ${index + 1}`}
+                    fill
+                    className="rounded-lg object-cover"
+                    sizes="(max-width: 96px) 100vw, 96px"
+                  />
+                )}
               </div>
             ))}
           </div>
-
-          {/* Explore All Button - Moved to bottom right */}
-          <div className="absolute bottom-8 right-8 z-20">
+          {/* Explore All Button */}
+          <div className="absolute bottom-4 right-4 z-30">
             <button 
               onClick={handleExploreAllClick}
-              className="bg-white/90 backdrop-blur-sm text-black px-8 py-3 rounded-full font-semibold 
-                hover:bg-white transition-all duration-300 shadow-lg hover:shadow-xl
-                border border-gray-200 hover:border-gray-300
-                transform hover:-translate-y-0.5 active:translate-y-0"
+              className="bg-white/90 backdrop-blur-sm text-pink-700 px-6 py-2 rounded-full font-semibold 
+                hover:bg-pink-50 transition-all duration-300 shadow-lg hover:shadow-xl
+                border border-pink-200 hover:border-pink-300"
             >
               Explore All
             </button>
