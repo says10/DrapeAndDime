@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs"; // Import auth hook from Clerk
 import Image from "next/image";
-import { CreditCard, Package, ShoppingBag, AlertCircle } from "lucide-react";
+import { CreditCard, Package, ShoppingBag, AlertCircle, Truck, XCircle } from "lucide-react";
 
 // Import the custom useCart hook
 import useCart from "@/lib/hooks/useCart"; // Adjust the path to where your store is located
@@ -30,6 +30,9 @@ const Payment = () => {
 
   const [shippingRate, setShippingRate] = useState(0);
   const [errorMessage, setErrorMessage] = useState(""); // State to manage error messages
+  const [showCodMessage, setShowCodMessage] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<'online' | 'cod'>('online');
+  const [isFormFilled, setIsFormFilled] = useState(false);
 
   const amount = cartItems.reduce(
     (total, cartItem) => total + cartItem.item.price * cartItem.quantity,
@@ -53,8 +56,28 @@ const Payment = () => {
     initializeCashfreeSDK();
   }, []);
 
+  // Add this function to check if form is filled
+  const checkFormFilled = (formData: any) => {
+    const requiredFields = ['name', 'phone', 'email', 'street', 'city', 'state', 'postalCode', 'country'];
+    return requiredFields.every(field => formData[field]?.trim().length > 0);
+  };
+
+  // Modify handleChange to include pincode check
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const newValue = e.target.value;
+    setFormData({ ...formData, [e.target.name]: newValue });
+    
+    // Check pincode specifically
+    if (e.target.name === 'postalCode') {
+      if (newValue.length === 6) {
+        setShowCodMessage(true);
+        if (paymentMethod === 'cod') {
+          setPaymentMethod('online'); // Switch to online payment if COD was selected
+        }
+      } else {
+        setShowCodMessage(false);
+      }
+    }
   };
 
   // Validation function
@@ -345,8 +368,70 @@ const Payment = () => {
               </div>
             </div>
 
-            {/* Payment Button */}
+            {/* Payment Methods */}
             <div className="mt-12 max-w-2xl mx-auto">
+              <div className="bg-white/80 backdrop-blur-sm p-8 rounded-2xl shadow-sm border border-gray-100 mb-8">
+                <h3 className="text-lg font-semibold text-gray-900 mb-6">Select Payment Method</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <button
+                    onClick={() => setPaymentMethod('online')}
+                    className={`p-4 rounded-xl border transition-all duration-200 flex items-center gap-3 ${
+                      paymentMethod === 'online'
+                        ? 'border-gray-900 bg-gray-50'
+                        : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                  >
+                    <div className={`p-2 rounded-lg ${
+                      paymentMethod === 'online' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-600'
+                    }`}>
+                      <CreditCard className="w-5 h-5" />
+                    </div>
+                    <div className="text-left">
+                      <p className="font-medium text-gray-900">Online Payment</p>
+                      <p className="text-sm text-gray-500">Pay securely with Cashfree</p>
+                    </div>
+                  </button>
+
+                  <button
+                    onClick={() => !showCodMessage && setPaymentMethod('cod')}
+                    disabled={showCodMessage}
+                    className={`p-4 rounded-xl border transition-all duration-200 flex items-center gap-3 ${
+                      paymentMethod === 'cod'
+                        ? 'border-gray-900 bg-gray-50'
+                        : 'border-gray-200 hover:border-gray-300'
+                    } ${showCodMessage ? 'opacity-75 cursor-not-allowed' : ''}`}
+                  >
+                    {showCodMessage && (
+                      <div className="absolute inset-0 bg-white/50 backdrop-blur-[2px] rounded-xl" />
+                    )}
+                    <div className={`p-2 rounded-lg ${
+                      paymentMethod === 'cod' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-600'
+                    }`}>
+                      <Truck className="w-5 h-5" />
+                    </div>
+                    <div className="text-left">
+                      <p className="font-medium text-gray-900">Cash on Delivery</p>
+                      <p className="text-sm text-gray-500">Pay when you receive</p>
+                    </div>
+                  </button>
+                </div>
+
+                {showCodMessage && (
+                  <div className="mt-4 p-4 bg-amber-50 border border-amber-100 rounded-lg flex items-start gap-3">
+                    <XCircle className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-sm font-medium text-amber-700">
+                        Cash on Delivery is not available for this pincode
+                      </p>
+                      <p className="text-sm text-amber-600 mt-1">
+                        Please choose online payment to complete your order
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Payment Button */}
               <button
                 onClick={handlePayment}
                 className="w-full py-4 px-8 bg-gray-900 text-white font-medium rounded-xl shadow-sm hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 transition-all duration-200 flex items-center justify-center gap-3"
