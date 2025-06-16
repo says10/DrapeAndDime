@@ -27,7 +27,6 @@ const Home = ({ collectionImages, collections }: HomeProps) => {
   const [selectedImage, setSelectedImage] = useState<string | null>(collectionImages[0]);
   const [carouselVisible, setCarouselVisible] = useState(true);
   const [animationActive, setAnimationActive] = useState(true);
-  const [showShopNowButton, setShowShopNowButton] = useState(false);
   const [selectedCollectionId, setSelectedCollectionId] = useState<string | null>(null);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const router = useRouter();
@@ -52,7 +51,6 @@ const Home = ({ collectionImages, collections }: HomeProps) => {
     setSelectedImage(image);
     setSelectedIndex(index);
     setAnimationActive(false);
-    setShowShopNowButton(true);
 
     if (collections && collections.length > 0) {
       const matchedCollection = collections.find((collection) => collection.image === image);
@@ -113,22 +111,26 @@ const Home = ({ collectionImages, collections }: HomeProps) => {
               />
             ) : null}
             {/* Overlay Gradient */}
-            <div className="absolute inset-0 bg-gradient-to-t from-pink-200/80 via-white/30 to-transparent z-10" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent z-10" />
           </div>
           {/* Overlay Content */}
           <div className="relative z-20 flex flex-col items-center justify-center w-full h-full text-center px-4">
-            <h1 className="text-3xl md:text-5xl font-extrabold text-pink-700 drop-shadow-lg mb-4">
+            <h1 className="text-3xl md:text-5xl font-extrabold text-white drop-shadow-lg mb-4">
               {collections[selectedIndex ?? 0]?.headline || 'Discover the Latest in Women\'s Fashion'}
             </h1>
-            <p className="text-lg md:text-2xl text-gray-700 mb-6">
+            <p className="text-lg md:text-2xl text-white/90 mb-8">
               {collections[selectedIndex ?? 0]?.name || 'Trendy, Elegant, and Comfortable Styles for Every Woman'}
             </p>
-            <button
-              onClick={handleShopNowClick}
-              className="bg-pink-600 hover:bg-pink-700 text-white px-8 py-3 rounded-full font-semibold shadow-lg transition-all duration-300"
-            >
-              {collections[selectedIndex ?? 0]?.ctaText || 'Shop Now'}
-            </button>
+            {selectedCollectionId && (
+              <button
+                onClick={handleShopNowClick}
+                className="bg-white text-black px-8 py-3 rounded-full font-semibold 
+                  hover:bg-gray-100 transition-all duration-300 shadow-lg
+                  transform hover:-translate-y-0.5 active:translate-y-0"
+              >
+                View Collection
+              </button>
+            )}
           </div>
           {/* Logo (Top Left) */}
           <Link href="/" className="absolute top-4 left-4 z-30">
@@ -143,7 +145,7 @@ const Home = ({ collectionImages, collections }: HomeProps) => {
           </Link>
           {/* Login Icon (Top Right) */}
           <Link href="/sign-in" className="absolute top-4 right-4 z-30">
-            <CircleUserRound className="text-pink-700 w-8 h-8 cursor-pointer hover:text-pink-500 transition-colors" />
+            <CircleUserRound className="text-white w-8 h-8 cursor-pointer hover:text-gray-200 transition-colors" />
           </Link>
           {/* Carousel Thumbnails */}
           <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-3 justify-center items-center w-full px-4 z-30">
@@ -151,7 +153,7 @@ const Home = ({ collectionImages, collections }: HomeProps) => {
               <div
                 key={index}
                 className={`relative w-16 h-16 md:w-24 md:h-24 cursor-pointer transition-transform duration-300 hover:scale-110 ${
-                  selectedImage === image ? 'ring-2 ring-pink-400' : ''
+                  selectedImage === image ? 'ring-2 ring-white' : ''
                 }`}
                 onClick={() => handleImageClick(image, index)}
               >
@@ -179,28 +181,13 @@ const Home = ({ collectionImages, collections }: HomeProps) => {
           <div className="absolute bottom-4 right-4 z-30">
             <button 
               onClick={handleExploreAllClick}
-              className="bg-white/90 backdrop-blur-sm text-pink-700 px-6 py-2 rounded-full font-semibold 
-                hover:bg-pink-50 transition-all duration-300 shadow-lg hover:shadow-xl
-                border border-pink-200 hover:border-pink-300"
+              className="bg-white/10 backdrop-blur-sm text-white px-6 py-2 rounded-full font-semibold 
+                hover:bg-white/20 transition-all duration-300 border border-white/20
+                hover:border-white/30"
             >
               Explore All
             </button>
           </div>
-        </div>
-      )}
-
-      {/* Shop Now Button - Kept in original position */}
-      {showShopNowButton && (
-        <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-20">
-          <button 
-            onClick={handleShopNowClick}
-            className="bg-black/90 backdrop-blur-sm text-white px-8 py-3 rounded-full font-semibold 
-              hover:bg-black transition-all duration-300 shadow-lg hover:shadow-xl
-              border border-gray-800 hover:border-gray-700
-              transform hover:-translate-y-0.5 active:translate-y-0"
-          >
-            View Collection
-          </button>
         </div>
       )}
     </>
