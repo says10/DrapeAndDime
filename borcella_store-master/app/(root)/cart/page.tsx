@@ -1,15 +1,26 @@
 "use client";
 
 import useCart from "@/lib/hooks/useCart";
-import { useUser } from "@clerk/nextjs";
 import { MinusCircle, PlusCircle, Trash } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 
+// Temporary user state until auth is implemented
+const useAuth = () => {
+  return { 
+    isAuthenticated: false,
+    user: {
+      id: null,
+      email: null,
+      name: null
+    }
+  };
+};
+
 const Cart = () => {
   const router = useRouter();
-  const { user } = useUser();
+  const { user } = useAuth();
   const cart = useCart();
   const [stockValidation, setStockValidation] = useState<{ [key: string]: boolean }>({});
 
@@ -22,8 +33,8 @@ const Cart = () => {
 
   const customer = {
     clerkId: user?.id,
-    email: user?.emailAddresses[0].emailAddress,
-    name: user?.fullName,
+    email: user?.email,
+    name: user?.name,
   };
 
   // Validate stock when cart items change

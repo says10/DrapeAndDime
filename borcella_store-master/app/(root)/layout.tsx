@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-// import { ClerkProvider } from "@clerk/nextjs";
+import { ClerkProvider } from "@clerk/nextjs";
+import { ReactNode } from "react";
 
 import "../globals.css";
 import Navbar from "@/components/Navbar";
@@ -17,16 +18,18 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: {
+  children: ReactNode;
+}) {
   return (
     <html lang="en">
       <body className={inter.className}>
-        <ToasterProvider />
-        <Navbar />
-        {children}
-        <Footer/>
+        <ClerkProvider>
+          <ToasterProvider />
+          <Navbar />
+          {children}
+          <Footer/>
+        </ClerkProvider>
       </body>
     </html>
   );

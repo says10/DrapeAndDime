@@ -1,38 +1,13 @@
 "use client"; // Ensure this is client-side code
 
 import useCart from "@/lib/hooks/useCart";
-// import { UserButton, useUser } from "@clerk/nextjs";
+import { UserButton, useUser } from "@clerk/nextjs";
 import { CircleUserRound, Menu, Search, ShoppingCart } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
-
-/* Insert a new CSS block at the top of the file (or in your global CSS) */
-/* (You can also inline these styles in a <style> tag if you prefer.) */
-/*
-  .sticky-navbar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    z-index: 1000;
-    transition: transform 0.3s ease-in-out;
-    transform: translateY(-100%);
-  }
-  .sticky-navbar:hover {
-    transform: translateY(0);
-  }
-  .sticky-navbar-trigger {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 4px; /* thin strip */
-    z-index: 1001; /* above the navbar */
-    background: transparent; /* or a subtle color */
-  }
-*/
+import styles from "./Navbar.module.css";
 
 const Navbar = () => {
   const pathname = usePathname();
@@ -43,11 +18,11 @@ const Navbar = () => {
   const [dropdownMenu, setDropdownMenu] = useState(false);
   const [query, setQuery] = useState("");
 
-  const isHomePage = pathname === "/"; // Check if we are on the homepage
+  const isHomePage = pathname === "/";
 
   return (
-    <div className="sticky-navbar flex items-center justify-between px-4 py-2 bg-white shadow-sm">
-      <div className="sticky-navbar-trigger" />
+    <div className={`${styles["sticky-navbar"]} flex items-center justify-between px-4 py-2 bg-white shadow-sm`}>
+      <div className={styles["sticky-navbar-trigger"]} />
 
       {/* Logo */}
       <Link href="/">
@@ -105,9 +80,9 @@ const Navbar = () => {
           <UserButton afterSignOutUrl="/sign-in" />
         ) : !isHomePage ? (
           <Link href="/sign-in">
-            <CircleUserRound />
+            <CircleUserRound className="w-6 h-6 hover:text-red-1" />
           </Link>
-        ) : null} {/* Only show login icon on homepage */}
+        ) : null}
       </div>
     </div>
   );

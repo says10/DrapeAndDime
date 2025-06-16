@@ -5,100 +5,6 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { CircleUserRound } from "lucide-react";
 import Link from "next/link";
- // Import ProductType
-
- const styles: Record<string, React.CSSProperties> = {
-  carouselContainer: {
-    position: "relative",
-    height: "100vh",
-    width: "100%",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    overflow: "hidden",
-  },
-  carouselBackground: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    zIndex: 1,
-  },
-  carouselBackgroundImage: {
-    width: "100%",
-    height: "100%",
-    objectFit: "cover" as React.CSSProperties["objectFit"], // ✅ Fix here
-  },
-  carouselCards: {
-    position: "absolute",
-    bottom: "20px",
-    zIndex: 2,
-    display: "flex",
-    justifyContent: "center",
-    gap: "16px",
-    padding: "10px",
-    overflowX: "auto",
-    whiteSpace: "nowrap",
-  },
-  carouselCard: {
-    cursor: "pointer",
-    transition: "transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out",
-    borderRadius: "8px",
-  },
-  carouselCardImage: {
-    borderRadius: "8px",
-    transition: "transform 0.3s ease-in-out",
-  },
-  exploreAllContainer: {
-    position: "absolute",
-    bottom: "10px",
-    left: "50%",
-    transform: "translateX(-50%)",
-    zIndex: 3,
-  },
-  exploreAllButton: {
-    backgroundColor: "#000",
-    color: "#fff",
-    padding: "12px 20px",
-    borderRadius: "8px",
-    cursor: "pointer",
-    fontWeight: "bold",
-    border: "none",
-    transition: "background-color 0.3s ease-in-out",
-  },
-  shopNowContainer: {
-    position: "absolute",
-    bottom: "20px",
-    right: "20px",
-    zIndex: 4,
-    display: "none",
-  },
-  shopNowButton: {
-    backgroundColor: "#000",
-    color: "#fff",
-    padding: "12px 20px",
-    borderRadius: "8px",
-    cursor: "pointer",
-    fontWeight: "bold",
-    border: "none",
-    transition: "background-color 0.3s ease-in-out",
-  },
-  loginIcon: {
-    position: "absolute",
-    top: "10px",
-    right: "10px",
-    zIndex: 5,
-    color: "white",
-    cursor: "pointer",
-  },
-  logo: {
-    position: "absolute",
-    top: "10px",
-    left: "10px",
-    zIndex: 5,
-  },
-};
 
 interface CollectionType {
   _id: string;
@@ -117,10 +23,7 @@ function isVideo(url: string) {
   return url.match(/\.(mp4|webm|ogg)$/i);
 }
 
-export default function Home({ collectionImages, collections }: HomeProps) {
-  console.log("Collection Images:", collectionImages);
-  console.log("Collections:", collections);
-
+const Home = ({ collectionImages, collections }: HomeProps) => {
   const [selectedImage, setSelectedImage] = useState<string | null>(collectionImages[0]);
   const [carouselVisible, setCarouselVisible] = useState(true);
   const [animationActive, setAnimationActive] = useState(true);
@@ -215,7 +118,7 @@ export default function Home({ collectionImages, collections }: HomeProps) {
           {/* Overlay Content */}
           <div className="relative z-20 flex flex-col items-center justify-center w-full h-full text-center px-4">
             <h1 className="text-3xl md:text-5xl font-extrabold text-pink-700 drop-shadow-lg mb-4">
-              {collections[selectedIndex ?? 0]?.headline || 'Discover the Latest in Women's Fashion'}
+              {collections[selectedIndex ?? 0]?.headline || 'Discover the Latest in Women\'s Fashion'}
             </h1>
             <p className="text-lg md:text-2xl text-gray-700 mb-6">
               {collections[selectedIndex ?? 0]?.name || 'Trendy, Elegant, and Comfortable Styles for Every Woman'}
@@ -302,4 +205,6 @@ export default function Home({ collectionImages, collections }: HomeProps) {
       )}
     </>
   );
-}
+};
+
+export default Home;
