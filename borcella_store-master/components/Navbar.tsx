@@ -31,22 +31,17 @@ const Navbar = () => {
   const [isHovered, setIsHovered] = useState(false);
   const [showSearchDropdown, setShowSearchDropdown] = useState(false);
 
-  // Check if we're on the exact home page (not /home)
-  const isHomePage = pathname === "/";
-
-  // Add scroll effect for non-home pages
+  // Add scroll effect for all pages
   const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
-      if (!isHomePage) {
-        setIsScrolled(window.scrollY > 10);
-      }
+      setIsScrolled(window.scrollY > 10);
     };
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [isHomePage]);
+  }, []);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -80,11 +75,7 @@ const Navbar = () => {
   return (
     <nav 
       className={`${styles["sticky-navbar"]} ${
-        isHomePage 
-          ? styles["home-page"]
-          : isScrolled
-            ? styles["scrolled"]
-            : ""
+        isScrolled ? styles["scrolled"] : ""
       } transition-all duration-300 ease-in-out`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -98,13 +89,13 @@ const Navbar = () => {
             width={130} 
             height={100}
             className={`transition-all duration-300 ${
-              isHomePage && !isHovered ? "brightness-0 invert" : ""
+              pathname === "/" && !isHovered ? "brightness-0 invert" : ""
             }`}
           />
         </Link>
 
         {/* Navigation Links - Desktop */}
-        {!isHomePage && (
+        {pathname !== "/" && (
           <div className="flex gap-6 text-base-bold max-lg:hidden">
             <Link href="/home" className={`hover:text-red-1 transition-colors ${pathname === "/home" && "text-red-1"}`}>
               Home
@@ -124,13 +115,13 @@ const Navbar = () => {
         {/* Search Bar with Dropdown */}
         <div className="relative flex-1 max-w-md mx-4">
           <div className={`flex gap-3 border px-3 py-2 items-center rounded-lg transition-all duration-300 ${
-            isHomePage && !isHovered 
+            pathname === "/" && !isHovered 
               ? "border-white/30 bg-white/10 backdrop-blur-sm" 
               : "border-gray-300 bg-white"
           }`}>
             <input
               className={`outline-none flex-1 bg-transparent transition-colors ${
-                isHomePage && !isHovered 
+                pathname === "/" && !isHovered 
                   ? "text-white placeholder-white/70" 
                   : "text-gray-900 placeholder-gray-500"
               }`}
@@ -146,7 +137,7 @@ const Navbar = () => {
               className="transition-colors"
             >
               <Search className={`cursor-pointer h-4 w-4 ${
-                isHomePage && !isHovered 
+                pathname === "/" && !isHovered 
                   ? "text-white" 
                   : "text-gray-600 hover:text-red-1"
               }`} />
@@ -164,7 +155,7 @@ const Navbar = () => {
 
         {/* Cart & User Menu */}
         <div className="relative flex gap-3 items-center">
-          {!isHomePage && (
+          {pathname !== "/" && (
             <Link 
               href="/cart" 
               className="flex items-center gap-3 border rounded-lg px-3 py-2 hover:bg-black hover:text-white transition-all duration-300 max-md:hidden"
@@ -177,7 +168,7 @@ const Navbar = () => {
           {/* Mobile Menu */}
           <Menu 
             className={`cursor-pointer lg:hidden transition-colors ${
-              isHomePage && !isHovered ? "text-white" : "text-gray-700"
+              pathname === "/" && !isHovered ? "text-white" : "text-gray-700"
             }`} 
             onClick={() => setDropdownMenu(!dropdownMenu)} 
           />
@@ -197,7 +188,7 @@ const Navbar = () => {
 
           {user ? (
             <UserButton afterSignOutUrl="/sign-in" />
-          ) : !isHomePage ? (
+          ) : pathname !== "/" ? (
             <Link href="/sign-in">
               <CircleUserRound className="w-6 h-6 hover:text-red-1 transition-colors" />
             </Link>
