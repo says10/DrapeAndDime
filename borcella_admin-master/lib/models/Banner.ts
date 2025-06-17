@@ -6,6 +6,11 @@ const bannerSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  mainBannerType: {
+    type: String,
+    enum: ['image', 'video'],
+    default: 'image'
+  },
   mainBannerTitle: {
     type: String,
     required: true,
@@ -28,6 +33,11 @@ const bannerSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  firstVerticalType: {
+    type: String,
+    enum: ['image', 'video'],
+    default: 'image'
+  },
   firstVerticalTitle: {
     type: String,
     required: true,
@@ -49,6 +59,11 @@ const bannerSchema = new mongoose.Schema({
   secondVerticalBanner: {
     type: String,
     required: true,
+  },
+  secondVerticalType: {
+    type: String,
+    enum: ['image', 'video'],
+    default: 'image'
   },
   secondVerticalTitle: {
     type: String,

@@ -160,10 +160,7 @@ const BannersPage = () => {
                   <div className="space-y-2">
                     <h4 className="font-medium text-sm">Main Banner (16:9)</h4>
                     <p className="text-sm text-muted-foreground">
-                      {banner.mainBannerTitle}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {banner.mainBannerSubtitle}
+                      {banner.mainBannerType === 'image' ? 'Image' : 'Video'} Banner
                     </p>
                   </div>
 
@@ -209,25 +206,33 @@ const BannersPage = () => {
                 <h3 className="text-lg font-semibold">Main Banner (16:9)</h3>
                 <div className="relative aspect-video bg-gray-100 rounded-lg overflow-hidden">
                   {viewingBanner.mainBanner ? (
-                    <Image
-                      src={viewingBanner.mainBanner}
-                      alt="Main banner"
-                      className="w-full h-full object-cover"
-                      fill
-                      sizes="(max-width: 768px) 100vw, 80vw"
-                    />
+                    viewingBanner.mainBannerType === 'image' ? (
+                      <Image
+                        src={viewingBanner.mainBanner}
+                        alt="Main banner"
+                        className="w-full h-full object-cover"
+                        fill
+                        sizes="(max-width: 768px) 100vw, 80vw"
+                      />
+                    ) : (
+                      <video
+                        src={viewingBanner.mainBanner}
+                        className="w-full h-full object-cover"
+                        controls
+                        autoPlay
+                        muted
+                        loop
+                      />
+                    )
                   ) : (
                     <div className="flex items-center justify-center h-full text-gray-500">
-                      No image uploaded
+                      No media uploaded
                     </div>
                   )}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                   <div className="absolute bottom-6 left-6 text-white">
-                    <h4 className="text-2xl font-bold mb-2">{viewingBanner.mainBannerTitle}</h4>
-                    <p className="text-lg mb-4 max-w-md">{viewingBanner.mainBannerSubtitle}</p>
-                    <Button className="bg-white text-black hover:bg-gray-100">
-                      {viewingBanner.mainBannerCta}
-                    </Button>
+                    <h4 className="text-2xl font-bold mb-2">Main Banner</h4>
+                    <p className="text-lg mb-4 max-w-md">{viewingBanner.mainBannerType === 'image' ? 'Image' : 'Video'} Content</p>
                   </div>
                 </div>
               </div>
@@ -242,16 +247,27 @@ const BannersPage = () => {
                     <h4 className="text-md font-medium text-center">First Option</h4>
                     <div className="relative aspect-[9/16] bg-gray-100 rounded-lg overflow-hidden">
                       {viewingBanner.firstVerticalBanner ? (
-                        <Image
-                          src={viewingBanner.firstVerticalBanner}
-                          alt="First vertical banner"
-                          className="w-full h-full object-cover"
-                          fill
-                          sizes="(max-width: 768px) 100vw, 33vw"
-                        />
+                        viewingBanner.firstVerticalType === 'image' ? (
+                          <Image
+                            src={viewingBanner.firstVerticalBanner}
+                            alt="First vertical banner"
+                            className="w-full h-full object-cover"
+                            fill
+                            sizes="(max-width: 768px) 100vw, 33vw"
+                          />
+                        ) : (
+                          <video
+                            src={viewingBanner.firstVerticalBanner}
+                            className="w-full h-full object-cover"
+                            controls
+                            autoPlay
+                            muted
+                            loop
+                          />
+                        )
                       ) : (
                         <div className="flex items-center justify-center h-full text-gray-500">
-                          No image uploaded
+                          No media uploaded
                         </div>
                       )}
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
@@ -279,16 +295,27 @@ const BannersPage = () => {
                     <h4 className="text-md font-medium text-center">Second Option</h4>
                     <div className="relative aspect-[9/16] bg-gray-100 rounded-lg overflow-hidden">
                       {viewingBanner.secondVerticalBanner ? (
-                        <Image
-                          src={viewingBanner.secondVerticalBanner}
-                          alt="Second vertical banner"
-                          className="w-full h-full object-cover"
-                          fill
-                          sizes="(max-width: 768px) 100vw, 33vw"
-                        />
+                        viewingBanner.secondVerticalType === 'image' ? (
+                          <Image
+                            src={viewingBanner.secondVerticalBanner}
+                            alt="Second vertical banner"
+                            className="w-full h-full object-cover"
+                            fill
+                            sizes="(max-width: 768px) 100vw, 33vw"
+                          />
+                        ) : (
+                          <video
+                            src={viewingBanner.secondVerticalBanner}
+                            className="w-full h-full object-cover"
+                            controls
+                            autoPlay
+                            muted
+                            loop
+                          />
+                        )
                       ) : (
                         <div className="flex items-center justify-center h-full text-gray-500">
-                          No image uploaded
+                          No media uploaded
                         </div>
                       )}
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
@@ -314,7 +341,6 @@ const BannersPage = () => {
                     <p><strong>Updated:</strong> {new Date(viewingBanner.updatedAt).toLocaleDateString()}</p>
                   </div>
                   <div>
-                    <p><strong>Main CTA Link:</strong> {viewingBanner.mainBannerCtaLink}</p>
                     <p><strong>First Vertical CTA Link:</strong> {viewingBanner.firstVerticalCtaLink}</p>
                     <p><strong>Second Vertical CTA Link:</strong> {viewingBanner.secondVerticalCtaLink}</p>
                   </div>

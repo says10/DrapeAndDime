@@ -75,17 +75,28 @@ const HomeBanner = () => {
         <div className="relative w-full aspect-video overflow-hidden rounded-2xl shadow-2xl">
           <div className="absolute inset-0 w-full h-full">
             {bannerData.mainBanner ? (
-              <Image
-                src={bannerData.mainBanner}
-                alt="Main banner"
-                className="object-cover object-center"
-                fill
-                sizes="(max-width: 768px) 100vw, 80vw"
-                priority
-              />
+              bannerData.mainBannerType === 'image' ? (
+                <Image
+                  src={bannerData.mainBanner}
+                  alt="Main banner"
+                  className="object-cover object-center"
+                  fill
+                  sizes="(max-width: 768px) 100vw, 80vw"
+                  priority
+                />
+              ) : (
+                <video
+                  src={bannerData.mainBanner}
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  className="object-cover object-center w-full h-full"
+                />
+              )
             ) : (
               <div className="flex items-center justify-center h-full text-gray-500">
-                No banner image available
+                No banner media available
               </div>
             )}
             <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/30 to-transparent" />

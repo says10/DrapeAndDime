@@ -28,18 +28,17 @@ type ProductType = {
 type BannerType = {
   _id: string;
   mainBanner: string;
-  mainBannerTitle: string;
-  mainBannerSubtitle: string;
-  mainBannerCta: string;
-  mainBannerCtaLink: string;
+  mainBannerType: 'image' | 'video';
   
   firstVerticalBanner: string;
+  firstVerticalType: 'image' | 'video';
   firstVerticalTitle: string;
   firstVerticalSubtitle: string;
   firstVerticalCta: string;
   firstVerticalCtaLink: string;
   
   secondVerticalBanner: string;
+  secondVerticalType: 'image' | 'video';
   secondVerticalTitle: string;
   secondVerticalSubtitle: string;
   secondVerticalCta: string;
