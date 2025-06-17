@@ -76,9 +76,17 @@ const VerticalBanners = () => {
     );
   }
 
-  if (!bannerData || !bannerData.verticalBanner1 || !bannerData.verticalBanner2) {
+  if (!bannerData || (!bannerData.verticalBanner1 && !bannerData.verticalBanner2)) {
+    console.log("VerticalBanners: No banner data or no vertical banners found");
     return null;
   }
+
+  console.log("VerticalBanners: Rendering with data:", {
+    verticalBanner1: bannerData.verticalBanner1,
+    verticalBanner1Type: bannerData.verticalBanner1Type,
+    verticalBanner2: bannerData.verticalBanner2,
+    verticalBanner2Type: bannerData.verticalBanner2Type
+  });
 
   return (
     <section className="w-full relative">
@@ -95,23 +103,32 @@ const VerticalBanners = () => {
             {/* First Vertical Banner */}
             <div className="group cursor-pointer">
               <div className="relative aspect-[9/16] overflow-hidden rounded-2xl shadow-2xl transform transition-all duration-500 group-hover:scale-105">
-                {bannerData.verticalBanner1Type === 'image' ? (
-                  <Image
-                    src={bannerData.verticalBanner1}
-                    alt="First option"
-                    className="object-cover"
-                    fill
-                    sizes="(max-width: 768px) 100vw, 33vw"
-                  />
+                {bannerData.verticalBanner1 ? (
+                  bannerData.verticalBanner1Type === 'image' ? (
+                    <Image
+                      src={bannerData.verticalBanner1}
+                      alt="First option"
+                      className="object-cover"
+                      fill
+                      sizes="(max-width: 768px) 100vw, 33vw"
+                    />
+                  ) : (
+                    <video
+                      src={bannerData.verticalBanner1}
+                      className="w-full h-full object-cover"
+                      autoPlay
+                      loop
+                      muted
+                      playsInline
+                      onError={(e) => console.error("Video error:", e)}
+                      onLoadStart={() => console.log("Video loading started")}
+                      onCanPlay={() => console.log("Video can play")}
+                    />
+                  )
                 ) : (
-                  <video
-                    src={bannerData.verticalBanner1}
-                    className="w-full h-full object-cover"
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                  />
+                  <div className="flex items-center justify-center h-full text-gray-500">
+                    No media uploaded
+                  </div>
                 )}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                 
@@ -160,23 +177,32 @@ const VerticalBanners = () => {
             {/* Second Vertical Banner */}
             <div className="group cursor-pointer">
               <div className="relative aspect-[9/16] overflow-hidden rounded-2xl shadow-2xl transform transition-all duration-500 group-hover:scale-105">
-                {bannerData.verticalBanner2Type === 'image' ? (
-                  <Image
-                    src={bannerData.verticalBanner2}
-                    alt="Second option"
-                    className="object-cover"
-                    fill
-                    sizes="(max-width: 768px) 100vw, 33vw"
-                  />
+                {bannerData.verticalBanner2 ? (
+                  bannerData.verticalBanner2Type === 'image' ? (
+                    <Image
+                      src={bannerData.verticalBanner2}
+                      alt="Second option"
+                      className="object-cover"
+                      fill
+                      sizes="(max-width: 768px) 100vw, 33vw"
+                    />
+                  ) : (
+                    <video
+                      src={bannerData.verticalBanner2}
+                      className="w-full h-full object-cover"
+                      autoPlay
+                      loop
+                      muted
+                      playsInline
+                      onError={(e) => console.error("Video error:", e)}
+                      onLoadStart={() => console.log("Video loading started")}
+                      onCanPlay={() => console.log("Video can play")}
+                    />
+                  )
                 ) : (
-                  <video
-                    src={bannerData.verticalBanner2}
-                    className="w-full h-full object-cover"
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                  />
+                  <div className="flex items-center justify-center h-full text-gray-500">
+                    No media uploaded
+                  </div>
                 )}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                 
