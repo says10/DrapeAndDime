@@ -46,15 +46,24 @@ const VerticalBanners = () => {
 
   if (loading) {
     return (
-      <section className="w-full bg-white py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
-            <div className="aspect-[9/16] bg-gray-200 rounded-2xl animate-pulse"></div>
-            <div className="text-center space-y-4">
-              <div className="h-8 bg-gray-200 rounded animate-pulse"></div>
-              <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
+      <section className="w-full relative">
+        {/* Premium Background Elements */}
+        <div className="absolute inset-0 bg-gradient-to-b from-gray-50 via-white to-gray-50" />
+        <div className="absolute inset-0 opacity-[0.03]" style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+        }} />
+        
+        {/* Content Container */}
+        <div className="relative py-16">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
+              <div className="aspect-[9/16] bg-gray-200 rounded-2xl animate-pulse"></div>
+              <div className="text-center space-y-4">
+                <div className="h-8 bg-gray-200 rounded animate-pulse"></div>
+                <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
+              </div>
+              <div className="aspect-[9/16] bg-gray-200 rounded-2xl animate-pulse"></div>
             </div>
-            <div className="aspect-[9/16] bg-gray-200 rounded-2xl animate-pulse"></div>
           </div>
         </div>
       </section>
@@ -66,111 +75,120 @@ const VerticalBanners = () => {
   }
 
   return (
-    <section className="w-full bg-white py-16">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
-          {/* First Vertical Banner */}
-          <div className="group cursor-pointer">
-            <div className="relative aspect-[9/16] overflow-hidden rounded-2xl shadow-2xl transform transition-all duration-500 group-hover:scale-105">
-              {bannerData.firstVerticalType === 'image' ? (
-                <Image
-                  src={bannerData.firstVerticalBanner}
-                  alt="First option"
-                  className="object-cover"
-                  fill
-                  sizes="(max-width: 768px) 100vw, 33vw"
-                />
-              ) : (
-                <video
-                  src={bannerData.firstVerticalBanner}
-                  className="w-full h-full object-cover"
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                />
-              )}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-              
-              <div className="absolute bottom-6 left-6 right-6 text-white">
-                <h3 className="text-2xl font-bold mb-2 group-hover:text-red-400 transition-colors">
-                  {bannerData.firstVerticalTitle}
-                </h3>
-                <p className="text-sm mb-4 opacity-90 line-clamp-2">
-                  {bannerData.firstVerticalSubtitle}
-                </p>
-                <Link 
-                  href={bannerData.firstVerticalCtaLink}
-                  className="inline-flex items-center bg-white text-black px-6 py-3 rounded-full font-semibold 
-                    hover:bg-red-500 hover:text-white transition-all duration-300 transform hover:-translate-y-1"
-                >
-                  {bannerData.firstVerticalCta}
-                </Link>
+    <section className="w-full relative">
+      {/* Premium Background Elements */}
+      <div className="absolute inset-0 bg-gradient-to-b from-gray-50 via-white to-gray-50" />
+      <div className="absolute inset-0 opacity-[0.03]" style={{
+        backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+      }} />
+      
+      {/* Content Container */}
+      <div className="relative py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
+            {/* First Vertical Banner */}
+            <div className="group cursor-pointer">
+              <div className="relative aspect-[9/16] overflow-hidden rounded-2xl shadow-2xl transform transition-all duration-500 group-hover:scale-105">
+                {bannerData.firstVerticalType === 'image' ? (
+                  <Image
+                    src={bannerData.firstVerticalBanner}
+                    alt="First option"
+                    className="object-cover"
+                    fill
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                  />
+                ) : (
+                  <video
+                    src={bannerData.firstVerticalBanner}
+                    className="w-full h-full object-cover"
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                  />
+                )}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                
+                <div className="absolute bottom-6 left-6 right-6 text-white">
+                  <h3 className="text-2xl font-bold mb-2 group-hover:text-red-400 transition-colors">
+                    {bannerData.firstVerticalTitle}
+                  </h3>
+                  <p className="text-sm mb-4 opacity-90 line-clamp-2">
+                    {bannerData.firstVerticalSubtitle}
+                  </p>
+                  <Link 
+                    href={bannerData.firstVerticalCtaLink}
+                    className="inline-flex items-center bg-white text-black px-6 py-3 rounded-full font-semibold 
+                      hover:bg-red-500 hover:text-white transition-all duration-300 transform hover:-translate-y-1"
+                  >
+                    {bannerData.firstVerticalCta}
+                  </Link>
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Center Text */}
-          <div className="text-center space-y-6">
-            <div className="space-y-4">
-              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight">
-                Which one are you?
-              </h2>
-              <p className="text-lg text-gray-600 max-w-md mx-auto">
-                Select your preferred style and discover your perfect look
-              </p>
-            </div>
-            
-            <div className="flex justify-center">
-              <div className="w-24 h-1 bg-gradient-to-r from-transparent via-gray-400 to-transparent rounded-full"></div>
-            </div>
-            
-            <div className="space-y-2">
-              <div className="flex items-center justify-center space-x-2">
-                <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
-                <span className="text-sm text-gray-500 font-medium">Choose Your Style</span>
-                <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+            {/* Center Text */}
+            <div className="text-center space-y-6">
+              <div className="space-y-4">
+                <h2 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight">
+                  Which one are you?
+                </h2>
+                <p className="text-lg text-gray-600 max-w-md mx-auto">
+                  Select your preferred style and discover your perfect look
+                </p>
+              </div>
+              
+              <div className="flex justify-center">
+                <div className="w-24 h-1 bg-gradient-to-r from-transparent via-gray-400 to-transparent rounded-full"></div>
+              </div>
+              
+              <div className="space-y-2">
+                <div className="flex items-center justify-center space-x-2">
+                  <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+                  <span className="text-sm text-gray-500 font-medium">Choose Your Style</span>
+                  <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Second Vertical Banner */}
-          <div className="group cursor-pointer">
-            <div className="relative aspect-[9/16] overflow-hidden rounded-2xl shadow-2xl transform transition-all duration-500 group-hover:scale-105">
-              {bannerData.secondVerticalType === 'image' ? (
-                <Image
-                  src={bannerData.secondVerticalBanner}
-                  alt="Second option"
-                  className="object-cover"
-                  fill
-                  sizes="(max-width: 768px) 100vw, 33vw"
-                />
-              ) : (
-                <video
-                  src={bannerData.secondVerticalBanner}
-                  className="w-full h-full object-cover"
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                />
-              )}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-              
-              <div className="absolute bottom-6 left-6 right-6 text-white">
-                <h3 className="text-2xl font-bold mb-2 group-hover:text-red-400 transition-colors">
-                  {bannerData.secondVerticalTitle}
-                </h3>
-                <p className="text-sm mb-4 opacity-90 line-clamp-2">
-                  {bannerData.secondVerticalSubtitle}
-                </p>
-                <Link 
-                  href={bannerData.secondVerticalCtaLink}
-                  className="inline-flex items-center bg-white text-black px-6 py-3 rounded-full font-semibold 
-                    hover:bg-red-500 hover:text-white transition-all duration-300 transform hover:-translate-y-1"
-                >
-                  {bannerData.secondVerticalCta}
-                </Link>
+            {/* Second Vertical Banner */}
+            <div className="group cursor-pointer">
+              <div className="relative aspect-[9/16] overflow-hidden rounded-2xl shadow-2xl transform transition-all duration-500 group-hover:scale-105">
+                {bannerData.secondVerticalType === 'image' ? (
+                  <Image
+                    src={bannerData.secondVerticalBanner}
+                    alt="Second option"
+                    className="object-cover"
+                    fill
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                  />
+                ) : (
+                  <video
+                    src={bannerData.secondVerticalBanner}
+                    className="w-full h-full object-cover"
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                  />
+                )}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                
+                <div className="absolute bottom-6 left-6 right-6 text-white">
+                  <h3 className="text-2xl font-bold mb-2 group-hover:text-red-400 transition-colors">
+                    {bannerData.secondVerticalTitle}
+                  </h3>
+                  <p className="text-sm mb-4 opacity-90 line-clamp-2">
+                    {bannerData.secondVerticalSubtitle}
+                  </p>
+                  <Link 
+                    href={bannerData.secondVerticalCtaLink}
+                    className="inline-flex items-center bg-white text-black px-6 py-3 rounded-full font-semibold 
+                      hover:bg-red-500 hover:text-white transition-all duration-300 transform hover:-translate-y-1"
+                  >
+                    {bannerData.secondVerticalCta}
+                  </Link>
+                </div>
               </div>
             </div>
           </div>
