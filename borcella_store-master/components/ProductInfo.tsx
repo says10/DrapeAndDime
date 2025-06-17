@@ -51,7 +51,7 @@ const ProductInfo = ({ productInfo }: { productInfo: ProductType }) => {
           </h1>
         </div>
         <div className="ml-4">
-          <HeartFavorite product={productInfo} />
+        <HeartFavorite product={productInfo} />
         </div>
       </div>
 
@@ -79,10 +79,10 @@ const ProductInfo = ({ productInfo }: { productInfo: ProductType }) => {
       <div className="space-y-3">
         <h3 className="text-lg font-semibold text-gray-900">Description</h3>
         <div className="text-gray-600 leading-relaxed">
-          <FormattedText 
-            text={productInfo.description} 
+        <FormattedText 
+          text={productInfo.description} 
             className="text-base"
-          />
+        />
         </div>
       </div>
 
@@ -170,7 +170,7 @@ const ProductInfo = ({ productInfo }: { productInfo: ProductType }) => {
           isOutOfStock ? "text-red-700" : "text-green-700"
         }`}>
           {isOutOfStock ? "Sold Out" : `${maxStock} items available`}
-        </p>
+      </p>
       </div>
 
       {/* Add to Cart Button */}
@@ -204,9 +204,9 @@ const ProductInfo = ({ productInfo }: { productInfo: ProductType }) => {
       }`}>
         <p className={`text-base font-medium ${
           isOutOfStock ? "text-red-700" : "text-green-700"
-        }`}>
+      }`}>
           {isOutOfStock ? "Currently out of stock" : "In stock and ready to ship"}
-        </p>
+      </p>
       </div>
     </div>
   );

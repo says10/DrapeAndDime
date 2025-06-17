@@ -197,7 +197,7 @@ const ProductDetails = ({ params }: { params: { productId: string }}) => {
 
       {productDetails && (
         <div className="space-y-6">
-          {/* Product Information */}
+      {/* Product Information */}
           <Card>
             <CardHeader>
               <CardTitle>Product Information</CardTitle>
@@ -398,7 +398,7 @@ const ProductDetails = ({ params }: { params: { productId: string }}) => {
                     />
                   </div>
                   <div className="flex items-center gap-2">
-                    <input
+          <input
                       type="checkbox"
                       id="isAvailable"
                       checked={editForm.isAvailable}
@@ -417,21 +417,21 @@ const ProductDetails = ({ params }: { params: { productId: string }}) => {
                       Restock Quantity:
                     </label>
                     <Input
-                      type="number"
-                      value={restockQuantity}
-                      onChange={(e) => setRestockQuantity(Number(e.target.value))}
+            type="number"
+            value={restockQuantity}
+            onChange={(e) => setRestockQuantity(Number(e.target.value))}
                       className="max-w-xs"
-                      min="1"
+            min="1"
                       placeholder="Enter quantity"
-                    />
+          />
                   </div>
                   
                   <Button
-                    onClick={handleRestock}
+            onClick={handleRestock}
                     className="bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                    disabled={restockQuantity <= 0}
-                  >
-                    Restock Product
+            disabled={restockQuantity <= 0}
+          >
+            Restock Product
                   </Button>
                 </div>
               )}
@@ -443,4 +443,4 @@ const ProductDetails = ({ params }: { params: { productId: string }}) => {
   );
 };
 
-export default ProductDetails; 
+export default ProductDetails;

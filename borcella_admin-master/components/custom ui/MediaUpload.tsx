@@ -57,9 +57,9 @@ const MediaUpload = ({
   };
 
   return (
-    <div className="space-y-4">
+    <div>
       {/* Media Type Selector */}
-      <div className="flex gap-2">
+      <div className="flex gap-2 mb-4">
         <Button
           type="button"
           variant={mediaType === 'image' ? 'default' : 'outline'}
@@ -84,30 +84,27 @@ const MediaUpload = ({
 
       {/* Preview */}
       {value && (
-        <div className="relative">
+        <div className="mb-4">
           {mediaType === 'image' ? (
-            <div className="relative w-full rounded-lg overflow-hidden" style={{ aspectRatio }}>
+            <div className="relative w-[200px] h-[200px]">
+              <div className="absolute top-0 right-0 z-10">
+                <Button type="button" onClick={onRemove} size="sm" className="bg-red-1 text-white">
+                  <Trash className="h-4 w-4" />
+                </Button>
+              </div>
               <Image
                 src={value}
                 alt="banner"
-                className="object-cover"
+                className="object-cover rounded-lg"
                 fill
-                sizes="(max-width: 768px) 100vw, 50vw"
               />
-              <Button
-                type="button"
-                onClick={onRemove}
-                size="sm"
-                className="absolute top-2 right-2 bg-red-600 hover:bg-red-700 text-white"
-              >
-                <Trash className="h-4 w-4" />
-              </Button>
             </div>
           ) : (
-            <div className="relative w-full rounded-lg overflow-hidden" style={{ aspectRatio }}>
+            <div className="relative">
               <video
                 src={value}
-                className="w-full h-full object-cover"
+                className="w-full rounded-lg"
+                style={{ aspectRatio }}
                 controls
                 muted
               />
@@ -126,7 +123,7 @@ const MediaUpload = ({
 
       {/* Upload Error */}
       {uploadError && (
-        <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-lg">
+        <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-lg mb-4">
           <AlertCircle className="h-4 w-4 text-red-600" />
           <span className="text-sm text-red-700">{uploadError}</span>
         </div>
@@ -134,7 +131,7 @@ const MediaUpload = ({
 
       {/* Widget Loading */}
       {!widgetReady && (
-        <div className="flex items-center gap-2 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+        <div className="flex items-center gap-2 p-3 bg-yellow-50 border border-yellow-200 rounded-lg mb-4">
           <AlertCircle className="h-4 w-4 text-yellow-600" />
           <span className="text-sm text-yellow-700">Loading Cloudinary widget...</span>
         </div>
@@ -163,16 +160,24 @@ const MediaUpload = ({
               type="button" 
               onClick={() => open()} 
               disabled={isLoading || !widgetReady}
-              className="w-full h-32 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center hover:border-gray-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="bg-grey-1 text-white disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <Plus className="h-8 w-8 text-gray-400 mb-2" />
-              <span className="text-sm text-gray-600">
-                Upload {mediaType === 'image' ? 'Image' : 'Video'} ({aspectRatio})
-              </span>
+              <Plus className="h-4 w-4 mr-2" />
+              {isLoading ? "Loading..." : `Upload ${mediaType === 'image' ? 'Image' : 'Video'} (${aspectRatio})`}
             </Button>
           );
         }}
       </CldUploadWidget>
+
+      {/* Debug Info (remove in production) */}
+      {process.env.NODE_ENV === 'development' && (
+        <div className="text-xs text-gray-500 p-2 bg-gray-50 rounded mt-2">
+          <p>MediaUpload - Upload Preset: vwfnzfpo</p>
+          <p>Media Type: {mediaType}</p>
+          <p>Widget Ready: {widgetReady ? "Yes" : "No"}</p>
+          <p>Cloudinary Loaded: {typeof window !== 'undefined' && (window as any).cloudinary ? "Yes" : "No"}</p>
+        </div>
+      )}
     </div>
   );
 };
