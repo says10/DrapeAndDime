@@ -2,6 +2,26 @@ import Banner from "@/lib/models/Banner";
 import { connectToDB } from "@/lib/mongoDB";
 import { NextRequest, NextResponse } from "next/server";
 
+export const GET = async (
+  req: NextRequest,
+  { params }: { params: { bannerId: string } }
+) => {
+  try {
+    await connectToDB();
+    
+    const banner = await Banner.findById(params.bannerId);
+    
+    if (!banner) {
+      return new NextResponse("Banner not found", { status: 404 });
+    }
+    
+    return NextResponse.json(banner);
+  } catch (error) {
+    console.error("[banner_GET]", error);
+    return new NextResponse("Internal error", { status: 500 });
+  }
+};
+
 export const PATCH = async (
   req: NextRequest,
   { params }: { params: { bannerId: string } }

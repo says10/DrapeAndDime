@@ -1,101 +1,63 @@
 import mongoose from "mongoose";
 
 const BannerSchema = new mongoose.Schema({
-  // Main 16:9 banner video
+  // Main 16:9 banner
   mainBanner: {
     type: String,
     required: true,
-    default: ""
-  },
-  mainBannerTitle: {
-    type: String,
-    required: true,
-    default: "New Arrivals"
-  },
-  mainBannerSubtitle: {
-    type: String,
-    required: true,
-    default: "Discover the latest trends in women's fashion"
-  },
-  mainBannerCta: {
-    type: String,
-    required: true,
-    default: "Shop Now"
-  },
-  mainBannerCtaLink: {
-    type: String,
-    required: true,
-    default: "/products"
   },
 
-  // First 9:16 banner video
-  firstVerticalBanner: {
+  // First 9:16 banner
+  verticalBanner1: {
     type: String,
     required: true,
-    default: ""
   },
-  firstVerticalTitle: {
+  verticalBanner1Title: {
     type: String,
-    required: true,
-    default: "Elegant Collection"
+    default: "",
   },
-  firstVerticalSubtitle: {
+  verticalBanner1Subtitle: {
     type: String,
-    required: true,
-    default: "Timeless pieces for the modern woman"
+    default: "",
   },
-  firstVerticalCta: {
+  verticalBanner1Cta: {
     type: String,
-    required: true,
-    default: "Explore"
+    default: "",
   },
-  firstVerticalCtaLink: {
+  verticalBanner1CtaLink: {
     type: String,
-    required: true,
-    default: "/collections"
+    default: "",
   },
 
-  // Second 9:16 banner video
-  secondVerticalBanner: {
+  // Second 9:16 banner
+  verticalBanner2: {
     type: String,
     required: true,
-    default: ""
   },
-  secondVerticalTitle: {
+  verticalBanner2Title: {
     type: String,
-    required: true,
-    default: "Trendy Styles"
+    default: "",
   },
-  secondVerticalSubtitle: {
+  verticalBanner2Subtitle: {
     type: String,
-    required: true,
-    default: "Stay ahead with our curated fashion selection"
+    default: "",
   },
-  secondVerticalCta: {
+  verticalBanner2Cta: {
     type: String,
-    required: true,
-    default: "View Collection"
+    default: "",
   },
-  secondVerticalCtaLink: {
+  verticalBanner2CtaLink: {
     type: String,
-    required: true,
-    default: "/products"
+    default: "",
   },
 
   isActive: {
     type: Boolean,
-    default: true
+    default: true,
   },
-
-  createdAt: {
-    type: Date,
-    default: Date.now
-  },
-  updatedAt: {
-    type: Date,
-    default: Date.now
-  }
-}, { toJSON: { getters: true } });
+}, {
+  timestamps: true,
+});
 
 const Banner = mongoose.models.Banner || mongoose.model("Banner", BannerSchema);
 

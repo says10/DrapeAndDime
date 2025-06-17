@@ -8,7 +8,15 @@ import { ChevronRight } from "lucide-react";
 interface BannerData {
   mainBanner: string;
   verticalBanner1: string;
+  verticalBanner1Title: string;
+  verticalBanner1Subtitle: string;
+  verticalBanner1Cta: string;
+  verticalBanner1CtaLink: string;
   verticalBanner2: string;
+  verticalBanner2Title: string;
+  verticalBanner2Subtitle: string;
+  verticalBanner2Cta: string;
+  verticalBanner2CtaLink: string;
   isActive: boolean;
 }
 
@@ -56,7 +64,8 @@ const HomeBanner = () => {
 
   return (
     <section className="w-full bg-gray-100">
-      <div className="max-w-[1920px] mx-auto px-8 py-8">
+      <div className="max-w-[1920px] mx-auto px-8 py-8 space-y-8">
+        {/* Main Banner */}
         <div className="relative w-full aspect-video overflow-hidden rounded-2xl shadow-2xl">
           <div className="absolute inset-0 w-full h-full">
             {bannerData.mainBanner ? (
@@ -106,6 +115,103 @@ const HomeBanner = () => {
           <div className="absolute top-0 left-0 w-32 h-32 bg-gradient-to-br from-white/10 to-transparent rounded-br-full" />
           <div className="absolute bottom-0 right-0 w-24 h-24 bg-gradient-to-tl from-white/10 to-transparent rounded-tl-full" />
         </div>
+
+        {/* Vertical Banners Section */}
+        {(bannerData.verticalBanner1 || bannerData.verticalBanner2) && (
+          <div className="space-y-6">
+            <div className="text-center">
+              <h2 className="text-3xl font-bold text-gray-800 mb-2">Which one do you choose?</h2>
+              <p className="text-gray-600">Select your preferred style</p>
+            </div>
+            
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-center">
+              {/* First Vertical Banner */}
+              <div className="space-y-4">
+                <div className="relative aspect-[9/16] bg-gray-100 rounded-lg overflow-hidden shadow-lg">
+                  {bannerData.verticalBanner1 ? (
+                    <Image
+                      src={bannerData.verticalBanner1}
+                      alt="First vertical banner"
+                      className="w-full h-full object-cover"
+                      fill
+                      sizes="(max-width: 768px) 100vw, 33vw"
+                    />
+                  ) : (
+                    <div className="flex items-center justify-center h-full text-gray-500">
+                      No media uploaded
+                    </div>
+                  )}
+                  {(bannerData.verticalBanner1Title || bannerData.verticalBanner1Subtitle || bannerData.verticalBanner1Cta) && (
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                  )}
+                  {(bannerData.verticalBanner1Title || bannerData.verticalBanner1Subtitle || bannerData.verticalBanner1Cta) && (
+                    <div className="absolute bottom-4 left-4 text-white">
+                      {bannerData.verticalBanner1Title && (
+                        <h3 className="text-lg font-bold mb-1">{bannerData.verticalBanner1Title}</h3>
+                      )}
+                      {bannerData.verticalBanner1Subtitle && (
+                        <p className="text-sm mb-2 max-w-xs">{bannerData.verticalBanner1Subtitle}</p>
+                      )}
+                      {bannerData.verticalBanner1Cta && bannerData.verticalBanner1CtaLink && (
+                        <Link 
+                          href={bannerData.verticalBanner1CtaLink}
+                          className="inline-block bg-white text-black px-4 py-2 rounded-full text-sm font-semibold hover:bg-gray-100 transition-colors"
+                        >
+                          {bannerData.verticalBanner1Cta}
+                        </Link>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Center Divider */}
+              <div className="flex flex-col items-center justify-center space-y-4 py-8">
+                <div className="w-16 h-1 bg-gradient-to-r from-transparent via-gray-400 to-transparent rounded-full"></div>
+              </div>
+
+              {/* Second Vertical Banner */}
+              <div className="space-y-4">
+                <div className="relative aspect-[9/16] bg-gray-100 rounded-lg overflow-hidden shadow-lg">
+                  {bannerData.verticalBanner2 ? (
+                    <Image
+                      src={bannerData.verticalBanner2}
+                      alt="Second vertical banner"
+                      className="w-full h-full object-cover"
+                      fill
+                      sizes="(max-width: 768px) 100vw, 33vw"
+                    />
+                  ) : (
+                    <div className="flex items-center justify-center h-full text-gray-500">
+                      No media uploaded
+                    </div>
+                  )}
+                  {(bannerData.verticalBanner2Title || bannerData.verticalBanner2Subtitle || bannerData.verticalBanner2Cta) && (
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                  )}
+                  {(bannerData.verticalBanner2Title || bannerData.verticalBanner2Subtitle || bannerData.verticalBanner2Cta) && (
+                    <div className="absolute bottom-4 left-4 text-white">
+                      {bannerData.verticalBanner2Title && (
+                        <h3 className="text-lg font-bold mb-1">{bannerData.verticalBanner2Title}</h3>
+                      )}
+                      {bannerData.verticalBanner2Subtitle && (
+                        <p className="text-sm mb-2 max-w-xs">{bannerData.verticalBanner2Subtitle}</p>
+                      )}
+                      {bannerData.verticalBanner2Cta && bannerData.verticalBanner2CtaLink && (
+                        <Link 
+                          href={bannerData.verticalBanner2CtaLink}
+                          className="inline-block bg-white text-black px-4 py-2 rounded-full text-sm font-semibold hover:bg-gray-100 transition-colors"
+                        >
+                          {bannerData.verticalBanner2Cta}
+                        </Link>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </section>
   );
