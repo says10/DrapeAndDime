@@ -32,12 +32,18 @@ const HomeBanner = () => {
 
   const fetchBannerData = async () => {
     try {
+      console.log("Fetching banner data...");
       const response = await fetch("/api/banners");
+      console.log("Response status:", response.status);
       if (response.ok) {
         const data = await response.json();
+        console.log("Banner data received:", data);
         // Get the first active banner
         const activeBanner = data.find((banner: BannerData) => banner.isActive);
+        console.log("Active banner:", activeBanner);
         setBannerData(activeBanner || null);
+      } else {
+        console.error("Response not ok:", response.status, response.statusText);
       }
     } catch (error) {
       console.error("Error fetching banner data:", error);

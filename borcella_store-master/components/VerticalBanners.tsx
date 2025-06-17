@@ -30,15 +30,21 @@ const VerticalBanners = () => {
 
   const fetchBannerData = async () => {
     try {
+      console.log("VerticalBanners: Fetching banner data...");
       const response = await fetch("/api/banners");
+      console.log("VerticalBanners: Response status:", response.status);
       if (response.ok) {
         const data = await response.json();
+        console.log("VerticalBanners: Banner data received:", data);
         // Get the first active banner
         const activeBanner = data.find((banner: BannerData) => banner.isActive);
+        console.log("VerticalBanners: Active banner:", activeBanner);
         setBannerData(activeBanner || null);
+      } else {
+        console.error("VerticalBanners: Response not ok:", response.status, response.statusText);
       }
     } catch (error) {
-      console.error("Error fetching banner data:", error);
+      console.error("VerticalBanners: Error fetching banner data:", error);
     } finally {
       setLoading(false);
     }
