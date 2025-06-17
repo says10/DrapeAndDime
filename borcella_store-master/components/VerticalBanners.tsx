@@ -24,6 +24,11 @@ const VerticalBanners = () => {
   const [bannerData, setBannerData] = useState<BannerData | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // Helper function to detect if a URL is a video based on extension
+  const isVideoFile = (url: string) => {
+    return /\.(mp4|webm|ogg|mov|avi|mkv)$/i.test(url);
+  };
+
   useEffect(() => {
     fetchBannerData();
   }, []);
@@ -104,7 +109,7 @@ const VerticalBanners = () => {
             <div className="group cursor-pointer">
               <div className="relative aspect-[9/16] overflow-hidden rounded-2xl shadow-2xl transform transition-all duration-500 group-hover:scale-105">
                 {bannerData.verticalBanner1 ? (
-                  bannerData.verticalBanner1Type === 'image' ? (
+                  (bannerData.verticalBanner1Type === 'image' && !isVideoFile(bannerData.verticalBanner1)) ? (
                     <Image
                       src={bannerData.verticalBanner1}
                       alt="First option"
@@ -178,7 +183,7 @@ const VerticalBanners = () => {
             <div className="group cursor-pointer">
               <div className="relative aspect-[9/16] overflow-hidden rounded-2xl shadow-2xl transform transition-all duration-500 group-hover:scale-105">
                 {bannerData.verticalBanner2 ? (
-                  bannerData.verticalBanner2Type === 'image' ? (
+                  (bannerData.verticalBanner2Type === 'image' && !isVideoFile(bannerData.verticalBanner2)) ? (
                     <Image
                       src={bannerData.verticalBanner2}
                       alt="Second option"
