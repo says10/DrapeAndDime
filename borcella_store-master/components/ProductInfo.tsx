@@ -1,11 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import HeartFavorite from "./HeartFavorite";
 import { MinusCircle, PlusCircle, ShoppingBag } from "lucide-react";
-import useCart from "@/lib/hooks/useCart"; // Ensure correct import
+import useCart from "@/lib/hooks/useCart";
 import FormattedText from "./FormattedText";
-// import { toast } from "sonner"; // Temporarily commented out
+import HeartFavorite from "./HeartFavorite";
+import { toast } from "sonner";
 
 const ProductInfo = ({ productInfo }: { productInfo: ProductType }) => {
   const [selectedColor, setSelectedColor] = useState<string>(productInfo.colors || "");
@@ -27,14 +27,14 @@ const ProductInfo = ({ productInfo }: { productInfo: ProductType }) => {
           color: selectedColor,
           size: selectedSize,
         });
-        // toast.success("Added to cart!", {
-        //   description: `${productInfo.title} has been added to your cart.`,
-        //   duration: 3000,
-        // });
-        console.log("Added to cart:", productInfo.title); // Temporary console log
+        toast.success("Added to cart!", {
+          description: `${productInfo.title} has been added to your cart.`,
+          duration: 3000,
+        });
       } catch (error) {
-        // toast.error("Failed to add to cart");
-        console.error("Failed to add to cart:", error); // Temporary console log
+        toast.error("Failed to add to cart", {
+          description: "Please try again later.",
+        });
       } finally {
         setIsAddingToCart(false);
       }
@@ -42,116 +42,152 @@ const ProductInfo = ({ productInfo }: { productInfo: ProductType }) => {
   };
 
   return (
-    <div className="max-w-[400px] flex flex-col gap-4">
-      {/* Product Title & Favorite Icon */}
-      <div className="flex justify-between items-center">
-        <p className="text-heading3-bold">{productInfo.title}</p>
-        <HeartFavorite product={productInfo} />
+    <div className="max-w-[450px] flex flex-col gap-6 p-6 bg-white rounded-2xl shadow-sm border border-gray-100">
+      {/* Product Title & Wishlist Heart */}
+      <div className="flex justify-between items-start">
+        <div className="space-y-2 flex-1">
+          <h1 className="text-3xl font-bold text-gray-900 leading-tight tracking-tight">
+            {productInfo.title}
+          </h1>
+        </div>
+        <div className="ml-4">
+          <HeartFavorite product={productInfo} />
+        </div>
       </div>
 
       {/* Product Category */}
-      <div className="flex gap-2">
-        <p className="text-base-medium text-grey-2">Category:</p>
-        <p className="text-base-bold">{productInfo.category}</p>
+      <div className="flex items-center gap-3">
+        <span className="text-sm font-medium text-gray-500 uppercase tracking-wide">Category:</span>
+        <span className="px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm font-semibold">
+          {productInfo.category}
+        </span>
       </div>
 
       {/* Price */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-3">
         {productInfo.originalPrice && productInfo.originalPrice > productInfo.price && (
-          <span className="text-gray-500 line-through text-lg">
-            ₹ {productInfo.originalPrice}
+          <span className="text-xl text-gray-400 line-through font-medium">
+            ₹{productInfo.originalPrice.toLocaleString()}
           </span>
         )}
-        <span className="text-heading3-bold text-black-600">
-          ₹ {productInfo.price}
+        <span className="text-4xl font-bold text-gray-900">
+          ₹{productInfo.price.toLocaleString()}
         </span>
       </div>
 
       {/* Description */}
-      <div className="flex flex-col gap-2">
-        <p className="text-base-medium text-grey-2">Description:</p>
-        <FormattedText 
-          text={productInfo.description} 
-          className="text-small-medium"
-        />
+      <div className="space-y-3">
+        <h3 className="text-lg font-semibold text-gray-900">Description</h3>
+        <div className="text-gray-600 leading-relaxed">
+          <FormattedText 
+            text={productInfo.description} 
+            className="text-base"
+          />
+        </div>
       </div>
 
       {/* Colors */}
       {productInfo.colors && (
-        <div className="flex flex-col gap-2">
-          <p className="text-base-medium text-grey-2">Color:</p>
-          <div className="flex gap-2">
-            <p
-              className={`border border-black px-2 py-1 rounded-lg cursor-pointer ${
-                selectedColor === productInfo.colors ? "bg-black text-white bg-opacity-50" : ""
+        <div className="space-y-3">
+          <h3 className="text-lg font-semibold text-gray-900">Color</h3>
+          <div className="flex gap-3">
+            <button
+              className={`px-4 py-2 rounded-lg border-2 font-medium transition-all duration-200 ${
+                selectedColor === productInfo.colors 
+                  ? "border-gray-900 bg-gray-900 text-white shadow-md" 
+                  : "border-gray-300 text-gray-700 hover:border-gray-400 hover:bg-gray-50"
               }`}
               onClick={() => setSelectedColor(productInfo.colors)}
             >
               {productInfo.colors}
-            </p>
+            </button>
           </div>
         </div>
       )}
 
       {/* Sizes */}
       {productInfo.sizes && (
-        <div className="flex flex-col gap-2">
-          <p className="text-base-medium text-grey-2">Size:</p>
-          <div className="flex gap-2">
-            <p
-              className={`border border-black px-2 py-1 rounded-lg cursor-pointer ${
-                selectedSize === productInfo.sizes ? "bg-black text-white bg-opacity-50" : ""
+        <div className="space-y-3">
+          <h3 className="text-lg font-semibold text-gray-900">Size</h3>
+          <div className="flex gap-3">
+            <button
+              className={`px-4 py-2 rounded-lg border-2 font-medium transition-all duration-200 ${
+                selectedSize === productInfo.sizes 
+                  ? "border-gray-900 bg-gray-900 text-white shadow-md" 
+                  : "border-gray-300 text-gray-700 hover:border-gray-400 hover:bg-gray-50"
               }`}
               onClick={() => setSelectedSize(productInfo.sizes)}
             >
               {productInfo.sizes}
-            </p>
+            </button>
           </div>
         </div>
       )}
 
-      {/* Quantity Selector (Disabled if Out of Stock) */}
-      <div className="flex flex-col gap-2">
-        <p className="text-base-medium text-grey-2">Quantity:</p>
-        <div className="flex gap-4 items-center">
-          <MinusCircle
-            className={`cursor-pointer ${quantity > 1 ? "hover:text-red-1" : "text-gray-400"}`}
+      {/* Quantity Selector */}
+      <div className="space-y-3">
+        <h3 className="text-lg font-semibold text-gray-900">Quantity</h3>
+        <div className="flex items-center gap-4">
+          <button
+            className={`p-2 rounded-full transition-all duration-200 ${
+              quantity > 1 
+                ? "text-gray-700 hover:text-red-600 hover:bg-red-50" 
+                : "text-gray-300 cursor-not-allowed"
+            }`}
             onClick={() => quantity > 1 && setQuantity(quantity - 1)}
-          />
-          <p className="text-body-bold">{quantity}</p>
-          <PlusCircle
-            className={`cursor-pointer ${
-              isOutOfStock || quantity >= maxStock ? "text-gray-400" : "hover:text-red-1"
+            disabled={quantity <= 1}
+          >
+            <MinusCircle className="w-6 h-6" />
+          </button>
+          <span className="text-2xl font-bold text-gray-900 min-w-[3rem] text-center">
+            {quantity}
+          </span>
+          <button
+            className={`p-2 rounded-full transition-all duration-200 ${
+              isOutOfStock || quantity >= maxStock 
+                ? "text-gray-300 cursor-not-allowed" 
+                : "text-gray-700 hover:text-green-600 hover:bg-green-50"
             }`}
             onClick={() => {
               if (!isOutOfStock && quantity < maxStock) {
                 setQuantity(quantity + 1);
               }
             }}
-          />
+            disabled={isOutOfStock || quantity >= maxStock}
+          >
+            <PlusCircle className="w-6 h-6" />
+          </button>
         </div>
       </div>
 
       {/* Availability Message */}
-      <p className={`text-lg font-semibold ${isOutOfStock ? "text-red-600" : "text-green-600"}`}>
-        {isOutOfStock ? "Sold out " : `Last (${maxStock} available)`}
-      </p>
+      <div className={`p-4 rounded-xl ${
+        isOutOfStock 
+          ? "bg-red-50 border border-red-200" 
+          : "bg-green-50 border border-green-200"
+      }`}>
+        <p className={`text-lg font-semibold ${
+          isOutOfStock ? "text-red-700" : "text-green-700"
+        }`}>
+          {isOutOfStock ? "Sold Out" : `${maxStock} items available`}
+        </p>
+      </div>
 
-      {/* Add to Cart Button (Disabled if Out of Stock) */}
+      {/* Add to Cart Button */}
       <button
-        className={`group relative flex items-center justify-center gap-2 px-6 py-4 rounded-xl text-base font-medium transition-all duration-300 ${
+        className={`group relative flex items-center justify-center gap-3 px-8 py-4 rounded-xl text-lg font-semibold transition-all duration-300 ${
           isOutOfStock
             ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-            : "bg-gray-900 text-white hover:bg-gray-800 hover:shadow-lg active:scale-[0.98]"
+            : "bg-gray-900 text-white hover:bg-gray-800 hover:shadow-xl active:scale-[0.98] transform"
         }`}
         onClick={handleAddToCart}
         disabled={isOutOfStock || isAddingToCart}
       >
         {isAddingToCart ? (
-          <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+          <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
         ) : (
           <>
-            <ShoppingBag className="w-5 h-5" />
+            <ShoppingBag className="w-6 h-6" />
             {isOutOfStock ? "Sold Out" : "Add to Cart"}
           </>
         )}
@@ -161,17 +197,17 @@ const ProductInfo = ({ productInfo }: { productInfo: ProductType }) => {
       </button>
 
       {/* Stock Status */}
-      <p className={`text-sm font-medium ${
+      <div className={`p-4 rounded-xl ${
         isOutOfStock 
-          ? "text-red-600 bg-red-50 px-3 py-2 rounded-lg" 
-          : "text-green-600 bg-green-50 px-3 py-2 rounded-lg"
+          ? "bg-red-50 border border-red-200" 
+          : "bg-green-50 border border-green-200"
       }`}>
-        {isOutOfStock ? (
-          "Currently out of stock"
-        ) : (
-          `${maxStock} units available`
-        )}
-      </p>
+        <p className={`text-base font-medium ${
+          isOutOfStock ? "text-red-700" : "text-green-700"
+        }`}>
+          {isOutOfStock ? "Currently out of stock" : "In stock and ready to ship"}
+        </p>
+      </div>
     </div>
   );
 };

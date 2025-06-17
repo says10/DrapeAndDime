@@ -24,6 +24,28 @@ type ProductType = {
   isAvailable:boolean;
 }
 
+type BannerType = {
+  _id: string;
+  mainBanner: string;
+  mainBannerTitle: string;
+  mainBannerSubtitle: string;
+  mainBannerCta: string;
+  mainBannerCtaLink: string;
+  firstVerticalBanner: string;
+  firstVerticalTitle: string;
+  firstVerticalSubtitle: string;
+  firstVerticalCta: string;
+  firstVerticalCtaLink: string;
+  secondVerticalBanner: string;
+  secondVerticalTitle: string;
+  secondVerticalSubtitle: string;
+  secondVerticalCta: string;
+  secondVerticalCtaLink: string;
+  isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 type OrderColumnType = {
   _id: string;
   customer: string;

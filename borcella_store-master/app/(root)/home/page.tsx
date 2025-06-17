@@ -3,26 +3,22 @@
 import Image from "next/image";
 import CollectionCarousel from "@/components/CollectionCarousel";
 import ProductList from "@/components/ProductList";
+import VerticalBanners from "@/components/VerticalBanners";
 import { getCollections } from "@/lib/actions/actions";
+import HomeBanner from "@/components/HomeBanner";
 
 export default async function Home() {
   const collections = await getCollections();
   return (
     <div className="flex flex-col">
-      {/* Banner */}
-      <div className="w-full">
-        <Image 
-          src="/banner.png" 
-          alt="banner" 
-          width={2000} 
-          height={1000} 
-          className="w-full h-auto object-cover"
-          priority
-        />
-      </div>
+      {/* Hero Banner with 16:9 Aspect Ratio */}
+      <HomeBanner />
 
       {/* Collections Carousel */}
       <CollectionCarousel collections={collections} />
+
+      {/* Vertical Banners (9:16) */}
+      <VerticalBanners />
 
       {/* Products Section with Premium Background */}
       <div className="w-full relative">
