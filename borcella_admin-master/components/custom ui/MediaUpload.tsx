@@ -1,8 +1,10 @@
 "use client";
 
-import { useState, useRef } from "react";
-import { Button } from "@/components/ui/button";
+import { CldUploadWidget } from "next-cloudinary";
 import { Plus, Trash, AlertCircle, Image as ImageIcon, Video } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import Image from "next/image";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 
 interface MediaUploadProps {
@@ -22,92 +24,36 @@ const MediaUpload = ({
   onTypeChange,
   aspectRatio = "16:9"
 }: MediaUploadProps) => {
-  const [isUploading, setIsUploading] = useState(false);
+  const [widgetReady, setWidgetReady] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleFileUpload = async (file: File) => {
-    if (!file) return;
-
-    // Validate file type
-    const isImage = file.type.startsWith('image/');
-    const isVideo = file.type.startsWith('video/');
-    
-    if (mediaType === 'image' && !isImage) {
-      setUploadError("Please select an image file");
-      toast.error("Please select an image file");
-      return;
+  // Check if Cloudinary is properly loaded
+  useEffect(() => {
+    if (typeof window !== 'undefined' && (window as any).cloudinary) {
+      setWidgetReady(true);
+    } else {
+      console.warn("Cloudinary not loaded properly for MediaUpload");
     }
+  }, []);
+
+  const onUpload = (result: any) => {
+    console.log("Media upload result:", result);
     
-    if (mediaType === 'video' && !isVideo) {
-      setUploadError("Please select a video file");
-      toast.error("Please select a video file");
-      return;
-    }
-
-    // Validate file size (100MB for videos, 10MB for images)
-    const maxSize = mediaType === 'video' ? 100 * 1024 * 1024 : 10 * 1024 * 1024;
-    if (file.size > maxSize) {
-      setUploadError(`File size must be less than ${mediaType === 'video' ? '100MB' : '10MB'}`);
-      toast.error(`File size must be less than ${mediaType === 'video' ? '100MB' : '10MB'}`);
-      return;
-    }
-
-    setIsUploading(true);
-    setUploadError(null);
-    
-    try {
-      console.log('Starting upload for:', file.name, 'Type:', file.type, 'Size:', file.size);
-      
-      // Create FormData for our API
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('mediaType', mediaType);
-
-      console.log('FormData created, uploading via API...');
-
-      // Upload via our API route
-      const response = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData,
-      });
-
-      console.log('Response status:', response.status, 'Response ok:', response.ok);
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error('API response error:', errorData);
-        throw new Error(errorData.error || `Upload failed: ${response.status} ${response.statusText}`);
-      }
-
-      const result = await response.json();
-      console.log('Upload successful, result:', result);
-      
-      if (result.url) {
-        onChange(result.url);
-        toast.success(`${mediaType === 'image' ? 'Image' : 'Video'} uploaded successfully!`);
-      } else {
-        throw new Error('No URL in response');
-      }
-    } catch (error) {
-      console.error('Upload error details:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Unknown upload error';
-      setUploadError(`Failed to upload ${mediaType}: ${errorMessage}`);
-      toast.error(`Failed to upload ${mediaType}. Please try again.`);
-    } finally {
-      setIsUploading(false);
+    if (result.event === "success") {
+      setUploadError(null);
+      onChange(result.info.secure_url);
+      toast.success(`${mediaType === 'image' ? 'Image' : 'Video'} uploaded successfully!`);
+    } else if (result.event === "error") {
+      setUploadError("Upload failed. Please try again.");
+      toast.error(`${mediaType === 'image' ? 'Image' : 'Video'} upload failed. Please try again.`);
+      console.error("Media upload error:", result);
     }
   };
 
-  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      handleFileUpload(file);
-    }
-  };
-
-  const handleClick = () => {
-    fileInputRef.current?.click();
+  const onUploadError = (error: any) => {
+    console.error("Media upload widget error:", error);
+    setUploadError("Upload failed. Please check your connection and try again.");
+    toast.error("Upload failed. Please check your connection and try again.");
   };
 
   return (
@@ -138,7 +84,7 @@ const MediaUpload = ({
 
       {/* Preview */}
       {value && (
-        <div className="mb-4">
+        <div className="mb-4 flex flex-wrap items-center gap-4">
           <div className="relative w-[200px] h-[200px]">
             <div className="absolute top-0 right-0 z-10">
               <Button type="button" onClick={onRemove} size="sm" className="bg-red-1 text-white">
@@ -146,10 +92,11 @@ const MediaUpload = ({
               </Button>
             </div>
             {mediaType === 'image' ? (
-              <img
+              <Image
                 src={value}
                 alt="banner"
-                className="object-cover rounded-lg w-full h-full"
+                className="object-cover rounded-lg"
+                fill
               />
             ) : (
               <video
@@ -171,25 +118,45 @@ const MediaUpload = ({
         </div>
       )}
 
-      {/* File Input */}
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept={mediaType === 'image' ? 'image/*' : 'video/*'}
-        onChange={handleFileSelect}
-        className="hidden"
-      />
+      {/* Widget Loading */}
+      {!widgetReady && (
+        <div className="flex items-center gap-2 p-3 bg-yellow-50 border border-yellow-200 rounded-lg mb-4">
+          <AlertCircle className="h-4 w-4 text-yellow-600" />
+          <span className="text-sm text-yellow-700">Loading Cloudinary widget...</span>
+        </div>
+      )}
 
-      {/* Upload Button */}
-      <Button 
-        type="button" 
-        onClick={handleClick}
-        disabled={isUploading}
-        className="bg-grey-1 text-white disabled:opacity-50 disabled:cursor-not-allowed"
+      {/* Upload Widget */}
+      <CldUploadWidget 
+        uploadPreset="vwfnzfpo" 
+        onUpload={onUpload}
+        onError={onUploadError}
+        options={{
+          resourceType: mediaType,
+          maxFileSize: mediaType === 'image' ? 10000000 : 100000000, // 10MB for images, 100MB for videos
+          sources: ["local", "camera"],
+          multiple: false,
+          cropping: false,
+          showAdvancedOptions: false,
+          showSkipCropButton: false,
+          showUploadMoreButton: false,
+          singleUploadAutoClose: true,
+        }}
       >
-        <Plus className="h-4 w-4 mr-2" />
-        {isUploading ? "Uploading..." : `Upload ${mediaType === 'image' ? 'Image' : 'Video'} (${aspectRatio})`}
-      </Button>
+        {({ open, isLoading }) => {
+          return (
+            <Button 
+              type="button" 
+              onClick={() => open()} 
+              disabled={isLoading || !widgetReady}
+              className="bg-grey-1 text-white disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              {isLoading ? "Loading..." : `Upload ${mediaType === 'image' ? 'Image' : 'Video'} (${aspectRatio})`}
+            </Button>
+          );
+        }}
+      </CldUploadWidget>
 
       {/* Debug Info (remove in production) */}
       {process.env.NODE_ENV === 'development' && (
@@ -197,6 +164,8 @@ const MediaUpload = ({
           <p>MediaUpload - Upload Preset: vwfnzfpo</p>
           <p>Media Type: {mediaType}</p>
           <p>Aspect Ratio: {aspectRatio}</p>
+          <p>Widget Ready: {widgetReady ? "Yes" : "No"}</p>
+          <p>Cloudinary Loaded: {typeof window !== 'undefined' && (window as any).cloudinary ? "Yes" : "No"}</p>
         </div>
       )}
     </div>
