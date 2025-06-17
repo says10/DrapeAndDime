@@ -1,11 +1,16 @@
 import mongoose from "mongoose";
 
 const BannerSchema = new mongoose.Schema({
-  // Main 16:9 banner video
+  // Main 16:9 banner
   mainBanner: {
     type: String,
     required: true,
     default: ""
+  },
+  mainBannerType: {
+    type: String,
+    enum: ['image', 'video'],
+    default: 'video'
   },
   mainBannerTitle: {
     type: String,
@@ -28,11 +33,16 @@ const BannerSchema = new mongoose.Schema({
     default: "/products"
   },
 
-  // First 9:16 banner video
+  // First 9:16 banner
   firstVerticalBanner: {
     type: String,
     required: true,
     default: ""
+  },
+  firstVerticalType: {
+    type: String,
+    enum: ['image', 'video'],
+    default: 'video'
   },
   firstVerticalTitle: {
     type: String,
@@ -55,11 +65,16 @@ const BannerSchema = new mongoose.Schema({
     default: "/collections"
   },
 
-  // Second 9:16 banner video
+  // Second 9:16 banner
   secondVerticalBanner: {
     type: String,
     required: true,
     default: ""
+  },
+  secondVerticalType: {
+    type: String,
+    enum: ['image', 'video'],
+    default: 'video'
   },
   secondVerticalTitle: {
     type: String,

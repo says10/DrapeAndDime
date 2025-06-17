@@ -7,6 +7,7 @@ import { Separator } from "@/components/ui/separator";
 import { Plus, Edit, Trash2, Eye } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 import {
   Dialog,
@@ -202,23 +203,33 @@ const BannersPage = () => {
               <DialogTitle>Banner Preview</DialogTitle>
             </DialogHeader>
             
-            <div className="space-y-6">
+            <div className="space-y-8">
               {/* Main Banner Preview */}
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold">Main Banner (16:9)</h3>
                 <div className="relative aspect-video bg-gray-100 rounded-lg overflow-hidden">
                   {viewingBanner.mainBanner ? (
-                    <video
-                      src={viewingBanner.mainBanner}
-                      className="w-full h-full object-cover"
-                      controls
-                      autoPlay
-                      muted
-                      loop
-                    />
+                    viewingBanner.mainBannerType === 'image' ? (
+                      <Image
+                        src={viewingBanner.mainBanner}
+                        alt="Main banner"
+                        className="w-full h-full object-cover"
+                        fill
+                        sizes="(max-width: 768px) 100vw, 80vw"
+                      />
+                    ) : (
+                      <video
+                        src={viewingBanner.mainBanner}
+                        className="w-full h-full object-cover"
+                        controls
+                        autoPlay
+                        muted
+                        loop
+                      />
+                    )
                   ) : (
                     <div className="flex items-center justify-center h-full text-gray-500">
-                      No video uploaded
+                      No media uploaded
                     </div>
                   )}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
@@ -232,62 +243,95 @@ const BannersPage = () => {
                 </div>
               </div>
 
-              {/* Vertical Banners Preview */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* First Vertical Banner */}
-                <div className="space-y-4">
-                  <h3 className="text-lg font-semibold">First Vertical Banner (9:16)</h3>
-                  <div className="relative aspect-[9/16] bg-gray-100 rounded-lg overflow-hidden">
-                    {viewingBanner.firstVerticalBanner ? (
-                      <video
-                        src={viewingBanner.firstVerticalBanner}
-                        className="w-full h-full object-cover"
-                        controls
-                        autoPlay
-                        muted
-                        loop
-                      />
-                    ) : (
-                      <div className="flex items-center justify-center h-full text-gray-500">
-                        No video uploaded
+              {/* Vertical Banners Preview - Side by Side */}
+              <div className="space-y-6">
+                <h3 className="text-lg font-semibold">Vertical Banners (9:16)</h3>
+                
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-center">
+                  {/* First Vertical Banner */}
+                  <div className="space-y-4">
+                    <h4 className="text-md font-medium text-center">First Option</h4>
+                    <div className="relative aspect-[9/16] bg-gray-100 rounded-lg overflow-hidden">
+                      {viewingBanner.firstVerticalBanner ? (
+                        viewingBanner.firstVerticalType === 'image' ? (
+                          <Image
+                            src={viewingBanner.firstVerticalBanner}
+                            alt="First vertical banner"
+                            className="w-full h-full object-cover"
+                            fill
+                            sizes="(max-width: 768px) 100vw, 33vw"
+                          />
+                        ) : (
+                          <video
+                            src={viewingBanner.firstVerticalBanner}
+                            className="w-full h-full object-cover"
+                            controls
+                            autoPlay
+                            muted
+                            loop
+                          />
+                        )
+                      ) : (
+                        <div className="flex items-center justify-center h-full text-gray-500">
+                          No media uploaded
+                        </div>
+                      )}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                      <div className="absolute bottom-4 left-4 text-white">
+                        <h5 className="text-lg font-bold mb-1">{viewingBanner.firstVerticalTitle}</h5>
+                        <p className="text-sm mb-2 max-w-xs">{viewingBanner.firstVerticalSubtitle}</p>
+                        <Button size="sm" className="bg-white text-black hover:bg-gray-100">
+                          {viewingBanner.firstVerticalCta}
+                        </Button>
                       </div>
-                    )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                    <div className="absolute bottom-4 left-4 text-white">
-                      <h4 className="text-lg font-bold mb-1">{viewingBanner.firstVerticalTitle}</h4>
-                      <p className="text-sm mb-2 max-w-xs">{viewingBanner.firstVerticalSubtitle}</p>
-                      <Button size="sm" className="bg-white text-black hover:bg-gray-100">
-                        {viewingBanner.firstVerticalCta}
-                      </Button>
                     </div>
                   </div>
-                </div>
 
-                {/* Second Vertical Banner */}
-                <div className="space-y-4">
-                  <h3 className="text-lg font-semibold">Second Vertical Banner (9:16)</h3>
-                  <div className="relative aspect-[9/16] bg-gray-100 rounded-lg overflow-hidden">
-                    {viewingBanner.secondVerticalBanner ? (
-                      <video
-                        src={viewingBanner.secondVerticalBanner}
-                        className="w-full h-full object-cover"
-                        controls
-                        autoPlay
-                        muted
-                        loop
-                      />
-                    ) : (
-                      <div className="flex items-center justify-center h-full text-gray-500">
-                        No video uploaded
+                  {/* Center Text */}
+                  <div className="flex flex-col items-center justify-center space-y-4 py-8">
+                    <div className="text-center">
+                      <h4 className="text-2xl font-bold text-gray-800 mb-2">Which one do you choose?</h4>
+                      <p className="text-gray-600 text-sm">Select your preferred style</p>
+                    </div>
+                    <div className="w-16 h-1 bg-gradient-to-r from-transparent via-gray-400 to-transparent rounded-full"></div>
+                  </div>
+
+                  {/* Second Vertical Banner */}
+                  <div className="space-y-4">
+                    <h4 className="text-md font-medium text-center">Second Option</h4>
+                    <div className="relative aspect-[9/16] bg-gray-100 rounded-lg overflow-hidden">
+                      {viewingBanner.secondVerticalBanner ? (
+                        viewingBanner.secondVerticalType === 'image' ? (
+                          <Image
+                            src={viewingBanner.secondVerticalBanner}
+                            alt="Second vertical banner"
+                            className="w-full h-full object-cover"
+                            fill
+                            sizes="(max-width: 768px) 100vw, 33vw"
+                          />
+                        ) : (
+                          <video
+                            src={viewingBanner.secondVerticalBanner}
+                            className="w-full h-full object-cover"
+                            controls
+                            autoPlay
+                            muted
+                            loop
+                          />
+                        )
+                      ) : (
+                        <div className="flex items-center justify-center h-full text-gray-500">
+                          No media uploaded
+                        </div>
+                      )}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                      <div className="absolute bottom-4 left-4 text-white">
+                        <h5 className="text-lg font-bold mb-1">{viewingBanner.secondVerticalTitle}</h5>
+                        <p className="text-sm mb-2 max-w-xs">{viewingBanner.secondVerticalSubtitle}</p>
+                        <Button size="sm" className="bg-white text-black hover:bg-gray-100">
+                          {viewingBanner.secondVerticalCta}
+                        </Button>
                       </div>
-                    )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                    <div className="absolute bottom-4 left-4 text-white">
-                      <h4 className="text-lg font-bold mb-1">{viewingBanner.secondVerticalTitle}</h4>
-                      <p className="text-sm mb-2 max-w-xs">{viewingBanner.secondVerticalSubtitle}</p>
-                      <Button size="sm" className="bg-white text-black hover:bg-gray-100">
-                        {viewingBanner.secondVerticalCta}
-                      </Button>
                     </div>
                   </div>
                 </div>

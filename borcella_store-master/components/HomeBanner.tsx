@@ -2,14 +2,29 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { ChevronRight } from "lucide-react";
 
 interface BannerData {
   mainBanner: string;
+  mainBannerType: 'image' | 'video';
   mainBannerTitle: string;
   mainBannerSubtitle: string;
   mainBannerCta: string;
   mainBannerCtaLink: string;
+  firstVerticalBanner: string;
+  firstVerticalType: 'image' | 'video';
+  firstVerticalTitle: string;
+  firstVerticalSubtitle: string;
+  firstVerticalCta: string;
+  firstVerticalCtaLink: string;
+  secondVerticalBanner: string;
+  secondVerticalType: 'image' | 'video';
+  secondVerticalTitle: string;
+  secondVerticalSubtitle: string;
+  secondVerticalCta: string;
+  secondVerticalCtaLink: string;
+  isActive: boolean;
 }
 
 const HomeBanner = () => {
@@ -25,7 +40,9 @@ const HomeBanner = () => {
       const response = await fetch("/api/banners");
       if (response.ok) {
         const data = await response.json();
-        setBannerData(data);
+        // Get the first active banner
+        const activeBanner = data.find((banner: BannerData) => banner.isActive);
+        setBannerData(activeBanner || null);
       }
     } catch (error) {
       console.error("Error fetching banner data:", error);
@@ -57,14 +74,25 @@ const HomeBanner = () => {
       <div className="max-w-[1920px] mx-auto px-8 py-8">
         <div className="relative w-full aspect-video overflow-hidden rounded-2xl shadow-2xl">
           <div className="absolute inset-0 w-full h-full">
-            <video
-              src={bannerData.mainBanner}
-              autoPlay
-              loop
-              muted
-              playsInline
-              className="object-cover object-center w-full h-full"
-            />
+            {bannerData.mainBannerType === 'image' ? (
+              <Image
+                src={bannerData.mainBanner}
+                alt="Main banner"
+                className="object-cover object-center"
+                fill
+                sizes="(max-width: 768px) 100vw, 80vw"
+                priority
+              />
+            ) : (
+              <video
+                src={bannerData.mainBanner}
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="object-cover object-center w-full h-full"
+              />
+            )}
             <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/30 to-transparent" />
           </div>
 
