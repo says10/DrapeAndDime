@@ -57,28 +57,42 @@ const MediaUpload = ({
     setUploadError(null);
     
     try {
-      // Create FormData
+      console.log('Starting upload for:', file.name, 'Type:', file.type, 'Size:', file.size);
+      
+      // Create FormData for our API
       const formData = new FormData();
       formData.append('file', file);
-      formData.append('upload_preset', 'vwfnzfpo');
-      formData.append('resource_type', mediaType);
+      formData.append('mediaType', mediaType);
 
-      // Upload to Cloudinary
-      const response = await fetch(`https://api.cloudinary.com/v1_1/drapeanddime/${mediaType}/upload`, {
+      console.log('FormData created, uploading via API...');
+
+      // Upload via our API route
+      const response = await fetch('/api/upload', {
         method: 'POST',
         body: formData,
       });
 
+      console.log('Response status:', response.status, 'Response ok:', response.ok);
+
       if (!response.ok) {
-        throw new Error('Upload failed');
+        const errorData = await response.json();
+        console.error('API response error:', errorData);
+        throw new Error(errorData.error || `Upload failed: ${response.status} ${response.statusText}`);
       }
 
       const result = await response.json();
-      onChange(result.secure_url);
-      toast.success(`${mediaType === 'image' ? 'Image' : 'Video'} uploaded successfully!`);
+      console.log('Upload successful, result:', result);
+      
+      if (result.url) {
+        onChange(result.url);
+        toast.success(`${mediaType === 'image' ? 'Image' : 'Video'} uploaded successfully!`);
+      } else {
+        throw new Error('No URL in response');
+      }
     } catch (error) {
-      console.error('Upload error:', error);
-      setUploadError(`Failed to upload ${mediaType}. Please try again.`);
+      console.error('Upload error details:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown upload error';
+      setUploadError(`Failed to upload ${mediaType}: ${errorMessage}`);
       toast.error(`Failed to upload ${mediaType}. Please try again.`);
     } finally {
       setIsUploading(false);
