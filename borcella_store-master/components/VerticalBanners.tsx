@@ -114,7 +114,7 @@ const VerticalBanners = () => {
           <div className="text-center space-y-6">
             <div className="space-y-4">
               <h2 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight">
-                Which one do you choose?
+                Which one are you?
               </h2>
               <p className="text-lg text-gray-600 max-w-md mx-auto">
                 Select your preferred style and discover your perfect look

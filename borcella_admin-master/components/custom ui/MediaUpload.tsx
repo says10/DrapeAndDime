@@ -2,7 +2,7 @@
 
 import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { Trash, Upload, Image as ImageIcon, Video } from "lucide-react";
+import { Plus, Trash, AlertCircle, Image as ImageIcon, Video } from "lucide-react";
 import { toast } from "sonner";
 
 interface MediaUploadProps {
@@ -22,8 +22,8 @@ const MediaUpload = ({
   onTypeChange,
   aspectRatio = "16:9"
 }: MediaUploadProps) => {
-  const [isDragOver, setIsDragOver] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileUpload = async (file: File) => {
@@ -34,11 +34,13 @@ const MediaUpload = ({
     const isVideo = file.type.startsWith('video/');
     
     if (mediaType === 'image' && !isImage) {
+      setUploadError("Please select an image file");
       toast.error("Please select an image file");
       return;
     }
     
     if (mediaType === 'video' && !isVideo) {
+      setUploadError("Please select a video file");
       toast.error("Please select a video file");
       return;
     }
@@ -46,11 +48,13 @@ const MediaUpload = ({
     // Validate file size (100MB for videos, 10MB for images)
     const maxSize = mediaType === 'video' ? 100 * 1024 * 1024 : 10 * 1024 * 1024;
     if (file.size > maxSize) {
+      setUploadError(`File size must be less than ${mediaType === 'video' ? '100MB' : '10MB'}`);
       toast.error(`File size must be less than ${mediaType === 'video' ? '100MB' : '10MB'}`);
       return;
     }
 
     setIsUploading(true);
+    setUploadError(null);
     
     try {
       // Create FormData
@@ -74,6 +78,7 @@ const MediaUpload = ({
       toast.success(`${mediaType === 'image' ? 'Image' : 'Video'} uploaded successfully!`);
     } catch (error) {
       console.error('Upload error:', error);
+      setUploadError(`Failed to upload ${mediaType}. Please try again.`);
       toast.error(`Failed to upload ${mediaType}. Please try again.`);
     } finally {
       setIsUploading(false);
@@ -87,34 +92,14 @@ const MediaUpload = ({
     }
   };
 
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragOver(true);
-  };
-
-  const handleDragLeave = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragOver(false);
-  };
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragOver(false);
-    
-    const file = e.dataTransfer.files[0];
-    if (file) {
-      handleFileUpload(file);
-    }
-  };
-
   const handleClick = () => {
     fileInputRef.current?.click();
   };
 
   return (
-    <div className="space-y-4">
+    <div>
       {/* Media Type Toggle */}
-      <div className="flex gap-2">
+      <div className="flex gap-2 mb-4">
         <Button
           type="button"
           variant={mediaType === 'image' ? 'default' : 'outline'}
@@ -139,74 +124,67 @@ const MediaUpload = ({
 
       {/* Preview */}
       {value && (
-        <div className="relative">
-          {mediaType === 'image' ? (
-            <img
-              src={value}
-              alt="Preview"
-              className="w-full rounded-lg"
-              style={{ aspectRatio }}
-            />
-          ) : (
-            <video
-              src={value}
-              className="w-full rounded-lg"
-              style={{ aspectRatio }}
-              controls
-              muted
-            />
-          )}
-          <Button
-            type="button"
-            onClick={onRemove}
-            size="sm"
-            className="absolute top-2 right-2 bg-red-600 hover:bg-red-700 text-white"
-          >
-            <Trash className="h-4 w-4" />
-          </Button>
+        <div className="mb-4">
+          <div className="relative w-[200px] h-[200px]">
+            <div className="absolute top-0 right-0 z-10">
+              <Button type="button" onClick={onRemove} size="sm" className="bg-red-1 text-white">
+                <Trash className="h-4 w-4" />
+              </Button>
+            </div>
+            {mediaType === 'image' ? (
+              <img
+                src={value}
+                alt="banner"
+                className="object-cover rounded-lg w-full h-full"
+              />
+            ) : (
+              <video
+                src={value}
+                className="object-cover rounded-lg w-full h-full"
+                controls
+                muted
+              />
+            )}
+          </div>
         </div>
       )}
 
-      {/* Upload Area */}
-      <div
-        className={`w-full h-32 border-2 border-dashed rounded-lg flex flex-col items-center justify-center transition-colors cursor-pointer ${
-          isDragOver 
-            ? 'border-blue-500 bg-blue-50' 
-            : 'border-gray-300 hover:border-gray-400'
-        }`}
-        onDragOver={handleDragOver}
-        onDragLeave={handleDragLeave}
-        onDrop={handleDrop}
+      {/* Upload Error */}
+      {uploadError && (
+        <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-lg mb-4">
+          <AlertCircle className="h-4 w-4 text-red-600" />
+          <span className="text-sm text-red-700">{uploadError}</span>
+        </div>
+      )}
+
+      {/* File Input */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept={mediaType === 'image' ? 'image/*' : 'video/*'}
+        onChange={handleFileSelect}
+        className="hidden"
+      />
+
+      {/* Upload Button */}
+      <Button 
+        type="button" 
         onClick={handleClick}
+        disabled={isUploading}
+        className="bg-grey-1 text-white disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept={mediaType === 'image' ? 'image/*' : 'video/*'}
-          onChange={handleFileSelect}
-          className="hidden"
-        />
-        
-        {isUploading ? (
-          <div className="flex flex-col items-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mb-2"></div>
-            <span className="text-sm text-gray-600">Uploading...</span>
-          </div>
-        ) : (
-          <div className="flex flex-col items-center">
-            <Upload className="h-8 w-8 text-gray-400 mb-2" />
-            <span className="text-sm text-gray-600">
-              {isDragOver 
-                ? `Drop ${mediaType} here` 
-                : `Click to upload ${mediaType} or drag and drop`
-              }
-            </span>
-            <span className="text-xs text-gray-500 mt-1">
-              {aspectRatio} {mediaType} • Max {mediaType === 'video' ? '100MB' : '10MB'}
-            </span>
-          </div>
-        )}
-      </div>
+        <Plus className="h-4 w-4 mr-2" />
+        {isUploading ? "Uploading..." : `Upload ${mediaType === 'image' ? 'Image' : 'Video'} (${aspectRatio})`}
+      </Button>
+
+      {/* Debug Info (remove in production) */}
+      {process.env.NODE_ENV === 'development' && (
+        <div className="text-xs text-gray-500 p-2 bg-gray-50 rounded mt-2">
+          <p>MediaUpload - Upload Preset: vwfnzfpo</p>
+          <p>Media Type: {mediaType}</p>
+          <p>Aspect Ratio: {aspectRatio}</p>
+        </div>
+      )}
     </div>
   );
 };
