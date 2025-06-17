@@ -32,14 +32,16 @@ const HomeBanner = () => {
     return /\.(mp4|webm|ogg|mov|avi|mkv)$/i.test(url);
   };
 
-  useEffect(() => {
-    fetchBannerData();
-  }, []);
-
   const fetchBannerData = async () => {
     try {
       console.log("Fetching banner data...");
-      const response = await fetch("/api/banners");
+      const response = await fetch("/api/banners", {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      });
       console.log("Response status:", response.status);
       if (response.ok) {
         const data = await response.json();
@@ -57,6 +59,25 @@ const HomeBanner = () => {
       setLoading(false);
     }
   };
+
+  // Expose refresh function globally for manual refresh
+  useEffect(() => {
+    (window as any).refreshBanner = fetchBannerData;
+    return () => {
+      delete (window as any).refreshBanner;
+    };
+  }, []);
+
+  useEffect(() => {
+    fetchBannerData();
+    
+    // Refresh banner data every 30 seconds to catch updates
+    const interval = setInterval(() => {
+      fetchBannerData();
+    }, 30000);
+    
+    return () => clearInterval(interval);
+  }, []);
 
   const scrollToCollections = () => {
     const collectionsSection = document.querySelector('.collections-section');

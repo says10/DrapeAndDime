@@ -36,7 +36,13 @@ const VerticalBanners = () => {
   const fetchBannerData = async () => {
     try {
       console.log("VerticalBanners: Fetching banner data...");
-      const response = await fetch("/api/banners");
+      const response = await fetch("/api/banners", {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      });
       console.log("VerticalBanners: Response status:", response.status);
       if (response.ok) {
         const data = await response.json();
@@ -54,6 +60,25 @@ const VerticalBanners = () => {
       setLoading(false);
     }
   };
+
+  // Expose refresh function globally for manual refresh
+  useEffect(() => {
+    (window as any).refreshVerticalBanners = fetchBannerData;
+    return () => {
+      delete (window as any).refreshVerticalBanners;
+    };
+  }, []);
+
+  useEffect(() => {
+    fetchBannerData();
+    
+    // Refresh banner data every 30 seconds to catch updates
+    const interval = setInterval(() => {
+      fetchBannerData();
+    }, 30000);
+    
+    return () => clearInterval(interval);
+  }, []);
 
   if (loading) {
     return (
