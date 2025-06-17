@@ -170,7 +170,13 @@ const ProductDetails = ({ params }: { params: { productId: string } }) => {
                             }`}
                             aria-label={isInWishlist ? "Remove from wishlist" : "Add to wishlist"}
                           >
-                            <Heart className="w-5 h-5" fill={isInWishlist ? "red" : "white"} />
+                            <Heart 
+                              className={`w-5 h-5 transition-all duration-200 ${
+                                isInWishlist 
+                                  ? "fill-red-500 text-red-500" 
+                                  : "fill-transparent text-gray-400 hover:text-gray-600"
+                              }`}
+                            />
                           </button>
                           <button 
                             onClick={handleShare}

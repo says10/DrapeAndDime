@@ -56,8 +56,17 @@ const HeartFavorite = ({ product, updateSignedInUser }: HeartFavoriteProps) => {
   };
 
   return (
-    <button onClick={handleLike}>
-      <Heart fill={`${isLiked ? "red" : "white"}`} />
+    <button 
+      onClick={handleLike}
+      className="p-2 rounded-full bg-white/80 backdrop-blur-sm hover:bg-white transition-all duration-200 shadow-sm hover:shadow-md"
+    >
+      <Heart 
+        className={`w-5 h-5 transition-all duration-200 ${
+          isLiked 
+            ? "fill-red-500 text-red-500" 
+            : "fill-transparent text-gray-600 hover:text-red-500"
+        }`}
+      />
     </button>
   );
 };
