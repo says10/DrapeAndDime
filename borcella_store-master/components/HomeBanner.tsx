@@ -8,22 +8,10 @@ import { ChevronRight } from "lucide-react";
 interface BannerData {
   mainBanner: string;
   mainBannerType: 'image' | 'video';
-  mainBannerTitle: string;
-  mainBannerSubtitle: string;
-  mainBannerCta: string;
-  mainBannerCtaLink: string;
-  firstVerticalBanner: string;
-  firstVerticalType: 'image' | 'video';
-  firstVerticalTitle: string;
-  firstVerticalSubtitle: string;
-  firstVerticalCta: string;
-  firstVerticalCtaLink: string;
-  secondVerticalBanner: string;
-  secondVerticalType: 'image' | 'video';
-  secondVerticalTitle: string;
-  secondVerticalSubtitle: string;
-  secondVerticalCta: string;
-  secondVerticalCtaLink: string;
+  verticalBanner1: string;
+  verticalBanner1Type: 'image' | 'video';
+  verticalBanner2: string;
+  verticalBanner2Type: 'image' | 'video';
   isActive: boolean;
 }
 
@@ -75,16 +63,7 @@ const HomeBanner = () => {
         <div className="relative w-full aspect-video overflow-hidden rounded-2xl shadow-2xl">
           <div className="absolute inset-0 w-full h-full">
             {bannerData.mainBanner ? (
-              bannerData.mainBannerType === 'image' ? (
-                <Image
-                  src={bannerData.mainBanner}
-                  alt="Main banner"
-                  className="object-cover object-center"
-                  fill
-                  sizes="(max-width: 768px) 100vw, 80vw"
-                  priority
-                />
-              ) : (
+              bannerData.mainBannerType === 'video' ? (
                 <video
                   src={bannerData.mainBanner}
                   autoPlay
@@ -92,6 +71,15 @@ const HomeBanner = () => {
                   muted
                   playsInline
                   className="object-cover object-center w-full h-full"
+                />
+              ) : (
+                <Image
+                  src={bannerData.mainBanner}
+                  alt="Main banner"
+                  className="object-cover object-center"
+                  fill
+                  sizes="(max-width: 768px) 100vw, 80vw"
+                  priority
                 />
               )
             ) : (
@@ -110,20 +98,20 @@ const HomeBanner = () => {
               </div>
 
               <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-4 leading-tight">
-                {bannerData.mainBannerTitle}
+                Discover Your Style
               </h1>
 
               <p className="text-lg md:text-xl text-white/90 mb-8 max-w-lg leading-relaxed">
-                {bannerData.mainBannerSubtitle}
+                Explore our latest collection of trendy fashion pieces
               </p>
 
               <Link 
-                href={bannerData.mainBannerCtaLink}
+                href="/collections"
                 className="inline-flex items-center gap-2 bg-white text-black px-8 py-4 rounded-full font-semibold 
                   hover:bg-gray-100 transition-all duration-300 shadow-lg transform hover:-translate-y-0.5 
                   active:translate-y-0 group"
               >
-                {bannerData.mainBannerCta}
+                Shop Now
                 <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Link>
             </div>

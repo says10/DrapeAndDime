@@ -29,21 +29,10 @@ type BannerType = {
   _id: string;
   mainBanner: string;
   mainBannerType: 'image' | 'video';
-  
-  firstVerticalBanner: string;
-  firstVerticalType: 'image' | 'video';
-  firstVerticalTitle: string;
-  firstVerticalSubtitle: string;
-  firstVerticalCta: string;
-  firstVerticalCtaLink: string;
-  
-  secondVerticalBanner: string;
-  secondVerticalType: 'image' | 'video';
-  secondVerticalTitle: string;
-  secondVerticalSubtitle: string;
-  secondVerticalCta: string;
-  secondVerticalCtaLink: string;
-  
+  verticalBanner1: string;
+  verticalBanner1Type: 'image' | 'video';
+  verticalBanner2: string;
+  verticalBanner2Type: 'image' | 'video';
   isActive: boolean;
   createdAt: string;
   updatedAt: string;

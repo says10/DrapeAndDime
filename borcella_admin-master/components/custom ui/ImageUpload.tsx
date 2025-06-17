@@ -31,23 +31,28 @@ const ImageUpload = ({
   }, []);
 
   const onUpload = (result: any) => {
-    console.log("Image upload result:", result);
+    console.log("Media upload result:", result);
     
     if (result.event === "success") {
       setUploadError(null);
       onChange(result.info.secure_url);
-      toast.success("Image uploaded successfully!");
+      const isVideo = result.info.resource_type === 'video';
+      toast.success(`${isVideo ? 'Video' : 'Image'} uploaded successfully!`);
     } else if (result.event === "error") {
       setUploadError("Upload failed. Please try again.");
-      toast.error("Image upload failed. Please try again.");
-      console.error("Image upload error:", result);
+      toast.error("Upload failed. Please try again.");
+      console.error("Upload error:", result);
     }
   };
 
   const onUploadError = (error: any) => {
-    console.error("Image upload widget error:", error);
+    console.error("Upload widget error:", error);
     setUploadError("Upload failed. Please check your connection and try again.");
     toast.error("Upload failed. Please check your connection and try again.");
+  };
+
+  const isVideo = (url: string) => {
+    return url.match(/\.(mp4|webm|ogg|mov|avi|wmv|flv|mkv)$/i) || url.includes('/video/');
   };
 
   return (
@@ -60,12 +65,21 @@ const ImageUpload = ({
                 <Trash className="h-4 w-4" />
               </Button>
             </div>
-            <Image
-              src={url}
-              alt="collection"
-              className="object-cover rounded-lg"
-              fill
-            />
+            {isVideo(url) ? (
+              <video
+                src={url}
+                className="w-full h-full object-cover rounded-lg"
+                controls
+                muted
+              />
+            ) : (
+              <Image
+                src={url}
+                alt="media"
+                className="object-cover rounded-lg"
+                fill
+              />
+            )}
           </div>
         ))}
       </div>
@@ -89,8 +103,7 @@ const ImageUpload = ({
         onUpload={onUpload}
         onError={onUploadError}
         options={{
-          resourceType: "image",
-          maxFileSize: 10000000, // 10MB
+          maxFileSize: 100000000, // 100MB for videos
           sources: ["local", "camera"],
           multiple: false,
           cropping: false,
@@ -109,7 +122,7 @@ const ImageUpload = ({
               className="bg-grey-1 text-white disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Plus className="h-4 w-4 mr-2" />
-              {isLoading ? "Loading..." : "Upload Image"}
+              {isLoading ? "Loading..." : "Upload Media"}
             </Button>
           );
         }}
@@ -118,7 +131,7 @@ const ImageUpload = ({
       {/* Debug Info (remove in production) */}
       {process.env.NODE_ENV === 'development' && (
         <div className="text-xs text-gray-500 p-2 bg-gray-50 rounded mt-2">
-          <p>ImageUpload - Upload Preset: vwfnzfpo</p>
+          <p>MediaUpload - Upload Preset: vwfnzfpo</p>
           <p>Widget Ready: {widgetReady ? "Yes" : "No"}</p>
           <p>Cloudinary Loaded: {typeof window !== 'undefined' && (window as any).cloudinary ? "Yes" : "No"}</p>
         </div>

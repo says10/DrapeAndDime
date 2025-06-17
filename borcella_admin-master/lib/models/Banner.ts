@@ -11,75 +11,27 @@ const bannerSchema = new mongoose.Schema({
     enum: ['image', 'video'],
     default: 'image'
   },
-  mainBannerTitle: {
-    type: String,
-    required: true,
-  },
-  mainBannerSubtitle: {
-    type: String,
-    required: true,
-  },
-  mainBannerCta: {
-    type: String,
-    required: true,
-  },
-  mainBannerCtaLink: {
-    type: String,
-    required: true,
-  },
 
   // First 9:16 banner
-  firstVerticalBanner: {
+  verticalBanner1: {
     type: String,
     required: true,
   },
-  firstVerticalType: {
+  verticalBanner1Type: {
     type: String,
     enum: ['image', 'video'],
     default: 'image'
-  },
-  firstVerticalTitle: {
-    type: String,
-    required: true,
-  },
-  firstVerticalSubtitle: {
-    type: String,
-    required: true,
-  },
-  firstVerticalCta: {
-    type: String,
-    required: true,
-  },
-  firstVerticalCtaLink: {
-    type: String,
-    required: true,
   },
 
   // Second 9:16 banner
-  secondVerticalBanner: {
+  verticalBanner2: {
     type: String,
     required: true,
   },
-  secondVerticalType: {
+  verticalBanner2Type: {
     type: String,
     enum: ['image', 'video'],
     default: 'image'
-  },
-  secondVerticalTitle: {
-    type: String,
-    required: true,
-  },
-  secondVerticalSubtitle: {
-    type: String,
-    required: true,
-  },
-  secondVerticalCta: {
-    type: String,
-    required: true,
-  },
-  secondVerticalCtaLink: {
-    type: String,
-    required: true,
   },
 
   isActive: {
