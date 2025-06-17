@@ -5,18 +5,18 @@ import Link from "next/link";
 import Image from "next/image";
 
 interface BannerData {
-  firstVerticalBanner: string;
-  firstVerticalType: 'image' | 'video';
-  firstVerticalTitle: string;
-  firstVerticalSubtitle: string;
-  firstVerticalCta: string;
-  firstVerticalCtaLink: string;
-  secondVerticalBanner: string;
-  secondVerticalType: 'image' | 'video';
-  secondVerticalTitle: string;
-  secondVerticalSubtitle: string;
-  secondVerticalCta: string;
-  secondVerticalCtaLink: string;
+  verticalBanner1: string;
+  verticalBanner1Type: 'image' | 'video';
+  verticalBanner1Title: string;
+  verticalBanner1Subtitle: string;
+  verticalBanner1Cta: string;
+  verticalBanner1CtaLink: string;
+  verticalBanner2: string;
+  verticalBanner2Type: 'image' | 'video';
+  verticalBanner2Title: string;
+  verticalBanner2Subtitle: string;
+  verticalBanner2Cta: string;
+  verticalBanner2CtaLink: string;
   isActive: boolean;
 }
 
@@ -70,7 +70,7 @@ const VerticalBanners = () => {
     );
   }
 
-  if (!bannerData || !bannerData.firstVerticalBanner || !bannerData.secondVerticalBanner) {
+  if (!bannerData || !bannerData.verticalBanner1 || !bannerData.verticalBanner2) {
     return null;
   }
 
@@ -89,9 +89,9 @@ const VerticalBanners = () => {
             {/* First Vertical Banner */}
             <div className="group cursor-pointer">
               <div className="relative aspect-[9/16] overflow-hidden rounded-2xl shadow-2xl transform transition-all duration-500 group-hover:scale-105">
-                {bannerData.firstVerticalType === 'image' ? (
+                {bannerData.verticalBanner1Type === 'image' ? (
                   <Image
-                    src={bannerData.firstVerticalBanner}
+                    src={bannerData.verticalBanner1}
                     alt="First option"
                     className="object-cover"
                     fill
@@ -99,7 +99,7 @@ const VerticalBanners = () => {
                   />
                 ) : (
                   <video
-                    src={bannerData.firstVerticalBanner}
+                    src={bannerData.verticalBanner1}
                     className="w-full h-full object-cover"
                     autoPlay
                     loop
@@ -111,17 +111,17 @@ const VerticalBanners = () => {
                 
                 <div className="absolute bottom-6 left-6 right-6 text-white">
                   <h3 className="text-2xl font-bold mb-2 group-hover:text-red-400 transition-colors">
-                    {bannerData.firstVerticalTitle}
+                    {bannerData.verticalBanner1Title}
                   </h3>
                   <p className="text-sm mb-4 opacity-90 line-clamp-2">
-                    {bannerData.firstVerticalSubtitle}
+                    {bannerData.verticalBanner1Subtitle}
                   </p>
                   <Link 
-                    href={bannerData.firstVerticalCtaLink}
+                    href={bannerData.verticalBanner1CtaLink}
                     className="inline-flex items-center bg-white text-black px-6 py-3 rounded-full font-semibold 
                       hover:bg-red-500 hover:text-white transition-all duration-300 transform hover:-translate-y-1"
                   >
-                    {bannerData.firstVerticalCta}
+                    {bannerData.verticalBanner1Cta}
                   </Link>
                 </div>
               </div>
@@ -154,9 +154,9 @@ const VerticalBanners = () => {
             {/* Second Vertical Banner */}
             <div className="group cursor-pointer">
               <div className="relative aspect-[9/16] overflow-hidden rounded-2xl shadow-2xl transform transition-all duration-500 group-hover:scale-105">
-                {bannerData.secondVerticalType === 'image' ? (
+                {bannerData.verticalBanner2Type === 'image' ? (
                   <Image
-                    src={bannerData.secondVerticalBanner}
+                    src={bannerData.verticalBanner2}
                     alt="Second option"
                     className="object-cover"
                     fill
@@ -164,7 +164,7 @@ const VerticalBanners = () => {
                   />
                 ) : (
                   <video
-                    src={bannerData.secondVerticalBanner}
+                    src={bannerData.verticalBanner2}
                     className="w-full h-full object-cover"
                     autoPlay
                     loop
@@ -176,17 +176,17 @@ const VerticalBanners = () => {
                 
                 <div className="absolute bottom-6 left-6 right-6 text-white">
                   <h3 className="text-2xl font-bold mb-2 group-hover:text-red-400 transition-colors">
-                    {bannerData.secondVerticalTitle}
+                    {bannerData.verticalBanner2Title}
                   </h3>
                   <p className="text-sm mb-4 opacity-90 line-clamp-2">
-                    {bannerData.secondVerticalSubtitle}
+                    {bannerData.verticalBanner2Subtitle}
                   </p>
                   <Link 
-                    href={bannerData.secondVerticalCtaLink}
+                    href={bannerData.verticalBanner2CtaLink}
                     className="inline-flex items-center bg-white text-black px-6 py-3 rounded-full font-semibold 
                       hover:bg-red-500 hover:text-white transition-all duration-300 transform hover:-translate-y-1"
                   >
-                    {bannerData.secondVerticalCta}
+                    {bannerData.verticalBanner2Cta}
                   </Link>
                 </div>
               </div>

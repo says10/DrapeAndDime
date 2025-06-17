@@ -1,14 +1,19 @@
-import Banner from "@/lib/models/Banner";
+import { NextRequest, NextResponse } from "next/server";
 import { connectToDB } from "@/lib/mongoDB";
-import { NextResponse } from "next/server";
+import Banner from "@/lib/models/Banner";
 
-export const GET = async () => {
+export async function GET() {
   try {
     await connectToDB();
-    const banners = await Banner.find().sort({ updatedAt: -1 });
+    
+    const banners = await Banner.find({}).sort({ createdAt: -1 });
+    
     return NextResponse.json(banners);
   } catch (error) {
-    console.error("[banners_GET]", error);
-    return new NextResponse("Internal error", { status: 500 });
+    console.error("Error fetching banners:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch banners" },
+      { status: 500 }
+    );
   }
-}; 
+} 

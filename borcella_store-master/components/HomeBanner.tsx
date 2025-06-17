@@ -8,11 +8,13 @@ import { ChevronRight } from "lucide-react";
 interface BannerData {
   mainBanner: string;
   verticalBanner1: string;
+  verticalBanner1Type: 'image' | 'video';
   verticalBanner1Title: string;
   verticalBanner1Subtitle: string;
   verticalBanner1Cta: string;
   verticalBanner1CtaLink: string;
   verticalBanner2: string;
+  verticalBanner2Type: 'image' | 'video';
   verticalBanner2Title: string;
   verticalBanner2Subtitle: string;
   verticalBanner2Cta: string;
@@ -129,13 +131,24 @@ const HomeBanner = () => {
               <div className="space-y-4">
                 <div className="relative aspect-[9/16] bg-gray-100 rounded-lg overflow-hidden shadow-lg">
                   {bannerData.verticalBanner1 ? (
-                    <Image
-                      src={bannerData.verticalBanner1}
-                      alt="First vertical banner"
-                      className="w-full h-full object-cover"
-                      fill
-                      sizes="(max-width: 768px) 100vw, 33vw"
-                    />
+                    bannerData.verticalBanner1Type === 'image' ? (
+                      <Image
+                        src={bannerData.verticalBanner1}
+                        alt="First vertical banner"
+                        className="w-full h-full object-cover"
+                        fill
+                        sizes="(max-width: 768px) 100vw, 33vw"
+                      />
+                    ) : (
+                      <video
+                        src={bannerData.verticalBanner1}
+                        className="w-full h-full object-cover"
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                      />
+                    )
                   ) : (
                     <div className="flex items-center justify-center h-full text-gray-500">
                       No media uploaded
@@ -174,13 +187,24 @@ const HomeBanner = () => {
               <div className="space-y-4">
                 <div className="relative aspect-[9/16] bg-gray-100 rounded-lg overflow-hidden shadow-lg">
                   {bannerData.verticalBanner2 ? (
-                    <Image
-                      src={bannerData.verticalBanner2}
-                      alt="Second vertical banner"
-                      className="w-full h-full object-cover"
-                      fill
-                      sizes="(max-width: 768px) 100vw, 33vw"
-                    />
+                    bannerData.verticalBanner2Type === 'image' ? (
+                      <Image
+                        src={bannerData.verticalBanner2}
+                        alt="Second vertical banner"
+                        className="w-full h-full object-cover"
+                        fill
+                        sizes="(max-width: 768px) 100vw, 33vw"
+                      />
+                    ) : (
+                      <video
+                        src={bannerData.verticalBanner2}
+                        className="w-full h-full object-cover"
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                      />
+                    )
                   ) : (
                     <div className="flex items-center justify-center h-full text-gray-500">
                       No media uploaded

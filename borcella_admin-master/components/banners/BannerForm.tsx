@@ -21,15 +21,24 @@ import ImageUpload from "../custom ui/ImageUpload";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import Delete from "../custom ui/Delete";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const formSchema = z.object({
   mainBanner: z.string(),
   verticalBanner1: z.string(),
+  verticalBanner1Type: z.enum(['image', 'video']),
   verticalBanner1Title: z.string(),
   verticalBanner1Subtitle: z.string(),
   verticalBanner1Cta: z.string(),
   verticalBanner1CtaLink: z.string(),
   verticalBanner2: z.string(),
+  verticalBanner2Type: z.enum(['image', 'video']),
   verticalBanner2Title: z.string(),
   verticalBanner2Subtitle: z.string(),
   verticalBanner2Cta: z.string(),
@@ -50,11 +59,13 @@ const BannerForm: React.FC<BannerFormProps> = ({ initialData }) => {
       ? {
           mainBanner: initialData.mainBanner || "",
           verticalBanner1: initialData.verticalBanner1 || "",
+          verticalBanner1Type: initialData.verticalBanner1Type || "image",
           verticalBanner1Title: initialData.verticalBanner1Title || "",
           verticalBanner1Subtitle: initialData.verticalBanner1Subtitle || "",
           verticalBanner1Cta: initialData.verticalBanner1Cta || "",
           verticalBanner1CtaLink: initialData.verticalBanner1CtaLink || "",
           verticalBanner2: initialData.verticalBanner2 || "",
+          verticalBanner2Type: initialData.verticalBanner2Type || "image",
           verticalBanner2Title: initialData.verticalBanner2Title || "",
           verticalBanner2Subtitle: initialData.verticalBanner2Subtitle || "",
           verticalBanner2Cta: initialData.verticalBanner2Cta || "",
@@ -63,11 +74,13 @@ const BannerForm: React.FC<BannerFormProps> = ({ initialData }) => {
       : {
           mainBanner: "",
           verticalBanner1: "",
+          verticalBanner1Type: "image",
           verticalBanner1Title: "",
           verticalBanner1Subtitle: "",
           verticalBanner1Cta: "",
           verticalBanner1CtaLink: "",
           verticalBanner2: "",
+          verticalBanner2Type: "image",
           verticalBanner2Title: "",
           verticalBanner2Subtitle: "",
           verticalBanner2Cta: "",
@@ -175,6 +188,28 @@ const BannerForm: React.FC<BannerFormProps> = ({ initialData }) => {
                 
                 <FormField
                   control={form.control}
+                  name="verticalBanner1Type"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Media Type</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select media type" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="image">Image</SelectItem>
+                          <SelectItem value="video">Video</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
                   name="verticalBanner1"
                   render={({ field }) => (
                     <FormItem>
@@ -254,6 +289,28 @@ const BannerForm: React.FC<BannerFormProps> = ({ initialData }) => {
               <div className="space-y-4">
                 <h4 className="text-base font-medium">Second Vertical Banner</h4>
                 
+                <FormField
+                  control={form.control}
+                  name="verticalBanner2Type"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Media Type</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select media type" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="image">Image</SelectItem>
+                          <SelectItem value="video">Video</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
                 <FormField
                   control={form.control}
                   name="verticalBanner2"

@@ -29,11 +29,13 @@ type BannerType = {
   _id: string;
   mainBanner: string;
   verticalBanner1: string;
+  verticalBanner1Type: 'image' | 'video';
   verticalBanner1Title: string;
   verticalBanner1Subtitle: string;
   verticalBanner1Cta: string;
   verticalBanner1CtaLink: string;
   verticalBanner2: string;
+  verticalBanner2Type: 'image' | 'video';
   verticalBanner2Title: string;
   verticalBanner2Subtitle: string;
   verticalBanner2Cta: string;
