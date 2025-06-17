@@ -12,16 +12,6 @@
   backdrop-filter: blur(12px);
 }
 
-/* Add padding to body to account for fixed navbar */
-body {
-  padding-top: 0;
-}
-
-/* Ensure content doesn't hide behind navbar */
-main {
-  padding-top: 0;
-}
-
 .sticky-navbar.home-page {
   background: transparent;
 }
