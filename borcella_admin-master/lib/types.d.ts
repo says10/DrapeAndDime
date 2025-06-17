@@ -28,27 +28,27 @@ type ProductType = {
 type BannerType = {
   _id: string;
   mainBanner: string;
-  mainBannerType: 'image' | 'video';
   mainBannerTitle: string;
   mainBannerSubtitle: string;
   mainBannerCta: string;
   mainBannerCtaLink: string;
+  
   firstVerticalBanner: string;
-  firstVerticalType: 'image' | 'video';
   firstVerticalTitle: string;
   firstVerticalSubtitle: string;
   firstVerticalCta: string;
   firstVerticalCtaLink: string;
+  
   secondVerticalBanner: string;
-  secondVerticalType: 'image' | 'video';
   secondVerticalTitle: string;
   secondVerticalSubtitle: string;
   secondVerticalCta: string;
   secondVerticalCtaLink: string;
+  
   isActive: boolean;
-  createdAt: Date;
-  updatedAt: Date;
-}
+  createdAt: string;
+  updatedAt: string;
+};
 
 type OrderColumnType = {
   _id: string;

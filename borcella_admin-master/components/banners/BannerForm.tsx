@@ -19,27 +19,24 @@ import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import MediaUpload from "../custom ui/MediaUpload";
+import ImageUpload from "../custom ui/ImageUpload";
 import { toast } from "sonner";
 import Delete from "../custom ui/Delete";
 
 const formSchema = z.object({
   mainBanner: z.string().min(1, "Main banner media is required"),
-  mainBannerType: z.enum(['image', 'video']),
   mainBannerTitle: z.string().min(1, "Title is required"),
   mainBannerSubtitle: z.string().min(1, "Subtitle is required"),
   mainBannerCta: z.string().min(1, "CTA text is required"),
   mainBannerCtaLink: z.string().min(1, "CTA link is required"),
   
   firstVerticalBanner: z.string().min(1, "First vertical banner media is required"),
-  firstVerticalType: z.enum(['image', 'video']),
   firstVerticalTitle: z.string().min(1, "Title is required"),
   firstVerticalSubtitle: z.string().min(1, "Subtitle is required"),
   firstVerticalCta: z.string().min(1, "CTA text is required"),
   firstVerticalCtaLink: z.string().min(1, "CTA link is required"),
   
   secondVerticalBanner: z.string().min(1, "Second vertical banner media is required"),
-  secondVerticalType: z.enum(['image', 'video']),
   secondVerticalTitle: z.string().min(1, "Title is required"),
   secondVerticalSubtitle: z.string().min(1, "Subtitle is required"),
   secondVerticalCta: z.string().min(1, "CTA text is required"),
@@ -60,21 +57,18 @@ const BannerForm: React.FC<BannerFormProps> = ({ initialData }) => {
     resolver: zodResolver(formSchema),
     defaultValues: {
       mainBanner: initialData?.mainBanner || "",
-      mainBannerType: initialData?.mainBannerType || 'video',
       mainBannerTitle: initialData?.mainBannerTitle || "New Arrivals",
       mainBannerSubtitle: initialData?.mainBannerSubtitle || "Discover the latest trends in women's fashion",
       mainBannerCta: initialData?.mainBannerCta || "Shop Now",
       mainBannerCtaLink: initialData?.mainBannerCtaLink || "/products",
       
       firstVerticalBanner: initialData?.firstVerticalBanner || "",
-      firstVerticalType: initialData?.firstVerticalType || 'video',
       firstVerticalTitle: initialData?.firstVerticalTitle || "Elegant Collection",
       firstVerticalSubtitle: initialData?.firstVerticalSubtitle || "Timeless pieces for the modern woman",
       firstVerticalCta: initialData?.firstVerticalCta || "Explore",
       firstVerticalCtaLink: initialData?.firstVerticalCtaLink || "/collections",
       
       secondVerticalBanner: initialData?.secondVerticalBanner || "",
-      secondVerticalType: initialData?.secondVerticalType || 'video',
       secondVerticalTitle: initialData?.secondVerticalTitle || "Trendy Styles",
       secondVerticalSubtitle: initialData?.secondVerticalSubtitle || "Stay ahead with our curated fashion selection",
       secondVerticalCta: initialData?.secondVerticalCta || "View Collection",
@@ -93,29 +87,22 @@ const BannerForm: React.FC<BannerFormProps> = ({ initialData }) => {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       setLoading(true);
-      
-      const url = initialData ? `/api/banners/${initialData._id}` : "/api/banners";
-      const method = initialData ? "PATCH" : "POST";
-      
-      const response = await fetch(url, {
-        method,
-        headers: {
-          "Content-Type": "application/json",
-        },
+      const url = initialData
+        ? `/api/banners/${initialData._id}`
+        : "/api/banners";
+      const res = await fetch(url, {
+        method: "POST",
         body: JSON.stringify(values),
       });
-
-      if (!response.ok) {
-        throw new Error("Failed to save banner");
+      if (res.ok) {
+        setLoading(false);
+        toast.success(`Banner ${initialData ? "updated" : "created"}`);
+        window.location.href = "/banners";
+        router.push("/banners");
       }
-
-      toast.success(initialData ? "Banner updated successfully" : "Banner created successfully");
-      router.push("/banners");
-    } catch (error) {
-      console.error("Error saving banner:", error);
-      toast.error("Failed to save banner");
-    } finally {
-      setLoading(false);
+    } catch (err) {
+      console.log("[banners_POST]", err);
+      toast.error("Something went wrong! Please try again.");
     }
   };
 
@@ -143,15 +130,12 @@ const BannerForm: React.FC<BannerFormProps> = ({ initialData }) => {
               name="mainBanner"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Main Banner Media (16:9)</FormLabel>
+                  <FormLabel>Main Banner Image (16:9)</FormLabel>
                   <FormControl>
-                    <MediaUpload
-                      value={field.value}
-                      mediaType={form.watch('mainBannerType')}
-                      onChange={field.onChange}
+                    <ImageUpload
+                      value={field.value ? [field.value] : []}
+                      onChange={(url) => field.onChange(url)}
                       onRemove={() => field.onChange("")}
-                      onTypeChange={(type) => form.setValue('mainBannerType', type)}
-                      aspectRatio="16:9"
                     />
                   </FormControl>
                   <FormMessage />
@@ -159,35 +143,19 @@ const BannerForm: React.FC<BannerFormProps> = ({ initialData }) => {
               )}
             />
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="mainBannerTitle"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Title</FormLabel>
-                    <FormControl>
-                      <Input {...field} onKeyDown={handleKeyPress} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="mainBannerCta"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>CTA Text</FormLabel>
-                    <FormControl>
-                      <Input {...field} onKeyDown={handleKeyPress} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+            <FormField
+              control={form.control}
+              name="mainBannerTitle"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Title</FormLabel>
+                  <FormControl>
+                    <Input {...field} onKeyDown={handleKeyPress} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             <FormField
               control={form.control}
@@ -203,19 +171,35 @@ const BannerForm: React.FC<BannerFormProps> = ({ initialData }) => {
               )}
             />
 
-            <FormField
-              control={form.control}
-              name="mainBannerCtaLink"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>CTA Link</FormLabel>
-                  <FormControl>
-                    <Input {...field} onKeyDown={handleKeyPress} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="mainBannerCta"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>CTA Text</FormLabel>
+                    <FormControl>
+                      <Input {...field} onKeyDown={handleKeyPress} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="mainBannerCtaLink"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>CTA Link</FormLabel>
+                    <FormControl>
+                      <Input {...field} onKeyDown={handleKeyPress} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
           </div>
 
           {/* Vertical Banners Section */}
@@ -233,15 +217,12 @@ const BannerForm: React.FC<BannerFormProps> = ({ initialData }) => {
                   name="firstVerticalBanner"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>First Vertical Banner Media</FormLabel>
+                      <FormLabel>First Vertical Banner Image</FormLabel>
                       <FormControl>
-                        <MediaUpload
-                          value={field.value}
-                          mediaType={form.watch('firstVerticalType')}
-                          onChange={field.onChange}
+                        <ImageUpload
+                          value={field.value ? [field.value] : []}
+                          onChange={(url) => field.onChange(url)}
                           onRemove={() => field.onChange("")}
-                          onTypeChange={(type) => form.setValue('firstVerticalType', type)}
-                          aspectRatio="9:16"
                         />
                       </FormControl>
                       <FormMessage />
@@ -249,35 +230,19 @@ const BannerForm: React.FC<BannerFormProps> = ({ initialData }) => {
                   )}
                 />
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="firstVerticalTitle"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Title</FormLabel>
-                        <FormControl>
-                          <Input {...field} onKeyDown={handleKeyPress} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="firstVerticalCta"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>CTA Text</FormLabel>
-                        <FormControl>
-                          <Input {...field} onKeyDown={handleKeyPress} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
+                <FormField
+                  control={form.control}
+                  name="firstVerticalTitle"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Title</FormLabel>
+                      <FormControl>
+                        <Input {...field} onKeyDown={handleKeyPress} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
                 <FormField
                   control={form.control}
@@ -293,19 +258,35 @@ const BannerForm: React.FC<BannerFormProps> = ({ initialData }) => {
                   )}
                 />
 
-                <FormField
-                  control={form.control}
-                  name="firstVerticalCtaLink"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>CTA Link</FormLabel>
-                      <FormControl>
-                        <Input {...field} onKeyDown={handleKeyPress} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="firstVerticalCta"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>CTA Text</FormLabel>
+                        <FormControl>
+                          <Input {...field} onKeyDown={handleKeyPress} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="firstVerticalCtaLink"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>CTA Link</FormLabel>
+                        <FormControl>
+                          <Input {...field} onKeyDown={handleKeyPress} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
               </div>
 
               {/* Second Vertical Banner */}
@@ -317,15 +298,12 @@ const BannerForm: React.FC<BannerFormProps> = ({ initialData }) => {
                   name="secondVerticalBanner"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Second Vertical Banner Media</FormLabel>
+                      <FormLabel>Second Vertical Banner Image</FormLabel>
                       <FormControl>
-                        <MediaUpload
-                          value={field.value}
-                          mediaType={form.watch('secondVerticalType')}
-                          onChange={field.onChange}
+                        <ImageUpload
+                          value={field.value ? [field.value] : []}
+                          onChange={(url) => field.onChange(url)}
                           onRemove={() => field.onChange("")}
-                          onTypeChange={(type) => form.setValue('secondVerticalType', type)}
-                          aspectRatio="9:16"
                         />
                       </FormControl>
                       <FormMessage />
@@ -333,35 +311,19 @@ const BannerForm: React.FC<BannerFormProps> = ({ initialData }) => {
                   )}
                 />
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="secondVerticalTitle"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Title</FormLabel>
-                        <FormControl>
-                          <Input {...field} onKeyDown={handleKeyPress} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="secondVerticalCta"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>CTA Text</FormLabel>
-                        <FormControl>
-                          <Input {...field} onKeyDown={handleKeyPress} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
+                <FormField
+                  control={form.control}
+                  name="secondVerticalTitle"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Title</FormLabel>
+                      <FormControl>
+                        <Input {...field} onKeyDown={handleKeyPress} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
                 <FormField
                   control={form.control}
@@ -377,53 +339,64 @@ const BannerForm: React.FC<BannerFormProps> = ({ initialData }) => {
                   )}
                 />
 
-                <FormField
-                  control={form.control}
-                  name="secondVerticalCtaLink"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>CTA Link</FormLabel>
-                      <FormControl>
-                        <Input {...field} onKeyDown={handleKeyPress} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="secondVerticalCta"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>CTA Text</FormLabel>
+                        <FormControl>
+                          <Input {...field} onKeyDown={handleKeyPress} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="secondVerticalCtaLink"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>CTA Link</FormLabel>
+                        <FormControl>
+                          <Input {...field} onKeyDown={handleKeyPress} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Status Section */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold">Status</h3>
-            <Separator />
-            
-            <FormField
-              control={form.control}
-              name="isActive"
-              render={({ field }) => (
-                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                  <div className="space-y-0.5">
-                    <FormLabel className="text-base">Active Status</FormLabel>
-                    <div className="text-sm text-muted-foreground">
-                      Enable or disable this banner configuration
-                    </div>
+          {/* Active Status */}
+          <FormField
+            control={form.control}
+            name="isActive"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                <div className="space-y-0.5">
+                  <FormLabel className="text-base">Active Status</FormLabel>
+                  <div className="text-sm text-muted-foreground">
+                    Enable or disable this banner
                   </div>
-                  <FormControl>
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-          </div>
+                </div>
+                <FormControl>
+                  <Switch
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
 
           <div className="flex gap-10">
             <Button type="submit" className="bg-blue-1 text-white" disabled={loading}>
-              {loading ? "Saving..." : "Submit"}
+              {loading ? "Loading..." : "Submit"}
             </Button>
             <Button
               type="button"

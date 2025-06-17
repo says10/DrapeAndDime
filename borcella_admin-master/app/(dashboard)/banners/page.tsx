@@ -209,27 +209,16 @@ const BannersPage = () => {
                 <h3 className="text-lg font-semibold">Main Banner (16:9)</h3>
                 <div className="relative aspect-video bg-gray-100 rounded-lg overflow-hidden">
                   {viewingBanner.mainBanner ? (
-                    viewingBanner.mainBannerType === 'image' ? (
-                      <Image
-                        src={viewingBanner.mainBanner}
-                        alt="Main banner"
-                        className="w-full h-full object-cover"
-                        fill
-                        sizes="(max-width: 768px) 100vw, 80vw"
-                      />
-                    ) : (
-                      <video
-                        src={viewingBanner.mainBanner}
-                        className="w-full h-full object-cover"
-                        controls
-                        autoPlay
-                        muted
-                        loop
-                      />
-                    )
+                    <Image
+                      src={viewingBanner.mainBanner}
+                      alt="Main banner"
+                      className="w-full h-full object-cover"
+                      fill
+                      sizes="(max-width: 768px) 100vw, 80vw"
+                    />
                   ) : (
                     <div className="flex items-center justify-center h-full text-gray-500">
-                      No media uploaded
+                      No image uploaded
                     </div>
                   )}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
@@ -253,27 +242,16 @@ const BannersPage = () => {
                     <h4 className="text-md font-medium text-center">First Option</h4>
                     <div className="relative aspect-[9/16] bg-gray-100 rounded-lg overflow-hidden">
                       {viewingBanner.firstVerticalBanner ? (
-                        viewingBanner.firstVerticalType === 'image' ? (
-                          <Image
-                            src={viewingBanner.firstVerticalBanner}
-                            alt="First vertical banner"
-                            className="w-full h-full object-cover"
-                            fill
-                            sizes="(max-width: 768px) 100vw, 33vw"
-                          />
-                        ) : (
-                          <video
-                            src={viewingBanner.firstVerticalBanner}
-                            className="w-full h-full object-cover"
-                            controls
-                            autoPlay
-                            muted
-                            loop
-                          />
-                        )
+                        <Image
+                          src={viewingBanner.firstVerticalBanner}
+                          alt="First vertical banner"
+                          className="w-full h-full object-cover"
+                          fill
+                          sizes="(max-width: 768px) 100vw, 33vw"
+                        />
                       ) : (
                         <div className="flex items-center justify-center h-full text-gray-500">
-                          No media uploaded
+                          No image uploaded
                         </div>
                       )}
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
@@ -301,27 +279,16 @@ const BannersPage = () => {
                     <h4 className="text-md font-medium text-center">Second Option</h4>
                     <div className="relative aspect-[9/16] bg-gray-100 rounded-lg overflow-hidden">
                       {viewingBanner.secondVerticalBanner ? (
-                        viewingBanner.secondVerticalType === 'image' ? (
-                          <Image
-                            src={viewingBanner.secondVerticalBanner}
-                            alt="Second vertical banner"
-                            className="w-full h-full object-cover"
-                            fill
-                            sizes="(max-width: 768px) 100vw, 33vw"
-                          />
-                        ) : (
-                          <video
-                            src={viewingBanner.secondVerticalBanner}
-                            className="w-full h-full object-cover"
-                            controls
-                            autoPlay
-                            muted
-                            loop
-                          />
-                        )
+                        <Image
+                          src={viewingBanner.secondVerticalBanner}
+                          alt="Second vertical banner"
+                          className="w-full h-full object-cover"
+                          fill
+                          sizes="(max-width: 768px) 100vw, 33vw"
+                        />
                       ) : (
                         <div className="flex items-center justify-center h-full text-gray-500">
-                          No media uploaded
+                          No image uploaded
                         </div>
                       )}
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
