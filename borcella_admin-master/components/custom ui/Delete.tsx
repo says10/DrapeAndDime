@@ -28,7 +28,17 @@ const Delete: React.FC<DeleteProps> = ({ item, id }) => {
   const onDelete = async () => {
     try {
       setLoading(true)
-      const itemType = item === "product" ? "products" : "collections"
+      let itemType;
+      if (item === "product") {
+        itemType = "products";
+      } else if (item === "collection") {
+        itemType = "collections";
+      } else if (item === "banner") {
+        itemType = "banners";
+      } else {
+        itemType = item + "s"; // fallback
+      }
+      
       const res = await fetch(`/api/${itemType}/${id}`, {
         method: "DELETE",
       })

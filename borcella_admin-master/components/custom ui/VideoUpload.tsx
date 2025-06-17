@@ -11,12 +11,12 @@ interface VideoUploadProps {
   aspectRatio?: "16:9" | "9:16";
 }
 
-const VideoUpload: React.FC<VideoUploadProps> = ({
+const VideoUpload = ({
   value,
   onChange,
   onRemove,
   aspectRatio = "16:9"
-}) => {
+}: VideoUploadProps) => {
   const onUpload = (result: any) => {
     onChange(result.info.secure_url);
   };

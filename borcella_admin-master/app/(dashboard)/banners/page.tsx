@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Plus, Edit, Trash2, Eye } from "lucide-react";
 import { toast } from "sonner";
-import BannerForm from "@/components/banners/BannerForm";
+import { useRouter } from "next/navigation";
 
 import {
   Dialog,
@@ -16,10 +16,9 @@ import {
 } from "@/components/ui/dialog";
 
 const BannersPage = () => {
+  const router = useRouter();
   const [banners, setBanners] = useState<BannerType[]>([]);
   const [loading, setLoading] = useState(true);
-  const [showForm, setShowForm] = useState(false);
-  const [editingBanner, setEditingBanner] = useState<BannerType | null>(null);
   const [viewingBanner, setViewingBanner] = useState<BannerType | null>(null);
 
   useEffect(() => {
@@ -43,13 +42,11 @@ const BannersPage = () => {
   };
 
   const handleAddBanner = () => {
-    setEditingBanner(null);
-    setShowForm(true);
+    router.push("/banners/new");
   };
 
   const handleEditBanner = (banner: BannerType) => {
-    setEditingBanner(banner);
-    setShowForm(true);
+    router.push(`/banners/${banner._id}`);
   };
 
   const handleViewBanner = (banner: BannerType) => {
@@ -76,12 +73,6 @@ const BannersPage = () => {
       console.error("Error deleting banner:", error);
       toast.error("Failed to delete banner");
     }
-  };
-
-  const handleFormClose = () => {
-    setShowForm(false);
-    setEditingBanner(null);
-    fetchBanners(); // Refresh the list after form closes
   };
 
   const handleViewClose = () => {
@@ -202,14 +193,6 @@ const BannersPage = () => {
           ))
         )}
       </div>
-
-      {/* Banner Form Dialog */}
-      {showForm && (
-        <BannerForm
-          banner={editingBanner}
-          onClose={handleFormClose}
-        />
-      )}
 
       {/* Banner Preview Dialog */}
       {viewingBanner && (

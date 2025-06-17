@@ -1,16 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import {
   Form,
   FormControl,
@@ -26,7 +21,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import VideoUpload from "../custom ui/VideoUpload";
 import { toast } from "sonner";
-import { Loader } from "lucide-react";
+import Delete from "../custom ui/Delete";
 
 const formSchema = z.object({
   mainBanner: z.string().min(1, "Main banner video is required"),
@@ -51,44 +46,50 @@ const formSchema = z.object({
 });
 
 interface BannerFormProps {
-  banner?: BannerType | null;
-  onClose: () => void;
+  initialData?: BannerType | null;
 }
 
-const BannerForm = ({ banner, onClose }: BannerFormProps) => {
+const BannerForm: React.FC<BannerFormProps> = ({ initialData }) => {
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      mainBanner: banner?.mainBanner || "",
-      mainBannerTitle: banner?.mainBannerTitle || "New Arrivals",
-      mainBannerSubtitle: banner?.mainBannerSubtitle || "Discover the latest trends in women's fashion",
-      mainBannerCta: banner?.mainBannerCta || "Shop Now",
-      mainBannerCtaLink: banner?.mainBannerCtaLink || "/products",
+      mainBanner: initialData?.mainBanner || "",
+      mainBannerTitle: initialData?.mainBannerTitle || "New Arrivals",
+      mainBannerSubtitle: initialData?.mainBannerSubtitle || "Discover the latest trends in women's fashion",
+      mainBannerCta: initialData?.mainBannerCta || "Shop Now",
+      mainBannerCtaLink: initialData?.mainBannerCtaLink || "/products",
       
-      firstVerticalBanner: banner?.firstVerticalBanner || "",
-      firstVerticalTitle: banner?.firstVerticalTitle || "Elegant Collection",
-      firstVerticalSubtitle: banner?.firstVerticalSubtitle || "Timeless pieces for the modern woman",
-      firstVerticalCta: banner?.firstVerticalCta || "Explore",
-      firstVerticalCtaLink: banner?.firstVerticalCtaLink || "/collections",
+      firstVerticalBanner: initialData?.firstVerticalBanner || "",
+      firstVerticalTitle: initialData?.firstVerticalTitle || "Elegant Collection",
+      firstVerticalSubtitle: initialData?.firstVerticalSubtitle || "Timeless pieces for the modern woman",
+      firstVerticalCta: initialData?.firstVerticalCta || "Explore",
+      firstVerticalCtaLink: initialData?.firstVerticalCtaLink || "/collections",
       
-      secondVerticalBanner: banner?.secondVerticalBanner || "",
-      secondVerticalTitle: banner?.secondVerticalTitle || "Trendy Styles",
-      secondVerticalSubtitle: banner?.secondVerticalSubtitle || "Stay ahead with our curated fashion selection",
-      secondVerticalCta: banner?.secondVerticalCta || "View Collection",
-      secondVerticalCtaLink: banner?.secondVerticalCtaLink || "/products",
+      secondVerticalBanner: initialData?.secondVerticalBanner || "",
+      secondVerticalTitle: initialData?.secondVerticalTitle || "Trendy Styles",
+      secondVerticalSubtitle: initialData?.secondVerticalSubtitle || "Stay ahead with our curated fashion selection",
+      secondVerticalCta: initialData?.secondVerticalCta || "View Collection",
+      secondVerticalCtaLink: initialData?.secondVerticalCtaLink || "/products",
       
-      isActive: banner?.isActive ?? true,
+      isActive: initialData?.isActive ?? true,
     },
   });
+
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement> | React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+    }
+  };
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       setLoading(true);
       
-      const url = banner ? `/api/banners/${banner._id}` : "/api/banners";
-      const method = banner ? "PATCH" : "POST";
+      const url = initialData ? `/api/banners/${initialData._id}` : "/api/banners";
+      const method = initialData ? "PATCH" : "POST";
       
       const response = await fetch(url, {
         method,
@@ -102,8 +103,8 @@ const BannerForm = ({ banner, onClose }: BannerFormProps) => {
         throw new Error("Failed to save banner");
       }
 
-      toast.success(banner ? "Banner updated successfully" : "Banner created successfully");
-      onClose();
+      toast.success(initialData ? "Banner updated successfully" : "Banner created successfully");
+      router.push("/banners");
     } catch (error) {
       console.error("Error saving banner:", error);
       toast.error("Failed to save banner");
@@ -113,78 +114,52 @@ const BannerForm = ({ banner, onClose }: BannerFormProps) => {
   };
 
   return (
-    <Dialog open={true} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>
-            {banner ? "Edit Banner" : "Create New Banner"}
-          </DialogTitle>
-        </DialogHeader>
-        
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            {/* Main Banner Section */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold">Main Banner (16:9)</h3>
-              <Separator />
-              
+    <div className="p-10">
+      {initialData ? (
+        <div className="flex items-center justify-between">
+          <p className="text-heading2-bold">Edit Banner</p>
+          <Delete id={initialData._id} item="banner" />
+        </div>
+      ) : (
+        <p className="text-heading2-bold">Create Banner</p>
+      )}
+      <Separator className="bg-grey-1 mt-4 mb-7" />
+      
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          {/* Main Banner Section */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold">Main Banner (16:9)</h3>
+            <Separator />
+            
+            <FormField
+              control={form.control}
+              name="mainBanner"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Main Banner Video (16:9)</FormLabel>
+                  <FormControl>
+                    <VideoUpload
+                      value={field.value}
+                      onChange={field.onChange}
+                      onRemove={() => field.onChange("")}
+                      aspectRatio="16:9"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField
                 control={form.control}
-                name="mainBanner"
+                name="mainBannerTitle"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Main Banner Video (16:9)</FormLabel>
+                    <FormLabel>Title</FormLabel>
                     <FormControl>
-                      <VideoUpload
-                        value={field.value}
-                        onChange={field.onChange}
-                        onRemove={() => field.onChange("")}
-                        aspectRatio="16:9"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name="mainBannerTitle"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Title</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="mainBannerCta"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>CTA Text</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-              <FormField
-                control={form.control}
-                name="mainBannerSubtitle"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Subtitle</FormLabel>
-                    <FormControl>
-                      <Textarea {...field} />
+                      <Input {...field} onKeyDown={handleKeyPress} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -193,12 +168,12 @@ const BannerForm = ({ banner, onClose }: BannerFormProps) => {
 
               <FormField
                 control={form.control}
-                name="mainBannerCtaLink"
+                name="mainBannerCta"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>CTA Link</FormLabel>
+                    <FormLabel>CTA Text</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder="/products" />
+                      <Input {...field} onKeyDown={handleKeyPress} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -206,151 +181,68 @@ const BannerForm = ({ banner, onClose }: BannerFormProps) => {
               />
             </div>
 
-            {/* First Vertical Banner Section */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold">First Vertical Banner (9:16)</h3>
-              <Separator />
-              
+            <FormField
+              control={form.control}
+              name="mainBannerSubtitle"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Subtitle</FormLabel>
+                  <FormControl>
+                    <Textarea {...field} onKeyDown={handleKeyPress} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="mainBannerCtaLink"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>CTA Link</FormLabel>
+                  <FormControl>
+                    <Input {...field} onKeyDown={handleKeyPress} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
+          {/* First Vertical Banner Section */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold">First Vertical Banner (9:16)</h3>
+            <Separator />
+            
+            <FormField
+              control={form.control}
+              name="firstVerticalBanner"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>First Vertical Banner Video (9:16)</FormLabel>
+                  <FormControl>
+                    <VideoUpload
+                      value={field.value}
+                      onChange={field.onChange}
+                      onRemove={() => field.onChange("")}
+                      aspectRatio="9:16"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField
                 control={form.control}
-                name="firstVerticalBanner"
+                name="firstVerticalTitle"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>First Vertical Banner Video (9:16)</FormLabel>
+                    <FormLabel>Title</FormLabel>
                     <FormControl>
-                      <VideoUpload
-                        value={field.value}
-                        onChange={field.onChange}
-                        onRemove={() => field.onChange("")}
-                        aspectRatio="9:16"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name="firstVerticalTitle"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Title</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="firstVerticalCta"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>CTA Text</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-              <FormField
-                control={form.control}
-                name="firstVerticalSubtitle"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Subtitle</FormLabel>
-                    <FormControl>
-                      <Textarea {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="firstVerticalCtaLink"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>CTA Link</FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="/collections" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            {/* Second Vertical Banner Section */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold">Second Vertical Banner (9:16)</h3>
-              <Separator />
-              
-              <FormField
-                control={form.control}
-                name="secondVerticalBanner"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Second Vertical Banner Video (9:16)</FormLabel>
-                    <FormControl>
-                      <VideoUpload
-                        value={field.value}
-                        onChange={field.onChange}
-                        onRemove={() => field.onChange("")}
-                        aspectRatio="9:16"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name="secondVerticalTitle"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Title</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="secondVerticalCta"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>CTA Text</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-              <FormField
-                control={form.control}
-                name="secondVerticalSubtitle"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Subtitle</FormLabel>
-                    <FormControl>
-                      <Textarea {...field} />
+                      <Input {...field} onKeyDown={handleKeyPress} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -359,12 +251,12 @@ const BannerForm = ({ banner, onClose }: BannerFormProps) => {
 
               <FormField
                 control={form.control}
-                name="secondVerticalCtaLink"
+                name="firstVerticalCta"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>CTA Link</FormLabel>
+                    <FormLabel>CTA Text</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder="/products" />
+                      <Input {...field} onKeyDown={handleKeyPress} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -372,47 +264,160 @@ const BannerForm = ({ banner, onClose }: BannerFormProps) => {
               />
             </div>
 
-            {/* Status */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold">Status</h3>
-              <Separator />
-              
+            <FormField
+              control={form.control}
+              name="firstVerticalSubtitle"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Subtitle</FormLabel>
+                  <FormControl>
+                    <Textarea {...field} onKeyDown={handleKeyPress} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="firstVerticalCtaLink"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>CTA Link</FormLabel>
+                  <FormControl>
+                    <Input {...field} onKeyDown={handleKeyPress} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
+          {/* Second Vertical Banner Section */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold">Second Vertical Banner (9:16)</h3>
+            <Separator />
+            
+            <FormField
+              control={form.control}
+              name="secondVerticalBanner"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Second Vertical Banner Video (9:16)</FormLabel>
+                  <FormControl>
+                    <VideoUpload
+                      value={field.value}
+                      onChange={field.onChange}
+                      onRemove={() => field.onChange("")}
+                      aspectRatio="9:16"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField
                 control={form.control}
-                name="isActive"
+                name="secondVerticalTitle"
                 render={({ field }) => (
-                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                    <div className="space-y-0.5">
-                      <FormLabel className="text-base">Active</FormLabel>
-                      <div className="text-sm text-muted-foreground">
-                        Enable this banner to be displayed on the website
-                      </div>
+                  <FormItem>
+                    <FormLabel>Title</FormLabel>
+                    <FormControl>
+                      <Input {...field} onKeyDown={handleKeyPress} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="secondVerticalCta"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>CTA Text</FormLabel>
+                    <FormControl>
+                      <Input {...field} onKeyDown={handleKeyPress} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <FormField
+              control={form.control}
+              name="secondVerticalSubtitle"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Subtitle</FormLabel>
+                  <FormControl>
+                    <Textarea {...field} onKeyDown={handleKeyPress} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="secondVerticalCtaLink"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>CTA Link</FormLabel>
+                  <FormControl>
+                    <Input {...field} onKeyDown={handleKeyPress} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
+          {/* Status Section */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold">Status</h3>
+            <Separator />
+            
+            <FormField
+              control={form.control}
+              name="isActive"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                  <div className="space-y-0.5">
+                    <FormLabel className="text-base">Active Status</FormLabel>
+                    <div className="text-sm text-muted-foreground">
+                      Enable or disable this banner configuration
                     </div>
-                    <FormControl>
-                      <Switch
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-            </div>
+                  </div>
+                  <FormControl>
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+          </div>
 
-            {/* Action Buttons */}
-            <div className="flex justify-end space-x-2">
-              <Button type="button" variant="outline" onClick={onClose}>
-                Cancel
-              </Button>
-              <Button type="submit" disabled={loading}>
-                {loading && <Loader className="mr-2 h-4 w-4 animate-spin" />}
-                {banner ? "Update Banner" : "Create Banner"}
-              </Button>
-            </div>
-          </form>
-        </Form>
-      </DialogContent>
-    </Dialog>
+          <div className="flex gap-10">
+            <Button type="submit" className="bg-blue-1 text-white" disabled={loading}>
+              {loading ? "Saving..." : "Submit"}
+            </Button>
+            <Button
+              type="button"
+              onClick={() => router.push("/banners")}
+              className="bg-blue-1 text-white"
+            >
+              Discard
+            </Button>
+          </div>
+        </form>
+      </Form>
+    </div>
   );
 };
 
