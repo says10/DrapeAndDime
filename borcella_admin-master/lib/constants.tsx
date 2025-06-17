@@ -5,6 +5,7 @@ import {
   Tag,
   UsersRound,
   Video,
+  TestTube,
 } from "lucide-react";
 
 export const navLinks = [
@@ -27,6 +28,11 @@ export const navLinks = [
     url: "/banners",
     icon: <Video />,
     label: "Banners",
+  },
+  {
+    url: "/test",
+    icon: <TestTube />,
+    label: "Test",
   },
   {
     url: "/orders",
