@@ -1,7 +1,7 @@
 "use client";
 
 import Loader from '@/components/custom ui/Loader';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -31,7 +31,7 @@ const ProductDetails = ({ params }: { params: { productId: string }}) => {
     isAvailable: true
   });
 
-  const getProductDetails = async () => {
+  const getProductDetails = useCallback(async () => {
     try { 
       const res = await fetch(`/api/products/${params.productId}`, {
         method: "GET"
@@ -57,11 +57,11 @@ const ProductDetails = ({ params }: { params: { productId: string }}) => {
       console.log("[productId_GET]", err);
       toast.error("Failed to load product details");
     }
-  };
+  }, [params.productId]);
 
   useEffect(() => {
     getProductDetails();
-  }, []);
+  }, [getProductDetails]);
 
   const handleRestock = async () => {
     if (productDetails && restockQuantity > 0) {

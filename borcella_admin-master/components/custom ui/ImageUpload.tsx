@@ -13,11 +13,11 @@ interface ImageUploadProps {
   onRemove: (value: string) => void;
 }
 
-const ImageUpload: React.FC<ImageUploadProps> = ({
+const ImageUpload = ({
   onChange,
   onRemove,
   value,
-}) => {
+}: ImageUploadProps) => {
   const [widgetReady, setWidgetReady] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
 

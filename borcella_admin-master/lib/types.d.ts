@@ -18,6 +18,7 @@ type ProductType = {
   colors: string;
   price: number;
   originalPrice: number;
+  expense:number;
   quantity: number;
   createdAt: Date;
   updatedAt: Date;
