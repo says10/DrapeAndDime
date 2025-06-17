@@ -151,11 +151,11 @@ const SearchDropdown = ({ query, isVisible, onClose, onSelectProduct }: SearchDr
                   </p>
                   <div className="flex items-center gap-2 mt-1">
                     <span className="text-sm font-semibold text-gray-900">
-                      ${product.price}
+                    ₹{product.price}
                     </span>
                     {product.originalPrice > product.price && (
                       <span className="text-xs text-gray-400 line-through">
-                        ${product.originalPrice}
+                        ₹{product.originalPrice}
                       </span>
                     )}
                   </div>

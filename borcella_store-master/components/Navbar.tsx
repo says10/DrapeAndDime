@@ -81,12 +81,10 @@ const Navbar = () => {
     <nav 
       className={`${styles["sticky-navbar"]} ${
         isHomePage 
-          ? isHovered 
-            ? "bg-white/95 backdrop-blur-md shadow-lg" 
-            : "bg-transparent"
+          ? styles["home-page"]
           : isScrolled
-            ? "bg-white/95 backdrop-blur-md shadow-lg"
-            : "bg-white/90 backdrop-blur-sm"
+            ? styles["scrolled"]
+            : ""
       } transition-all duration-300 ease-in-out`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}

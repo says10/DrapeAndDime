@@ -5,20 +5,38 @@
   width: 100%;
   z-index: 1000;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Home page specific styles */
+.sticky-navbar.home-page {
+  background: transparent;
   backdrop-filter: blur(0px);
 }
 
-.sticky-navbar:hover {
+.sticky-navbar.home-page:hover {
+  background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(12px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
-.sticky-navbar.home-page {
-  background: transparent;
-}
-
+/* Non-home page styles */
 .sticky-navbar:not(.home-page) {
-  background: white;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(8px);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.sticky-navbar:not(.home-page):hover {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+/* Scrolled state for non-home pages */
+.sticky-navbar.scrolled {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
 .sticky-navbar-trigger {
