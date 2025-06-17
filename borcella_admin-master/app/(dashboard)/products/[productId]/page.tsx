@@ -1,15 +1,16 @@
 "use client";
 
-import Loader from '@/components/custom ui/Loader';
-import React, { useEffect, useState, useCallback } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
-import { Edit, Save, X, Plus, Trash } from 'lucide-react';
+import { useEffect, useState, useCallback } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { useRouter } from "next/navigation";
+import Loader from "@/components/custom ui/Loader";
 import ImageUpload from '@/components/custom ui/ImageUpload';
 import { toast } from 'sonner';
+import { Edit, Save, X, Plus, Trash } from 'lucide-react';
 
 const ProductDetails = ({ params }: { params: { productId: string }}) => {
   const [loading, setLoading] = useState(true);

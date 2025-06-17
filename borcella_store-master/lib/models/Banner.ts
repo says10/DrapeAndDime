@@ -6,6 +6,11 @@ const BannerSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  mainBannerType: {
+    type: String,
+    enum: ['image', 'video'],
+    default: 'image',
+  },
 
   // First 9:16 banner
   verticalBanner1: {

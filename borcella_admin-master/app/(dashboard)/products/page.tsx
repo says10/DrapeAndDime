@@ -1,15 +1,24 @@
 "use client";
 
-
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Plus } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { Plus, Edit, Trash2, Eye } from "lucide-react";
+import { toast } from "sonner";
+import Image from "next/image";
 
 import Loader from "@/components/custom ui/Loader";
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 import { DataTable } from "@/components/custom ui/DataTable";
 import { columns } from "@/components/products/ProductColumns";
+
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 const Products = () => {
   const router = useRouter();

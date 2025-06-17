@@ -162,6 +162,11 @@ const BannersPage = () => {
                     <p className="text-sm text-muted-foreground">
                       {banner.mainBanner ? "Media uploaded" : "No media"}
                     </p>
+                    {banner.mainBannerType && (
+                      <p className="text-xs text-muted-foreground">
+                        Type: {banner.mainBannerType}
+                      </p>
+                    )}
                   </div>
 
                   {/* First Vertical Banner */}
@@ -220,13 +225,24 @@ const BannersPage = () => {
                 <h3 className="text-lg font-semibold">Main Banner (16:9)</h3>
                 <div className="relative aspect-video bg-gray-100 rounded-lg overflow-hidden">
                   {viewingBanner.mainBanner ? (
-                    <Image
-                      src={viewingBanner.mainBanner}
-                      alt="Main banner"
-                      className="w-full h-full object-cover"
-                      fill
-                      sizes="(max-width: 768px) 100vw, 80vw"
-                    />
+                    viewingBanner.mainBannerType === 'video' ? (
+                      <video
+                        src={viewingBanner.mainBanner}
+                        className="w-full h-full object-cover"
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                      />
+                    ) : (
+                      <Image
+                        src={viewingBanner.mainBanner}
+                        alt="Main banner"
+                        className="w-full h-full object-cover"
+                        fill
+                        sizes="(max-width: 768px) 100vw, 80vw"
+                      />
+                    )
                   ) : (
                     <div className="flex items-center justify-center h-full text-gray-500">
                       No media uploaded

@@ -7,6 +7,7 @@ import { ChevronRight } from "lucide-react";
 
 interface BannerData {
   mainBanner: string;
+  mainBannerType: 'image' | 'video';
   verticalBanner1: string;
   verticalBanner1Type: 'image' | 'video';
   verticalBanner1Title: string;
@@ -25,6 +26,11 @@ interface BannerData {
 const HomeBanner = () => {
   const [bannerData, setBannerData] = useState<BannerData | null>(null);
   const [loading, setLoading] = useState(true);
+
+  // Helper function to detect if a URL is a video based on extension
+  const isVideoFile = (url: string) => {
+    return /\.(mp4|webm|ogg|mov|avi|mkv)$/i.test(url);
+  };
 
   useEffect(() => {
     fetchBannerData();
@@ -84,14 +90,28 @@ const HomeBanner = () => {
         <div className="relative w-full aspect-video overflow-hidden rounded-2xl shadow-2xl">
           <div className="absolute inset-0 w-full h-full">
             {bannerData.mainBanner ? (
-              <Image
-                src={bannerData.mainBanner}
-                alt="Main banner"
-                className="object-cover object-center"
-                fill
-                sizes="(max-width: 768px) 100vw, 80vw"
-                priority
-              />
+              (bannerData.mainBannerType === 'video' || isVideoFile(bannerData.mainBanner)) ? (
+                <video
+                  src={bannerData.mainBanner}
+                  className="object-cover object-center w-full h-full"
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  onError={(e) => console.error("Main banner video error:", e)}
+                  onLoadStart={() => console.log("Main banner video loading started")}
+                  onCanPlay={() => console.log("Main banner video can play")}
+                />
+              ) : (
+                <Image
+                  src={bannerData.mainBanner}
+                  alt="Main banner"
+                  className="object-cover object-center"
+                  fill
+                  sizes="(max-width: 768px) 100vw, 80vw"
+                  priority
+                />
+              )
             ) : (
               <div className="flex items-center justify-center h-full text-gray-500">
                 No banner media available

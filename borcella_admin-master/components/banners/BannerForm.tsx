@@ -1,11 +1,8 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { useRouter } from "next/navigation";
-
-import { Separator } from "../ui/separator";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -17,6 +14,8 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Separator } from "@/components/ui/separator";
+import { useRouter } from "next/navigation";
 import ImageUpload from "../custom ui/ImageUpload";
 import { useState } from "react";
 import toast from "react-hot-toast";
@@ -31,6 +30,7 @@ import {
 
 const formSchema = z.object({
   mainBanner: z.string(),
+  mainBannerType: z.enum(['image', 'video']),
   verticalBanner1: z.string(),
   verticalBanner1Type: z.enum(['image', 'video']),
   verticalBanner1Title: z.string(),
@@ -58,6 +58,7 @@ const BannerForm: React.FC<BannerFormProps> = ({ initialData }) => {
     defaultValues: initialData
       ? {
           mainBanner: initialData.mainBanner || "",
+          mainBannerType: initialData.mainBannerType || "image",
           verticalBanner1: initialData.verticalBanner1 || "",
           verticalBanner1Type: initialData.verticalBanner1Type || "image",
           verticalBanner1Title: initialData.verticalBanner1Title || "",
@@ -73,6 +74,7 @@ const BannerForm: React.FC<BannerFormProps> = ({ initialData }) => {
         }
       : {
           mainBanner: "",
+          mainBannerType: "image",
           verticalBanner1: "",
           verticalBanner1Type: "image",
           verticalBanner1Title: "",
@@ -160,6 +162,28 @@ const BannerForm: React.FC<BannerFormProps> = ({ initialData }) => {
       <Form {...form}>
         <form className="space-y-6">
           {/* Main Banner */}
+          <FormField
+            control={form.control}
+            name="mainBannerType"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Media Type</FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select media type" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="image">Image</SelectItem>
+                    <SelectItem value="video">Video</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
           <FormField
             control={form.control}
             name="mainBanner"

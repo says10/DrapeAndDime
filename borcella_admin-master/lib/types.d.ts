@@ -28,6 +28,7 @@ type ProductType = {
 type BannerType = {
   _id: string;
   mainBanner: string;
+  mainBannerType: 'image' | 'video';
   verticalBanner1: string;
   verticalBanner1Type: 'image' | 'video';
   verticalBanner1Title: string;
@@ -52,7 +53,6 @@ type OrderColumnType = {
   totalAmount: number;
   createdAt: string;
 }
-
 
 type OrderItemType = {
   product: ProductType

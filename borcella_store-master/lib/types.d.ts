@@ -56,6 +56,7 @@ type OrderItemType = {
 type BannerType = {
   _id: string;
   mainBanner: string;
+  mainBannerType: 'image' | 'video';
   verticalBanner1: string;
   verticalBanner1Type: 'image' | 'video';
   verticalBanner1Title: string;
