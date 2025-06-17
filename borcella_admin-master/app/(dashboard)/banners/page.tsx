@@ -7,7 +7,7 @@ import { Separator } from "@/components/ui/separator";
 import { Plus, Edit, Trash2, Eye } from "lucide-react";
 import { toast } from "sonner";
 import BannerForm from "@/components/banners/BannerForm";
-import { BannerType } from "@/lib/types";
+
 import {
   Dialog,
   DialogContent,
