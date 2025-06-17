@@ -94,7 +94,7 @@ const BannersPage = () => {
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Banners</h1>
           <p className="text-muted-foreground">
-            Manage your banner images and videos
+            Manage your banner media content
           </p>
         </div>
         <Button onClick={handleAddBanner}>
@@ -160,7 +160,7 @@ const BannersPage = () => {
                   <div className="space-y-2">
                     <h4 className="font-medium text-sm">Main Banner (16:9)</h4>
                     <p className="text-sm text-muted-foreground">
-                      {banner.mainBanner ? `${banner.mainBannerType === 'video' ? 'Video' : 'Image'} uploaded` : "No media"}
+                      {banner.mainBanner ? "Media uploaded" : "No media"}
                     </p>
                   </div>
 
@@ -168,16 +168,26 @@ const BannersPage = () => {
                   <div className="space-y-2">
                     <h4 className="font-medium text-sm">Vertical Banner 1 (9:16)</h4>
                     <p className="text-sm text-muted-foreground">
-                      {banner.verticalBanner1 ? `${banner.verticalBanner1Type === 'video' ? 'Video' : 'Image'} uploaded` : "No media"}
+                      {banner.verticalBanner1 ? "Media uploaded" : "No media"}
                     </p>
+                    {banner.verticalBanner1Title && (
+                      <p className="text-xs text-muted-foreground">
+                        Title: {banner.verticalBanner1Title}
+                      </p>
+                    )}
                   </div>
 
                   {/* Second Vertical Banner */}
                   <div className="space-y-2">
                     <h4 className="font-medium text-sm">Vertical Banner 2 (9:16)</h4>
                     <p className="text-sm text-muted-foreground">
-                      {banner.verticalBanner2 ? `${banner.verticalBanner2Type === 'video' ? 'Video' : 'Image'} uploaded` : "No media"}
+                      {banner.verticalBanner2 ? "Media uploaded" : "No media"}
                     </p>
+                    {banner.verticalBanner2Title && (
+                      <p className="text-xs text-muted-foreground">
+                        Title: {banner.verticalBanner2Title}
+                      </p>
+                    )}
                   </div>
                 </div>
               </CardContent>
@@ -194,30 +204,19 @@ const BannersPage = () => {
               <DialogTitle>Banner Preview</DialogTitle>
             </DialogHeader>
             
-            <div className="space-y-8">
+            <div className="space-y-6">
               {/* Main Banner Preview */}
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold">Main Banner (16:9)</h3>
                 <div className="relative aspect-video bg-gray-100 rounded-lg overflow-hidden">
                   {viewingBanner.mainBanner ? (
-                    viewingBanner.mainBannerType === 'video' ? (
-                      <video
-                        src={viewingBanner.mainBanner}
-                        className="w-full h-full object-cover"
-                        controls
-                        autoPlay
-                        muted
-                        loop
-                      />
-                    ) : (
-                      <Image
-                        src={viewingBanner.mainBanner}
-                        alt="Main banner"
-                        className="w-full h-full object-cover"
-                        fill
-                        sizes="(max-width: 768px) 100vw, 80vw"
-                      />
-                    )
+                    <Image
+                      src={viewingBanner.mainBanner}
+                      alt="Main banner"
+                      className="w-full h-full object-cover"
+                      fill
+                      sizes="(max-width: 768px) 100vw, 80vw"
+                    />
                   ) : (
                     <div className="flex items-center justify-center h-full text-gray-500">
                       No media uploaded
@@ -227,36 +226,43 @@ const BannersPage = () => {
               </div>
 
               {/* Vertical Banners Preview - Side by Side */}
-              <div className="space-y-6">
+              <div className="space-y-4">
                 <h3 className="text-lg font-semibold">Vertical Banners (9:16)</h3>
                 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-center">
                   {/* First Vertical Banner */}
-                  <div className="space-y-4">
+                  <div className="space-y-2">
                     <h4 className="text-md font-medium text-center">First Option</h4>
                     <div className="relative aspect-[9/16] bg-gray-100 rounded-lg overflow-hidden">
                       {viewingBanner.verticalBanner1 ? (
-                        viewingBanner.verticalBanner1Type === 'video' ? (
-                          <video
-                            src={viewingBanner.verticalBanner1}
-                            className="w-full h-full object-cover"
-                            controls
-                            autoPlay
-                            muted
-                            loop
-                          />
-                        ) : (
-                          <Image
-                            src={viewingBanner.verticalBanner1}
-                            alt="First vertical banner"
-                            className="w-full h-full object-cover"
-                            fill
-                            sizes="(max-width: 768px) 100vw, 33vw"
-                          />
-                        )
+                        <Image
+                          src={viewingBanner.verticalBanner1}
+                          alt="First vertical banner"
+                          className="w-full h-full object-cover"
+                          fill
+                          sizes="(max-width: 768px) 100vw, 33vw"
+                        />
                       ) : (
                         <div className="flex items-center justify-center h-full text-gray-500">
                           No media uploaded
+                        </div>
+                      )}
+                      {(viewingBanner.verticalBanner1Title || viewingBanner.verticalBanner1Subtitle || viewingBanner.verticalBanner1Cta) && (
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                      )}
+                      {(viewingBanner.verticalBanner1Title || viewingBanner.verticalBanner1Subtitle || viewingBanner.verticalBanner1Cta) && (
+                        <div className="absolute bottom-4 left-4 text-white">
+                          {viewingBanner.verticalBanner1Title && (
+                            <h5 className="text-lg font-bold mb-1">{viewingBanner.verticalBanner1Title}</h5>
+                          )}
+                          {viewingBanner.verticalBanner1Subtitle && (
+                            <p className="text-sm mb-2 max-w-xs">{viewingBanner.verticalBanner1Subtitle}</p>
+                          )}
+                          {viewingBanner.verticalBanner1Cta && (
+                            <Button size="sm" className="bg-white text-black hover:bg-gray-100">
+                              {viewingBanner.verticalBanner1Cta}
+                            </Button>
+                          )}
                         </div>
                       )}
                     </div>
@@ -272,31 +278,38 @@ const BannersPage = () => {
                   </div>
 
                   {/* Second Vertical Banner */}
-                  <div className="space-y-4">
+                  <div className="space-y-2">
                     <h4 className="text-md font-medium text-center">Second Option</h4>
                     <div className="relative aspect-[9/16] bg-gray-100 rounded-lg overflow-hidden">
                       {viewingBanner.verticalBanner2 ? (
-                        viewingBanner.verticalBanner2Type === 'video' ? (
-                          <video
-                            src={viewingBanner.verticalBanner2}
-                            className="w-full h-full object-cover"
-                            controls
-                            autoPlay
-                            muted
-                            loop
-                          />
-                        ) : (
-                          <Image
-                            src={viewingBanner.verticalBanner2}
-                            alt="Second vertical banner"
-                            className="w-full h-full object-cover"
-                            fill
-                            sizes="(max-width: 768px) 100vw, 33vw"
-                          />
-                        )
+                        <Image
+                          src={viewingBanner.verticalBanner2}
+                          alt="Second vertical banner"
+                          className="w-full h-full object-cover"
+                          fill
+                          sizes="(max-width: 768px) 100vw, 33vw"
+                        />
                       ) : (
                         <div className="flex items-center justify-center h-full text-gray-500">
                           No media uploaded
+                        </div>
+                      )}
+                      {(viewingBanner.verticalBanner2Title || viewingBanner.verticalBanner2Subtitle || viewingBanner.verticalBanner2Cta) && (
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                      )}
+                      {(viewingBanner.verticalBanner2Title || viewingBanner.verticalBanner2Subtitle || viewingBanner.verticalBanner2Cta) && (
+                        <div className="absolute bottom-4 left-4 text-white">
+                          {viewingBanner.verticalBanner2Title && (
+                            <h5 className="text-lg font-bold mb-1">{viewingBanner.verticalBanner2Title}</h5>
+                          )}
+                          {viewingBanner.verticalBanner2Subtitle && (
+                            <p className="text-sm mb-2 max-w-xs">{viewingBanner.verticalBanner2Subtitle}</p>
+                          )}
+                          {viewingBanner.verticalBanner2Cta && (
+                            <Button size="sm" className="bg-white text-black hover:bg-gray-100">
+                              {viewingBanner.verticalBanner2Cta}
+                            </Button>
+                          )}
                         </div>
                       )}
                     </div>

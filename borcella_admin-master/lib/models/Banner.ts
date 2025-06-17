@@ -6,21 +6,27 @@ const bannerSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  mainBannerType: {
-    type: String,
-    enum: ['image', 'video'],
-    default: 'image'
-  },
 
   // First 9:16 banner
   verticalBanner1: {
     type: String,
     required: true,
   },
-  verticalBanner1Type: {
+  verticalBanner1Title: {
     type: String,
-    enum: ['image', 'video'],
-    default: 'image'
+    default: "",
+  },
+  verticalBanner1Subtitle: {
+    type: String,
+    default: "",
+  },
+  verticalBanner1Cta: {
+    type: String,
+    default: "",
+  },
+  verticalBanner1CtaLink: {
+    type: String,
+    default: "",
   },
 
   // Second 9:16 banner
@@ -28,10 +34,21 @@ const bannerSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  verticalBanner2Type: {
+  verticalBanner2Title: {
     type: String,
-    enum: ['image', 'video'],
-    default: 'image'
+    default: "",
+  },
+  verticalBanner2Subtitle: {
+    type: String,
+    default: "",
+  },
+  verticalBanner2Cta: {
+    type: String,
+    default: "",
+  },
+  verticalBanner2CtaLink: {
+    type: String,
+    default: "",
   },
 
   isActive: {

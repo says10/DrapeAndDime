@@ -7,11 +7,8 @@ import { ChevronRight } from "lucide-react";
 
 interface BannerData {
   mainBanner: string;
-  mainBannerType: 'image' | 'video';
   verticalBanner1: string;
-  verticalBanner1Type: 'image' | 'video';
   verticalBanner2: string;
-  verticalBanner2Type: 'image' | 'video';
   isActive: boolean;
 }
 
@@ -63,25 +60,14 @@ const HomeBanner = () => {
         <div className="relative w-full aspect-video overflow-hidden rounded-2xl shadow-2xl">
           <div className="absolute inset-0 w-full h-full">
             {bannerData.mainBanner ? (
-              bannerData.mainBannerType === 'video' ? (
-                <video
-                  src={bannerData.mainBanner}
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                  className="object-cover object-center w-full h-full"
-                />
-              ) : (
-                <Image
-                  src={bannerData.mainBanner}
-                  alt="Main banner"
-                  className="object-cover object-center"
-                  fill
-                  sizes="(max-width: 768px) 100vw, 80vw"
-                  priority
-                />
-              )
+              <Image
+                src={bannerData.mainBanner}
+                alt="Main banner"
+                className="object-cover object-center"
+                fill
+                sizes="(max-width: 768px) 100vw, 80vw"
+                priority
+              />
             ) : (
               <div className="flex items-center justify-center h-full text-gray-500">
                 No banner media available

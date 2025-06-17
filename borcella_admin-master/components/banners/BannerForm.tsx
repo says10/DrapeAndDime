@@ -15,6 +15,8 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import ImageUpload from "../custom ui/ImageUpload";
 import { useState } from "react";
 import toast from "react-hot-toast";
@@ -22,11 +24,16 @@ import Delete from "../custom ui/Delete";
 
 const formSchema = z.object({
   mainBanner: z.string(),
-  mainBannerType: z.enum(['image', 'video']),
   verticalBanner1: z.string(),
-  verticalBanner1Type: z.enum(['image', 'video']),
+  verticalBanner1Title: z.string(),
+  verticalBanner1Subtitle: z.string(),
+  verticalBanner1Cta: z.string(),
+  verticalBanner1CtaLink: z.string(),
   verticalBanner2: z.string(),
-  verticalBanner2Type: z.enum(['image', 'video']),
+  verticalBanner2Title: z.string(),
+  verticalBanner2Subtitle: z.string(),
+  verticalBanner2Cta: z.string(),
+  verticalBanner2CtaLink: z.string(),
 });
 
 interface BannerFormProps {
@@ -42,27 +49,31 @@ const BannerForm: React.FC<BannerFormProps> = ({ initialData }) => {
     defaultValues: initialData
       ? {
           mainBanner: initialData.mainBanner || "",
-          mainBannerType: initialData.mainBannerType || 'image',
           verticalBanner1: initialData.verticalBanner1 || "",
-          verticalBanner1Type: initialData.verticalBanner1Type || 'image',
+          verticalBanner1Title: initialData.verticalBanner1Title || "",
+          verticalBanner1Subtitle: initialData.verticalBanner1Subtitle || "",
+          verticalBanner1Cta: initialData.verticalBanner1Cta || "",
+          verticalBanner1CtaLink: initialData.verticalBanner1CtaLink || "",
           verticalBanner2: initialData.verticalBanner2 || "",
-          verticalBanner2Type: initialData.verticalBanner2Type || 'image',
+          verticalBanner2Title: initialData.verticalBanner2Title || "",
+          verticalBanner2Subtitle: initialData.verticalBanner2Subtitle || "",
+          verticalBanner2Cta: initialData.verticalBanner2Cta || "",
+          verticalBanner2CtaLink: initialData.verticalBanner2CtaLink || "",
         }
       : {
           mainBanner: "",
-          mainBannerType: 'image',
           verticalBanner1: "",
-          verticalBanner1Type: 'image',
+          verticalBanner1Title: "",
+          verticalBanner1Subtitle: "",
+          verticalBanner1Cta: "",
+          verticalBanner1CtaLink: "",
           verticalBanner2: "",
-          verticalBanner2Type: 'image',
+          verticalBanner2Title: "",
+          verticalBanner2Subtitle: "",
+          verticalBanner2Cta: "",
+          verticalBanner2CtaLink: "",
         },
   });
-
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-    }
-  };
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
@@ -98,33 +109,54 @@ const BannerForm: React.FC<BannerFormProps> = ({ initialData }) => {
   };
 
   return (
-    <div className="p-10">
-      {initialData ? (
-        <div className="flex items-center justify-between">
-          <p className="text-heading2-bold">Edit Banner</p>
-          <Delete id={initialData._id} item="banner" />
+    <div className="p-6">
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          {initialData ? (
+            <div className="flex items-center gap-4">
+              <p className="text-heading2-bold">Edit Banner</p>
+              <Delete id={initialData._id} item="banner" />
+            </div>
+          ) : (
+            <p className="text-heading2-bold">Create Banner</p>
+          )}
         </div>
-      ) : (
-        <p className="text-heading2-bold">Create Banner</p>
-      )}
-      <Separator className="bg-grey-1 mt-4 mb-7" />
+        
+        <div className="flex gap-3">
+          <Button 
+            type="button"
+            onClick={() => router.push("/banners")}
+            variant="outline"
+            className="bg-white text-gray-700 hover:bg-gray-50"
+          >
+            Discard
+          </Button>
+          <Button 
+            type="button"
+            onClick={form.handleSubmit(onSubmit)}
+            className="bg-blue-600 hover:bg-blue-700 text-white"
+            disabled={loading}
+          >
+            {loading ? "Saving..." : "Save"}
+          </Button>
+        </div>
+      </div>
+
+      <Separator className="mb-6" />
+      
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <form className="space-y-6">
+          {/* Main Banner */}
           <FormField
             control={form.control}
             name="mainBanner"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Main Banner (16:9)</FormLabel>
+                <FormLabel className="text-lg font-semibold">Main Banner (16:9)</FormLabel>
                 <FormControl>
                   <ImageUpload
                     value={field.value ? [field.value] : []}
-                    onChange={(url) => {
-                      field.onChange(url);
-                      // Auto-detect media type from URL
-                      const isVideo = url.match(/\.(mp4|webm|ogg|mov|avi|wmv|flv|mkv)$/i) || url.includes('/video/');
-                      form.setValue('mainBannerType', isVideo ? 'video' : 'image');
-                    }}
+                    onChange={(url) => field.onChange(url)}
                     onRemove={() => field.onChange("")}
                   />
                 </FormControl>
@@ -133,67 +165,172 @@ const BannerForm: React.FC<BannerFormProps> = ({ initialData }) => {
             )}
           />
           
-          <FormField
-            control={form.control}
-            name="verticalBanner1"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Vertical Banner 1 (9:16)</FormLabel>
-                <FormControl>
-                  <ImageUpload
-                    value={field.value ? [field.value] : []}
-                    onChange={(url) => {
-                      field.onChange(url);
-                      // Auto-detect media type from URL
-                      const isVideo = url.match(/\.(mp4|webm|ogg|mov|avi|wmv|flv|mkv)$/i) || url.includes('/video/');
-                      form.setValue('verticalBanner1Type', isVideo ? 'video' : 'image');
-                    }}
-                    onRemove={() => field.onChange("")}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          {/* Vertical Banners - Side by Side */}
+          <div>
+            <FormLabel className="text-lg font-semibold">Vertical Banners (9:16)</FormLabel>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-4">
+              {/* First Vertical Banner */}
+              <div className="space-y-4">
+                <h4 className="text-base font-medium">First Vertical Banner</h4>
+                
+                <FormField
+                  control={form.control}
+                  name="verticalBanner1"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Media</FormLabel>
+                      <FormControl>
+                        <ImageUpload
+                          value={field.value ? [field.value] : []}
+                          onChange={(url) => field.onChange(url)}
+                          onRemove={() => field.onChange("")}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-          <FormField
-            control={form.control}
-            name="verticalBanner2"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Vertical Banner 2 (9:16)</FormLabel>
-                <FormControl>
-                  <ImageUpload
-                    value={field.value ? [field.value] : []}
-                    onChange={(url) => {
-                      field.onChange(url);
-                      // Auto-detect media type from URL
-                      const isVideo = url.match(/\.(mp4|webm|ogg|mov|avi|wmv|flv|mkv)$/i) || url.includes('/video/');
-                      form.setValue('verticalBanner2Type', isVideo ? 'video' : 'image');
-                    }}
-                    onRemove={() => field.onChange("")}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+                <FormField
+                  control={form.control}
+                  name="verticalBanner1Title"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Title</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Enter title" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-          <div className="flex gap-10">
-            <Button 
-              type="submit" 
-              className="bg-blue-1 text-white"
-              disabled={loading}
-            >
-              {loading ? "Submitting..." : "Submit"}
-            </Button>
-            <Button
-              type="button"
-              onClick={() => router.push("/banners")}
-              className="bg-blue-1 text-white"
-            >
-              Discard
-            </Button>
+                <FormField
+                  control={form.control}
+                  name="verticalBanner1Subtitle"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Subtitle</FormLabel>
+                      <FormControl>
+                        <Textarea placeholder="Enter subtitle" rows={2} {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="verticalBanner1Cta"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>CTA Text</FormLabel>
+                        <FormControl>
+                          <Input placeholder="e.g., Shop Now" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="verticalBanner1CtaLink"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>CTA Link</FormLabel>
+                        <FormControl>
+                          <Input placeholder="e.g., /collections" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+
+              {/* Second Vertical Banner */}
+              <div className="space-y-4">
+                <h4 className="text-base font-medium">Second Vertical Banner</h4>
+                
+                <FormField
+                  control={form.control}
+                  name="verticalBanner2"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Media</FormLabel>
+                      <FormControl>
+                        <ImageUpload
+                          value={field.value ? [field.value] : []}
+                          onChange={(url) => field.onChange(url)}
+                          onRemove={() => field.onChange("")}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="verticalBanner2Title"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Title</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Enter title" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="verticalBanner2Subtitle"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Subtitle</FormLabel>
+                      <FormControl>
+                        <Textarea placeholder="Enter subtitle" rows={2} {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="verticalBanner2Cta"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>CTA Text</FormLabel>
+                        <FormControl>
+                          <Input placeholder="e.g., Shop Now" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="verticalBanner2CtaLink"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>CTA Link</FormLabel>
+                        <FormControl>
+                          <Input placeholder="e.g., /collections" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+            </div>
           </div>
         </form>
       </Form>

@@ -70,11 +70,12 @@ const ProductDetails = ({ params }: { params: { productId: string }}) => {
         const updatedAvailability = updatedQuantity > 0;
 
         const res = await fetch(`/api/products/${params.productId}`, {
-          method: "PUT",
+          method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
+            ...productDetails,
             quantity: updatedQuantity,
             isAvailable: updatedAvailability,
           }),
@@ -108,7 +109,7 @@ const ProductDetails = ({ params }: { params: { productId: string }}) => {
   const handleSaveEdit = async () => {
     try {
       const res = await fetch(`/api/products/${params.productId}`, {
-        method: "PUT",
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
@@ -121,7 +122,8 @@ const ProductDetails = ({ params }: { params: { productId: string }}) => {
         setIsEditing(false);
         toast.success("Product updated successfully!");
       } else {
-        toast.error("Failed to update product");
+        const errorData = await res.json();
+        toast.error(errorData.message || "Failed to update product");
       }
     } catch (err) {
       console.log("[updateProduct]", err);
