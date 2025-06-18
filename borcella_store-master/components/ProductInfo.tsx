@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { MinusCircle, PlusCircle, ShoppingBag, Star, Truck, Shield, RotateCcw } from "lucide-react";
 import useCart from "@/lib/hooks/useCart";
 import FormattedText from "./FormattedText";
@@ -11,10 +11,49 @@ const ProductInfo = ({ productInfo }: { productInfo: ProductType }) => {
   const [selectedSize, setSelectedSize] = useState<string>(productInfo.sizes || "");
   const [quantity, setQuantity] = useState<number>(1);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
+  const [productReviews, setProductReviews] = useState({
+    avgRating: 0,
+    totalReviews: 0,
+    text: "No reviews yet"
+  });
 
   const cart = useCart();
   const maxStock = productInfo.quantity;
   const isOutOfStock = maxStock === 0;
+
+  // Fetch real reviews from database
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        const response = await fetch(`/api/products/${productInfo._id}/reviews?page=1&limit=1`);
+        const data = await response.json();
+        
+        if (response.ok) {
+          const avgRating = data.avgRating || 0;
+          const totalReviews = data.totalReviews || 0;
+          
+          const getReviewText = (rating: number) => {
+            if (rating >= 4.5) return "Excellent";
+            if (rating >= 4.0) return "Great";
+            if (rating >= 3.5) return "Good";
+            if (rating >= 3.0) return "Fair";
+            if (rating > 0) return "Poor";
+            return "No reviews yet";
+          };
+          
+          setProductReviews({
+            avgRating,
+            totalReviews,
+            text: getReviewText(avgRating)
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching reviews:", error);
+      }
+    };
+
+    fetchReviews();
+  }, [productInfo._id]);
 
   const handleAddToCart = () => {
     if (!isOutOfStock) {
@@ -53,14 +92,31 @@ const ProductInfo = ({ productInfo }: { productInfo: ProductType }) => {
           </h1>
         </div>
         
-        {/* Rating */}
-        <div className="flex items-center gap-2">
+        {/* Dynamic Rating from Database */}
+        <div className="flex items-center gap-3">
           <div className="flex items-center gap-1">
             {[...Array(5)].map((_, i) => (
-              <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+              <Star 
+                key={i} 
+                className={`w-5 h-5 ${
+                  i < Math.floor(productReviews.avgRating) 
+                    ? "fill-yellow-400 text-yellow-400" 
+                    : i < productReviews.avgRating 
+                      ? "fill-yellow-400/50 text-yellow-400" 
+                      : "text-gray-300"
+                }`} 
+              />
             ))}
           </div>
-          <span className="text-gray-600 font-medium">(4.8 • 127 reviews)</span>
+          <div className="flex items-center gap-2">
+            <span className="text-gray-900 font-semibold">
+              {productReviews.avgRating > 0 ? productReviews.avgRating : "—"}
+            </span>
+            <span className="text-gray-600 font-medium">
+              ({productReviews.totalReviews} reviews)
+            </span>
+            <span className="text-sm text-gray-500">• {productReviews.text}</span>
+          </div>
         </div>
       </div>
 
@@ -83,94 +139,6 @@ const ProductInfo = ({ productInfo }: { productInfo: ProductType }) => {
         )}
       </div>
 
-      {/* Description */}
-      <div className="space-y-4">
-        <h3 className="text-xl font-semibold text-gray-900 font-serif">Description</h3>
-        <div className="text-gray-600 leading-relaxed text-lg">
-          <FormattedText 
-            text={productInfo.description} 
-            className="text-base"
-          />
-        </div>
-      </div>
-
-      {/* Product Options */}
-      <div className="space-y-6">
-        {/* Colors */}
-        {productInfo.colors && (
-          <div className="space-y-4">
-            <h3 className="text-xl font-semibold text-gray-900 font-serif">Color</h3>
-            <div className="flex gap-3">
-              <button
-                className={`px-6 py-3 rounded-xl border-2 font-semibold transition-all duration-300 ${
-                  selectedColor === productInfo.colors 
-                    ? "border-gray-900 bg-gray-900 text-white shadow-lg transform scale-105" 
-                    : "border-gray-300 text-gray-700 hover:border-gray-400 hover:bg-gray-50 hover:shadow-md"
-                }`}
-                onClick={() => setSelectedColor(productInfo.colors)}
-              >
-                {productInfo.colors}
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* Sizes */}
-        {productInfo.sizes && (
-          <div className="space-y-4">
-            <h3 className="text-xl font-semibold text-gray-900 font-serif">Size</h3>
-            <div className="flex gap-3">
-              <button
-                className={`px-6 py-3 rounded-xl border-2 font-semibold transition-all duration-300 ${
-                  selectedSize === productInfo.sizes 
-                    ? "border-gray-900 bg-gray-900 text-white shadow-lg transform scale-105" 
-                    : "border-gray-300 text-gray-700 hover:border-gray-400 hover:bg-gray-50 hover:shadow-md"
-                }`}
-                onClick={() => setSelectedSize(productInfo.sizes)}
-              >
-                {productInfo.sizes}
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* Quantity Selector */}
-        <div className="space-y-4">
-          <h3 className="text-xl font-semibold text-gray-900 font-serif">Quantity</h3>
-          <div className="flex items-center gap-6">
-            <button
-              className={`p-3 rounded-full transition-all duration-300 ${
-                quantity > 1 
-                  ? "text-gray-700 hover:text-red-600 hover:bg-red-50 shadow-md" 
-                  : "text-gray-300 cursor-not-allowed"
-              }`}
-              onClick={() => quantity > 1 && setQuantity(quantity - 1)}
-              disabled={quantity <= 1}
-            >
-              <MinusCircle className="w-7 h-7" />
-            </button>
-            <span className="text-3xl font-bold text-gray-900 min-w-[4rem] text-center">
-              {quantity}
-            </span>
-            <button
-              className={`p-3 rounded-full transition-all duration-300 ${
-                isOutOfStock || quantity >= maxStock 
-                  ? "text-gray-300 cursor-not-allowed" 
-                  : "text-gray-700 hover:text-green-600 hover:bg-green-50 shadow-md"
-              }`}
-              onClick={() => {
-                if (!isOutOfStock && quantity < maxStock) {
-                  setQuantity(quantity + 1);
-                }
-              }}
-              disabled={isOutOfStock || quantity >= maxStock}
-            >
-              <PlusCircle className="w-7 h-7" />
-            </button>
-          </div>
-        </div>
-      </div>
-
       {/* Stock Status */}
       <div className={`p-6 rounded-2xl ${
         isOutOfStock 
@@ -182,6 +150,45 @@ const ProductInfo = ({ productInfo }: { productInfo: ProductType }) => {
         }`}>
           {isOutOfStock ? "Sold Out" : `${maxStock} items available`}
         </p>
+      </div>
+
+      {/* Product Options - Color and Size Side by Side */}
+      <div className="space-y-6">
+        <div className="grid grid-cols-2 gap-6">
+          {/* Colors */}
+          {productInfo.colors && (
+            <div className="space-y-4">
+              <h3 className="text-xl font-semibold text-gray-900 font-serif">Color</h3>
+              <button
+                className={`w-full px-6 py-3 rounded-xl border-2 font-semibold transition-all duration-300 ${
+                  selectedColor === productInfo.colors 
+                    ? "border-gray-900 bg-gray-900 text-white shadow-lg transform scale-105" 
+                    : "border-gray-300 text-gray-700 hover:border-gray-400 hover:bg-gray-50 hover:shadow-md"
+                }`}
+                onClick={() => setSelectedColor(productInfo.colors)}
+              >
+                {productInfo.colors}
+              </button>
+            </div>
+          )}
+
+          {/* Sizes */}
+          {productInfo.sizes && (
+            <div className="space-y-4">
+              <h3 className="text-xl font-semibold text-gray-900 font-serif">Size</h3>
+              <button
+                className={`w-full px-6 py-3 rounded-xl border-2 font-semibold transition-all duration-300 ${
+                  selectedSize === productInfo.sizes 
+                    ? "border-gray-900 bg-gray-900 text-white shadow-lg transform scale-105" 
+                    : "border-gray-300 text-gray-700 hover:border-gray-400 hover:bg-gray-50 hover:shadow-md"
+                }`}
+                onClick={() => setSelectedSize(productInfo.sizes)}
+              >
+                {productInfo.sizes}
+              </button>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Add to Cart Button */}
@@ -203,6 +210,53 @@ const ProductInfo = ({ productInfo }: { productInfo: ProductType }) => {
           </>
         )}
       </button>
+
+      {/* Quantity Selector */}
+      <div className="space-y-4">
+        <h3 className="text-xl font-semibold text-gray-900 font-serif">Quantity</h3>
+        <div className="flex items-center gap-6">
+          <button
+            className={`p-3 rounded-full transition-all duration-300 ${
+              quantity > 1 
+                ? "text-gray-700 hover:text-red-600 hover:bg-red-50 shadow-md" 
+                : "text-gray-300 cursor-not-allowed"
+            }`}
+            onClick={() => quantity > 1 && setQuantity(quantity - 1)}
+            disabled={quantity <= 1}
+          >
+            <MinusCircle className="w-7 h-7" />
+          </button>
+          <span className="text-3xl font-bold text-gray-900 min-w-[4rem] text-center">
+            {quantity}
+          </span>
+          <button
+            className={`p-3 rounded-full transition-all duration-300 ${
+              isOutOfStock || quantity >= maxStock 
+                ? "text-gray-300 cursor-not-allowed" 
+                : "text-gray-700 hover:text-green-600 hover:bg-green-50 shadow-md"
+            }`}
+            onClick={() => {
+              if (!isOutOfStock && quantity < maxStock) {
+                setQuantity(quantity + 1);
+              }
+            }}
+            disabled={isOutOfStock || quantity >= maxStock}
+          >
+            <PlusCircle className="w-7 h-7" />
+          </button>
+        </div>
+      </div>
+
+      {/* Description - Moved to Bottom */}
+      <div className="space-y-4">
+        <h3 className="text-xl font-semibold text-gray-900 font-serif">Description</h3>
+        <div className="text-gray-600 leading-relaxed text-lg">
+          <FormattedText 
+            text={productInfo.description} 
+            className="text-base"
+          />
+        </div>
+      </div>
 
       {/* Trust Badges */}
       <div className="grid grid-cols-3 gap-4 pt-6 border-t border-gray-200">
