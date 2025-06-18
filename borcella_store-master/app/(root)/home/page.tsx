@@ -1,3 +1,5 @@
+"use client";
+
 // app/home/page.tsx
 
 import Image from "next/image";
@@ -6,22 +8,68 @@ import ProductList from "@/components/ProductList";
 import VerticalBanners from "@/components/VerticalBanners";
 import { getCollections } from "@/lib/actions/actions";
 import HomeBanner from "@/components/HomeBanner";
+import { useEffect, useState } from "react";
 
-export default async function Home() {
-  const collections = await getCollections();
+export default function Home() {
+  const [collections, setCollections] = useState([]);
+  const [scrollY, setScrollY] = useState(0);
+
+  useEffect(() => {
+    // Fetch collections
+    const fetchCollections = async () => {
+      const data = await getCollections();
+      setCollections(data);
+    };
+    fetchCollections();
+
+    // Handle scroll
+    const handleScroll = () => {
+      setScrollY(window.scrollY);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   return (
     <div className="flex flex-col">
       {/* Hero Banner with 16:9 Aspect Ratio */}
       <HomeBanner />
 
       {/* Collections Carousel */}
-      <CollectionCarousel collections={collections} />
+      <div 
+        className={`transition-all duration-700 ease-out ${
+          scrollY > 200 ? 'transform translate-y-0 opacity-100' : 'transform translate-y-8 opacity-90'
+        }`}
+        style={{
+          transform: scrollY > 200 ? 'translateY(0) scale(1.02)' : 'translateY(8px) scale(1)',
+          boxShadow: scrollY > 200 ? '0 20px 40px rgba(0,0,0,0.1)' : '0 4px 6px rgba(0,0,0,0.05)',
+        }}
+      >
+        <CollectionCarousel collections={collections} />
+      </div>
 
       {/* Vertical Banners (9:16) */}
-      <VerticalBanners />
+      <div 
+        className={`transition-all duration-700 ease-out ${
+          scrollY > 400 ? 'transform translate-y-0 opacity-100' : 'transform translate-y-8 opacity-90'
+        }`}
+        style={{
+          transform: scrollY > 400 ? 'translateY(0) scale(1.02)' : 'translateY(8px) scale(1)',
+          boxShadow: scrollY > 400 ? '0 20px 40px rgba(0,0,0,0.1)' : '0 4px 6px rgba(0,0,0,0.05)',
+        }}
+      >
+        <VerticalBanners />
+      </div>
 
       {/* Products Section with Premium Background */}
-      <div className="w-full relative">
+      <div 
+        className="w-full relative transition-all duration-700 ease-out"
+        style={{
+          transform: scrollY > 600 ? 'translateY(0) scale(1.02)' : 'translateY(8px) scale(1)',
+          boxShadow: scrollY > 600 ? '0 20px 40px rgba(0,0,0,0.1)' : '0 4px 6px rgba(0,0,0,0.05)',
+        }}
+      >
         {/* Premium Background Elements */}
         <div className="absolute inset-0 bg-gradient-to-b from-white via-gray-50 to-white" />
         <div className="absolute inset-0 opacity-[0.03]" style={{
