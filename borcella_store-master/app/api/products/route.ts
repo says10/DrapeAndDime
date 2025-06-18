@@ -35,6 +35,7 @@ const productSchema = new mongoose.Schema({
 
 export async function GET(req: NextRequest) {
   try {
+    console.log('Products API called');
     await connectToAdminDB();
 
     const Product = mongoose.models.Product || mongoose.model("Product", productSchema);
@@ -43,6 +44,7 @@ export async function GET(req: NextRequest) {
     const products = await Product.find({ isAvailable: true }).lean();
     
     console.log(`Found ${products.length} products`);
+    console.log('Products:', products);
 
     return NextResponse.json({
       products,
