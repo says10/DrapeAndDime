@@ -115,14 +115,14 @@ const Navbar = () => {
               <Link href="/home" className={`hover:text-red-1 transition-colors ${pathname === "/home" && "text-red-1"}`}>
                 Home
               </Link>
+              <Link href="/products" className={`hover:text-red-1 transition-colors ${pathname === "/products" && "text-red-1"}`}>
+                BestSellers
+              </Link>
               <Link href={user ? "/wishlist" : "/sign-in"} className={`hover:text-red-1 transition-colors ${pathname === "/wishlist" && "text-red-1"}`}>
                 Wishlist
               </Link>
               <Link href={user ? "/orders" : "/sign-in"} className={`hover:text-red-1 transition-colors ${pathname === "/orders" && "text-red-1"}`}>
                 Orders
-              </Link>
-              <Link href="/about-us" className={`hover:text-red-1 transition-colors ${pathname === "/about-us" && "text-red-1"}`}>
-                About Us
               </Link>
             </div>
           )}
@@ -191,9 +191,11 @@ const Navbar = () => {
             {dropdownMenu && (
               <div className="absolute top-12 right-5 flex flex-col gap-4 p-4 rounded-lg border bg-white/95 backdrop-blur-md shadow-lg text-base-bold lg:hidden z-50">
                 <Link href="/" className="hover:text-red-1 transition-colors">Home</Link>
+                <Link href="/products" className={`hover:text-red-1 transition-colors ${pathname === "/products" && "text-red-1"}`}>
+                  BestSellers
+                </Link>
                 <Link href={user ? "/wishlist" : "/sign-in"} className="hover:text-red-1 transition-colors">Wishlist</Link>
                 <Link href={user ? "/orders" : "/sign-in"} className="hover:text-red-1 transition-colors">Orders</Link>
-                <Link href="/about-us" className="hover:text-red-1 transition-colors">About Us</Link>
                 <Link href="/cart" className="flex items-center gap-3 border rounded-lg px-3 py-2 hover:bg-black hover:text-white transition-all duration-300">
                   <ShoppingCart />
                   <p className="text-base-bold">Cart ({cart.cartItems.length})</p>

@@ -61,18 +61,20 @@ export async function GET(req: NextRequest) {
     }
 
     if (tags) {
-      const tagArray = tags.split(',').map(tag => tag.trim());
+      const tagArray = tags.split(',').map((tag: string) => tag.trim());
       filter.tags = { $in: tagArray };
     }
 
     if (sizes) {
-      const sizeArray = sizes.split(',').map(size => size.trim());
-      filter.sizes = { $in: sizeArray };
+      const sizeArray = sizes.split(',').map((size: string) => size.trim());
+      // Filter sizes as string fields using regex
+      filter.sizes = { $regex: sizeArray.join('|'), $options: 'i' };
     }
 
     if (colors) {
-      const colorArray = colors.split(',').map(color => color.trim());
-      filter.colors = { $in: colorArray };
+      const colorArray = colors.split(',').map((color: string) => color.trim());
+      // Filter colors as string fields using regex
+      filter.colors = { $regex: colorArray.join('|'), $options: 'i' };
     }
 
     if (minPrice || maxPrice) {
@@ -107,11 +109,30 @@ export async function GET(req: NextRequest) {
       .limit(limit)
       .lean();
 
-    // Get unique values for filters
+    // Get unique values for filters - handle string fields properly
     const categories = await Product.distinct('category', { isAvailable: true });
     const allTags = await Product.distinct('tags', { isAvailable: true });
-    const allSizes = await Product.distinct('sizes', { isAvailable: true });
-    const allColors = await Product.distinct('colors', { isAvailable: true });
+    
+    // For sizes and colors, we need to get all unique values from string fields
+    const allProducts = await Product.find({ isAvailable: true }, 'sizes colors').lean();
+    
+    // Extract unique sizes from string fields
+    const allSizes = new Set<string>();
+    allProducts.forEach((product: any) => {
+      if (product.sizes) {
+        const sizes = product.sizes.split(',').map((s: string) => s.trim()).filter(Boolean);
+        sizes.forEach((size: string) => allSizes.add(size));
+      }
+    });
+
+    // Extract unique colors from string fields
+    const allColors = new Set<string>();
+    allProducts.forEach((product: any) => {
+      if (product.colors) {
+        const colors = product.colors.split(',').map((c: string) => c.trim()).filter(Boolean);
+        colors.forEach((color: string) => allColors.add(color));
+      }
+    });
 
     return NextResponse.json({
       products,
@@ -125,8 +146,8 @@ export async function GET(req: NextRequest) {
       filters: {
         categories: categories.filter(Boolean),
         tags: allTags.filter(Boolean).flat(),
-        sizes: allSizes.filter(Boolean),
-        colors: allColors.filter(Boolean)
+        sizes: Array.from(allSizes),
+        colors: Array.from(allColors)
       }
     });
 

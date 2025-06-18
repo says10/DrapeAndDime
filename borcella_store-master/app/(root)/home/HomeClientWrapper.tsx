@@ -42,7 +42,13 @@ export default function HomeClientWrapper({ collections }: HomeClientWrapperProp
               {/* Section Header */}
               <div className="text-center mb-16">
                 <h2 className="text-4xl font-bold mb-4 tracking-tight">Featured Products</h2>
-                <div className="w-24 h-1 bg-black mx-auto" />
+                <div className="w-24 h-1 bg-black mx-auto mb-6" />
+                <a 
+                  href="/products" 
+                  className="inline-flex items-center px-6 py-3 bg-black text-white font-medium rounded-lg hover:bg-gray-800 transition-colors duration-300"
+                >
+                  View All Products
+                </a>
               </div>
 
               {/* Products Grid */}
