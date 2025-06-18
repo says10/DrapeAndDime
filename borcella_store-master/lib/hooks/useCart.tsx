@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { toast } from "sonner";
 import { persist, createJSONStorage } from "zustand/middleware";
+import { trackCartSession } from "@/lib/actions/cartTracking";
 
 interface CartItem {
   item: ProductType;
@@ -23,55 +24,57 @@ const useCart = create(
   persist<CartStore>(
     (set, get) => ({
       cartItems: [],
-      addItem: (data: CartItem) => {
+      addItem: async (data: CartItem) => {
         const { item, quantity, color, size } = data;
-        const currentItems = get().cartItems; // all the items already in cart
+        const currentItems = get().cartItems;
         const isExisting = currentItems.find(
           (cartItem) => cartItem.item._id === item._id
         );
-
         if (isExisting) {
           toast.error("Item already in cart", {
             description: `${item.title} is already in your cart.`
           });
           return;
         }
-
-        // Check if item is available
         if (!item.isAvailable || item.quantity === 0) {
           toast.error("Item not available", {
             description: `${item.title} is currently out of stock.`
           });
           return;
         }
-
-        // Check if requested quantity is available
         if (quantity > item.quantity) {
           toast.error("Quantity not available", {
             description: `Only ${item.quantity} items available in stock.`
           });
           return;
         }
-
         set({ cartItems: [...currentItems, { item, quantity, color, size }] });
         toast.success("Item added to cart", { 
           description: `${item.title} has been added to your cart.`
         });
+        // Track cart session
+        await trackCartSession({
+          action: currentItems.length === 0 ? 'create_session' : 'update_activity',
+          cartItems: [...currentItems, { item, quantity, color, size }],
+        });
       },
-      removeItem: (idToRemove: string) => {
+      removeItem: async (idToRemove: string) => {
         const currentItems = get().cartItems;
         const itemToRemove = currentItems.find(item => item.item._id === idToRemove);
-        
         const newCartItems = currentItems.filter(
           (cartItem) => cartItem.item._id !== idToRemove
         );
         set({ cartItems: newCartItems });
-        
         if (itemToRemove) {
           toast.success("Item removed from cart", {
             description: `${itemToRemove.item.title} has been removed from your cart.`
           });
         }
+        // Track cart session
+        await trackCartSession({
+          action: newCartItems.length === 0 ? 'mark_abandoned' : 'update_activity',
+          cartItems: newCartItems,
+        });
       },
       increaseQuantity: (idToIncrease: string) => {
         const currentItems = get().cartItems;
@@ -103,10 +106,14 @@ const useCart = create(
         );
         set({ cartItems: newCartItems });
       },
-      clearCart: () => {
+      clearCart: async () => {
         set({ cartItems: [] });
         toast.success("Cart cleared", {
           description: "All items have been removed from your cart."
+        });
+        // Track cart session
+        await trackCartSession({
+          action: 'mark_abandoned',
         });
       },
       validateStock: async (itemId: string, quantity: number) => {

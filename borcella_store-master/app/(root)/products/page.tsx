@@ -36,8 +36,7 @@ const ProductsPage = () => {
         // Extract filter options from products
         if (productsData && productsData.length > 0) {
           const uniqueCategories = [...new Set(productsData.map((p: ProductType) => p.category).filter(Boolean))] as string[];
-          const allTags = productsData.flatMap((p: ProductType) => p.tags || []).filter(Boolean);
-          const uniqueTags = [...new Set(allTags)] as string[];
+          const uniqueTags = [...new Set(productsData.flatMap((p: ProductType) => (p.tags || []).map((t: string) => t.trim())).filter(Boolean))] as string[];
           
           const allSizes = new Set<string>();
           const allColors = new Set<string>();
@@ -291,10 +290,10 @@ const ProductsPage = () => {
                 </select>
               </div>
 
-              {/* Tags Filter */}
+              {/* Tags Filter (displayed as Brands) */}
               {tags.length > 0 && (
                 <div className="mb-6">
-                  <h4 className="font-medium text-gray-900 mb-3">Tags</h4>
+                  <h4 className="font-medium text-gray-900 mb-3">Brands</h4>
                   <div className="space-y-2">
                     {tags.slice(0, 10).map((tag) => (
                       <label key={tag} className="flex items-center">
@@ -364,14 +363,14 @@ const ProductsPage = () => {
                     placeholder="Min"
                     value={priceRange.min}
                     onChange={(e) => setPriceRange(prev => ({ ...prev, min: e.target.value }))}
-                    className="flex-1 px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-200 focus:border-transparent"
+                    className="flex-1 px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-200 focus:border-transparent text-sm"
                   />
                   <input
                     type="number"
                     placeholder="Max"
                     value={priceRange.max}
                     onChange={(e) => setPriceRange(prev => ({ ...prev, max: e.target.value }))}
-                    className="flex-1 px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-200 focus:border-transparent"
+                    className="flex-1 px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-200 focus:border-transparent text-sm"
                   />
                 </div>
               </div>
