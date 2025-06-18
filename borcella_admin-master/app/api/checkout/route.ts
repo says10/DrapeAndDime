@@ -32,19 +32,61 @@ export async function POST(req: NextRequest) {
 
     if (!cartItems || cartItems.length === 0) {
       console.log("❌ No items in cart");
-      return new NextResponse("No items to checkout", { status: 400 });
+      return new NextResponse(
+        JSON.stringify({ 
+          success: false, 
+          message: "No items to checkout" 
+        }), 
+        { 
+          status: 400,
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": allowedOrigin,
+            "Access-Control-Allow-Methods": "POST, OPTIONS",
+            "Access-Control-Allow-Headers": "Content-Type",
+            "Access-Control-Allow-Credentials": "true",
+          },
+        }
+      );
     }
 
     // Stock validation: Check if all items in the cart have sufficient stock
     for (const cartItem of cartItems) {
       const product = await Product.findById(cartItem.item._id);
       if (!product) {
-        return new NextResponse(`Product not found: ${cartItem.item.title}`, { status: 404 });
+        return new NextResponse(
+          JSON.stringify({ 
+            success: false, 
+            message: `Product not found: ${cartItem.item.title}` 
+          }), 
+          { 
+            status: 404,
+            headers: {
+              "Content-Type": "application/json",
+              "Access-Control-Allow-Origin": allowedOrigin,
+              "Access-Control-Allow-Methods": "POST, OPTIONS",
+              "Access-Control-Allow-Headers": "Content-Type",
+              "Access-Control-Allow-Credentials": "true",
+            },
+          }
+        );
       }
       if (product.quantity < cartItem.quantity) {
         return new NextResponse(
-          `${product.title} is out of stock. Only ${product.quantity} available.`,
-          { status: 400 }
+          JSON.stringify({ 
+            success: false, 
+            message: `${product.title} is out of stock. Only ${product.quantity} available.` 
+          }), 
+          { 
+            status: 400,
+            headers: {
+              "Content-Type": "application/json",
+              "Access-Control-Allow-Origin": allowedOrigin,
+              "Access-Control-Allow-Methods": "POST, OPTIONS",
+              "Access-Control-Allow-Headers": "Content-Type",
+              "Access-Control-Allow-Credentials": "true",
+            },
+          }
         );
       }
     }
@@ -89,7 +131,16 @@ export async function POST(req: NextRequest) {
           message: "Failed to create payment order",
           error: cashfreeError.message 
         }), 
-        { status: 500 }
+        { 
+          status: 500,
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": allowedOrigin,
+            "Access-Control-Allow-Methods": "POST, OPTIONS",
+            "Access-Control-Allow-Headers": "Content-Type",
+            "Access-Control-Allow-Credentials": "true",
+          },
+        }
       );
     }
 
@@ -101,7 +152,16 @@ export async function POST(req: NextRequest) {
           message: "Payment gateway error",
           error: "Failed to create order with payment gateway"
         }), 
-        { status: 500 }
+        { 
+          status: 500,
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": allowedOrigin,
+            "Access-Control-Allow-Methods": "POST, OPTIONS",
+            "Access-Control-Allow-Headers": "Content-Type",
+            "Access-Control-Allow-Credentials": "true",
+          },
+        }
       );
     }
 
@@ -143,7 +203,16 @@ export async function POST(req: NextRequest) {
           message: "Failed to save order",
           error: dbError.message 
         }), 
-        { status: 500 }
+        { 
+          status: 500,
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": allowedOrigin,
+            "Access-Control-Allow-Methods": "POST, OPTIONS",
+            "Access-Control-Allow-Headers": "Content-Type",
+            "Access-Control-Allow-Credentials": "true",
+          },
+        }
       );
     }
 
@@ -170,6 +239,22 @@ export async function POST(req: NextRequest) {
     );
   } catch (err) {
     console.error("❌ [checkout_POST] Error:", err);
-    return new NextResponse("Internal Server Error", { status: 500 });
+    return new NextResponse(
+      JSON.stringify({ 
+        success: false, 
+        message: "Internal Server Error",
+        error: err instanceof Error ? err.message : "Unknown error"
+      }), 
+      { 
+        status: 500,
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": allowedOrigin,
+          "Access-Control-Allow-Methods": "POST, OPTIONS",
+          "Access-Control-Allow-Headers": "Content-Type",
+          "Access-Control-Allow-Credentials": "true",
+        },
+      }
+    );
   }
 }

@@ -158,8 +158,19 @@ const Payment = () => {
       });
 
       if (!checkoutResponse.ok) {
-        const errorData = await checkoutResponse.json();
-        console.error("Checkout API error response:", errorData); // Log error details
+        // Try to parse as JSON first, fallback to text if it fails
+        let errorData;
+        try {
+          errorData = await checkoutResponse.json();
+        } catch (parseError) {
+          // If JSON parsing fails, get the text response
+          const errorText = await checkoutResponse.text();
+          console.error("Checkout API error (text response):", errorText);
+          setErrorMessage("Checkout failed. Please try again.");
+          return;
+        }
+        
+        console.error("Checkout API error response:", errorData);
         setErrorMessage(errorData.message || "Some of the items may be out of stock");
         return;
       }
