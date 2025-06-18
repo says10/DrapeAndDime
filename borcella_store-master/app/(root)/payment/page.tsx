@@ -195,30 +195,25 @@ const Payment = () => {
 
   // Main payment handler
   const handlePayment = async () => {
-    if (!cashfreeLoaded || !amount || isProcessing) return;
+    if (!cashfreeLoaded || !amount) return;
 
     // Validate form data
     if (!validateForm()) return;
-
-    setIsProcessing(true);
-    setPaymentStep('processing');
-    setErrorMessage("");
 
     const orderData = {
       cartItems,
       customer: {
         email: formData.email,
-        clerkId: user?.id,
+        clerkId: user?.id, // Ensure this is populated
       },
       shippingDetails: formData,
       shippingRate,
       enteredName: formData.name,
     };
 
-    console.log("📤 Sending orderData to API:", JSON.stringify(orderData, null, 2));
+    console.log("Sending orderData to API:", JSON.stringify(orderData, null, 2)); // Log before sending request
 
     try {
-      // Step 1: Create checkout session
       const checkoutResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/checkout`, {
         method: "POST",
         headers: {
@@ -228,58 +223,57 @@ const Payment = () => {
       });
 
       if (!checkoutResponse.ok) {
-        let errorData;
-        try {
-          errorData = await checkoutResponse.json();
-        } catch (parseError) {
-          const errorText = await checkoutResponse.text();
-          console.error("Checkout API error (text response):", errorText);
-          setErrorMessage("Checkout failed. Please try again.");
-          setIsProcessing(false);
-          setPaymentStep('form');
-          return;
-        }
-        
-        console.error("Checkout API error response:", errorData);
+        const errorData = await checkoutResponse.json();
+        console.error("Checkout API error response:", errorData); // Log error details
         setErrorMessage(errorData.message || "Some of the items may be out of stock");
-        setIsProcessing(false);
-        setPaymentStep('form');
         return;
       }
 
       const checkoutData = await checkoutResponse.json();
-      console.log("✅ Received checkout response:", checkoutData);
+      console.log("Received checkout response:", checkoutData); // Log response data
 
       if (!checkoutData.paymentSessionId) {
         setErrorMessage("Payment session ID missing. Please try again.");
-        setIsProcessing(false);
-        setPaymentStep('form');
         return;
       }
+      let checkoutOptions = {
+          paymentSessionId: checkoutData.paymentSessionId,
+          redirectTarget: "_modal",
+      };
 
-      setOrderId(checkoutData.orderId);
+      // Proceed with payment
+      const cashfree = await load({ mode: "production" });
+      cashfree
+        .checkout(checkoutOptions)
+        .then(async (response: { paymentId: string }) => {
+          console.log("Cashfree Payment Success:", response);
+          const verifyRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/verifypayment`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              orderId: checkoutData.orderId,
+              paymentId: checkoutData.paymentId,
+              shippingDetails: formData,
+            }),
+          });
 
-      // Step 2: Redirect to Cashfree's hosted checkout page
-      console.log("🔄 Redirecting to Cashfree hosted checkout...");
-      
-      // Instead of using the SDK modal, redirect directly to Cashfree's hosted page
-      const cashfreeUrl = `https://payments.cashfree.com/order/${checkoutData.orderId}`;
-      console.log("🔗 Cashfree URL:", cashfreeUrl);
-      
-      // Store order info in localStorage for verification after redirect
-      localStorage.setItem('pendingOrder', JSON.stringify({
-        orderId: checkoutData.orderId,
-        amount: checkoutData.amount,
-        timestamp: Date.now()
-      }));
-      
-      // Redirect to Cashfree
-      window.location.href = cashfreeUrl;
+          const verifyResData = await verifyRes.json();
+          console.log("Payment Verification Response:", verifyResData);
+
+          if (verifyResData.success) {
+            window.location.href = "/payment_success";
+          } else {
+            setErrorMessage("Payment verification failed.");
+            window.location.href = "/payment_fail";
+          }
+        })
+        .catch((error: any) => {
+          console.error("Cashfree payment error:", error);
+          setErrorMessage("Payment failed. Please try again.");
+        });
     } catch (error) {
-      console.error("❌ Error during checkout process:", error);
+      console.error("Error during checkout process:", error);
       setErrorMessage("An error occurred during checkout. Please try again later.");
-      setIsProcessing(false);
-      setPaymentStep('form');
     }
   };
 
