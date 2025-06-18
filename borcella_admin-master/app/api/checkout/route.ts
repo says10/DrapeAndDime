@@ -69,29 +69,41 @@ export async function POST(req: NextRequest) {
         customer_name: enteredName,
         customer_email: customer.email,
       },
-      "request": {
-      products: cartItems.map((item: { item: { _id: string }; color?: string; size?: string; quantity: number }) => ({
-        product: item.item._id,
-        color: item.color || "default",
-        size: item.size || "default",
-        quantity: item.quantity,
-      })),
-    },
     };
 
     // Initialize Cashfree Payment Gateway
-    Cashfree.XClientId = process.env.CASHFREE_APP_ID;  // Replace with your test client ID
-    Cashfree.XClientSecret = process.env.CASHFREE_SECRET_KEY;  // Replace with your test client secret
-    Cashfree.XEnvironment = Cashfree.Environment.PRODUCTION;  // Use SANDBOX for testing
+    Cashfree.XClientId = process.env.CASHFREE_APP_ID;
+    Cashfree.XClientSecret = process.env.CASHFREE_SECRET_KEY;
+    Cashfree.XEnvironment = Cashfree.Environment.PRODUCTION;
 
     // Create order with Cashfree
-    const cashfreeResponse = await Cashfree.PGCreateOrder("2025-01-01", cashfreeOrderRequest);
-
-    if (cashfreeResponse.status === 200) {
-      console.error("order created");
+    let cashfreeResponse;
+    try {
+      cashfreeResponse = await Cashfree.PGCreateOrder("2025-01-01", cashfreeOrderRequest);
+      console.log("✅ Cashfree Order Created:", cashfreeResponse.data);
+    } catch (cashfreeError) {
+      console.error("❌ Error creating Cashfree order:", cashfreeError);
+      return new NextResponse(
+        JSON.stringify({ 
+          success: false, 
+          message: "Failed to create payment order",
+          error: cashfreeError.message 
+        }), 
+        { status: 500 }
+      );
     }
 
-    console.log("✅ Cashfree Order Created:", cashfreeResponse.data);
+    if (cashfreeResponse.status !== 200) {
+      console.error("❌ Cashfree order creation failed with status:", cashfreeResponse.status);
+      return new NextResponse(
+        JSON.stringify({ 
+          success: false, 
+          message: "Payment gateway error",
+          error: "Failed to create order with payment gateway"
+        }), 
+        { status: 500 }
+      );
+    }
 
     // Save order in database
     const newOrder = new Order({
@@ -117,15 +129,28 @@ export async function POST(req: NextRequest) {
       cashfreeOrderId: cashfreeResponse.data.order_id,
       status: "NOT PAID",
       createdAt: new Date(),
-      expiresAt: new Date(Date.now() + 15 * 60 * 1000), // Expires in 15 minutes instead of 1 minute
+      expiresAt: new Date(Date.now() + 15 * 60 * 1000), // Expires in 15 minutes
     });
 
-    await newOrder.save();
-    console.log("🗃️ Order saved to MongoDB:", newOrder);
+    try {
+      await newOrder.save();
+      console.log("🗃️ Order saved to MongoDB:", newOrder._id);
+    } catch (dbError) {
+      console.error("❌ Error saving order to database:", dbError);
+      return new NextResponse(
+        JSON.stringify({ 
+          success: false, 
+          message: "Failed to save order",
+          error: dbError.message 
+        }), 
+        { status: 500 }
+      );
+    }
 
     // Respond with order details to frontend
     return new NextResponse(
       JSON.stringify({
+        success: true,
         orderId: cashfreeResponse.data.order_id,
         paymentSessionId: cashfreeResponse.data.payment_session_id,
         amount: totalAmount,

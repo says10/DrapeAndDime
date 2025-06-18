@@ -182,29 +182,49 @@ const Payment = () => {
         .checkout(checkoutOptions)
         .then(async (response: { paymentId: string }) => {
           console.log("Cashfree Payment Success:", response);
+          
+          // Send verification request with both orderId and paymentId
           const verifyRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/verifypayment`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               orderId: checkoutData.orderId,
-              paymentId: checkoutData.paymentId,
-              shippingDetails: formData,
+              paymentId: response.paymentId, // Use the actual paymentId from Cashfree response
             }),
           });
+
+          if (!verifyRes.ok) {
+            console.error("Payment verification failed with status:", verifyRes.status);
+            const errorText = await verifyRes.text();
+            console.error("Error response:", errorText);
+            setErrorMessage("Payment verification failed. Please contact support.");
+            window.location.href = "/payment_fail";
+            return;
+          }
 
           const verifyResData = await verifyRes.json();
           console.log("Payment Verification Response:", verifyResData);
 
           if (verifyResData.success) {
+            console.log("✅ Payment verified successfully, redirecting to success page");
             window.location.href = "/payment_success";
           } else {
-            setErrorMessage("Payment verification failed.");
-            window.location.href = "/payment_fail";
+            console.error("❌ Payment verification failed:", verifyResData.message);
+            setErrorMessage(verifyResData.message || "Payment verification failed.");
+            
+            // Handle different failure scenarios
+            if (verifyResData.status === "pending") {
+              setErrorMessage("Payment is pending. Please wait for confirmation.");
+              // You might want to redirect to a pending page or show a message
+            } else {
+              window.location.href = "/payment_fail";
+            }
           }
         })
         .catch((error: any) => {
           console.error("Cashfree payment error:", error);
           setErrorMessage("Payment failed. Please try again.");
+          window.location.href = "/payment_fail";
         });
     } catch (error) {
       console.error("Error during checkout process:", error);
