@@ -150,16 +150,8 @@ const ProductDetails = ({ params }: { params: { productId: string } }) => {
                   {/* Product Info Section */}
                   <div className="relative">
                     <div className="space-y-6">
-                      {/* Stock Status & Actions */}
-                      <div className="flex items-center justify-between">
-                        <div className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-medium ${
-                          productDetails.isAvailable 
-                            ? "bg-green-50 text-green-700 ring-1 ring-green-100" 
-                            : "bg-red-50 text-red-700 ring-1 ring-red-100"
-                        }`}>
-                          {productDetails.isAvailable ? "In Stock" : "Out of Stock"}
-                          <span className="ml-2">{productDetails.isAvailable ? "✓" : "×"}</span>
-                        </div>
+                      {/* Actions */}
+                      <div className="flex items-center justify-end">
                         <div className="flex items-center gap-3">
                           <button 
                             onClick={handleWishlistToggle}
