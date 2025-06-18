@@ -22,16 +22,16 @@ export async function POST(request: NextRequest) {
           userId,
           userEmail,
           userName,
-          cartItems: cartItems.map((item: any) => ({
-            productId: item.item._id,
-            quantity: item.quantity,
-            price: item.item.price,
-            title: item.item.title,
-            image: item.item.images[0],
-            size: item.size,
-            color: item.color
-          })),
-          totalValue: cartItems.reduce((sum: number, item: any) => sum + (item.item.price * item.quantity), 0),
+          cartItems: Array.isArray(cartItems) ? cartItems.map((item: any) => ({
+            productId: item?.item?._id ?? null,
+            quantity: item?.quantity ?? 0,
+            price: item?.item?.price ?? 0,
+            title: item?.item?.title ?? '',
+            image: Array.isArray(item?.item?.images) && item.item.images.length > 0 ? item.item.images[0] : null,
+            size: item?.size ?? null,
+            color: item?.color ?? null
+          })) : [],
+          totalValue: Array.isArray(cartItems) ? cartItems.reduce((sum: number, item: any) => sum + ((item?.item?.price ?? 0) * (item?.quantity ?? 0)), 0) : 0,
           status: "active",
           lastActivity: new Date()
         });
