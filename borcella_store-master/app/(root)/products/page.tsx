@@ -73,14 +73,43 @@ const ProductsPage = () => {
       const data = await response.json();
 
       if (response.ok) {
-        setProducts(data.products);
-        setPagination(data.pagination);
-        setFilterData(data.filters);
+        setProducts(data.products || []);
+        setPagination(data.pagination || {
+          currentPage: 1,
+          totalPages: 1,
+          totalProducts: 0,
+          hasNextPage: false,
+          hasPrevPage: false
+        });
+        setFilterData(data.filters || {
+          categories: [],
+          tags: [],
+          sizes: [],
+          colors: []
+        });
       } else {
         console.error('Failed to fetch products:', data.error);
+        // Set default values on error
+        setProducts([]);
+        setPagination({
+          currentPage: 1,
+          totalPages: 1,
+          totalProducts: 0,
+          hasNextPage: false,
+          hasPrevPage: false
+        });
       }
     } catch (error) {
       console.error('Error fetching products:', error);
+      // Set default values on error
+      setProducts([]);
+      setPagination({
+        currentPage: 1,
+        totalPages: 1,
+        totalProducts: 0,
+        hasNextPage: false,
+        hasPrevPage: false
+      });
     } finally {
       setLoading(false);
     }
@@ -159,11 +188,11 @@ const ProductsPage = () => {
   // Effects
   useEffect(() => {
     fetchProducts();
-  }, [selectedCategory, selectedTags, selectedSizes, selectedColors, priceRange, sortBy, sortOrder, searchQuery, pagination.currentPage]);
+  }, [selectedCategory, selectedTags, selectedSizes, selectedColors, priceRange, sortBy, sortOrder, searchQuery, pagination?.currentPage]);
 
   useEffect(() => {
     updateURL();
-  }, [selectedCategory, selectedTags, selectedSizes, selectedColors, priceRange, sortBy, sortOrder, searchQuery, pagination.currentPage]);
+  }, [selectedCategory, selectedTags, selectedSizes, selectedColors, priceRange, sortBy, sortOrder, searchQuery, pagination?.currentPage]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-white via-gray-50/50 to-gray-100/50">
@@ -172,7 +201,7 @@ const ProductsPage = () => {
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">All Products</h1>
           <p className="text-gray-600">
-            Discover our collection of {pagination.totalProducts} products
+            Discover our collection of {pagination?.totalProducts || 0} products
           </p>
         </div>
 
@@ -369,22 +398,22 @@ const ProductsPage = () => {
                 </div>
 
                 {/* Pagination */}
-                {pagination.totalPages > 1 && (
+                {pagination?.totalPages > 1 && (
                   <div className="flex items-center justify-center mt-12 gap-2">
                     <button
-                      onClick={() => handlePageChange(pagination.currentPage - 1)}
-                      disabled={!pagination.hasPrevPage}
+                      onClick={() => handlePageChange((pagination?.currentPage || 1) - 1)}
+                      disabled={!pagination?.hasPrevPage}
                       className="px-4 py-2 border border-gray-200 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
                     >
                       <ChevronLeft className="w-5 h-5" />
                     </button>
                     
-                    {[...Array(pagination.totalPages)].map((_, i) => {
+                    {[...Array(pagination?.totalPages || 1)].map((_, i) => {
                       const page = i + 1;
-                      const isCurrent = page === pagination.currentPage;
-                      const isNearCurrent = Math.abs(page - pagination.currentPage) <= 1;
+                      const isCurrent = page === (pagination?.currentPage || 1);
+                      const isNearCurrent = Math.abs(page - (pagination?.currentPage || 1)) <= 1;
                       const isFirst = page === 1;
-                      const isLast = page === pagination.totalPages;
+                      const isLast = page === (pagination?.totalPages || 1);
                       
                       if (isFirst || isLast || isNearCurrent) {
                         return (
@@ -400,15 +429,15 @@ const ProductsPage = () => {
                             {page}
                           </button>
                         );
-                      } else if (page === pagination.currentPage - 2 || page === pagination.currentPage + 2) {
+                      } else if (page === (pagination?.currentPage || 1) - 2 || page === (pagination?.currentPage || 1) + 2) {
                         return <span key={page} className="px-2">...</span>;
                       }
                       return null;
                     })}
                     
                     <button
-                      onClick={() => handlePageChange(pagination.currentPage + 1)}
-                      disabled={!pagination.hasNextPage}
+                      onClick={() => handlePageChange((pagination?.currentPage || 1) + 1)}
+                      disabled={!pagination?.hasNextPage}
                       className="px-4 py-2 border border-gray-200 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
                     >
                       <ChevronRight className="w-5 h-5" />
