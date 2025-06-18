@@ -4,6 +4,7 @@ import { useUser } from "@clerk/nextjs";
 import { Heart } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import HydrationSafe from "./HydrationSafe";
 
 interface HeartFavoriteProps {
   product: ProductType;
@@ -56,18 +57,24 @@ const HeartFavorite = ({ product, updateSignedInUser }: HeartFavoriteProps) => {
   };
 
   return (
-    <button 
-      onClick={handleLike}
-      className="p-2 rounded-full bg-white/80 backdrop-blur-sm hover:bg-white transition-all duration-200 shadow-sm hover:shadow-md"
-    >
-      <Heart 
-        className={`w-5 h-5 transition-all duration-200 ${
-          isLiked 
-            ? "fill-red-500 text-red-500" 
-            : "fill-transparent text-gray-600 hover:text-red-500"
-        }`}
-      />
-    </button>
+    <HydrationSafe fallback={
+      <div className="p-2 rounded-full bg-white/80 backdrop-blur-sm shadow-sm">
+        <div className="w-5 h-5 bg-gray-200 rounded animate-pulse"></div>
+      </div>
+    }>
+      <button 
+        onClick={handleLike}
+        className="p-2 rounded-full bg-white/80 backdrop-blur-sm hover:bg-white transition-all duration-200 shadow-sm hover:shadow-md"
+      >
+        <Heart 
+          className={`w-5 h-5 transition-all duration-200 ${
+            isLiked 
+              ? "fill-red-500 text-red-500" 
+              : "fill-transparent text-gray-600 hover:text-red-500"
+          }`}
+        />
+      </button>
+    </HydrationSafe>
   );
 };
 
