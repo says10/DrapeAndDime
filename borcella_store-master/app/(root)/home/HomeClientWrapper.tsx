@@ -6,6 +6,7 @@ import ProductList from "@/components/ProductList";
 import VerticalBanners from "@/components/VerticalBanners";
 import HomeBanner from "@/components/HomeBanner";
 import ScrollEffectsWrapper from "@/components/ScrollEffectsWrapper";
+import { ChevronRight } from "lucide-react";
 
 interface HomeClientWrapperProps {
   collections: CollectionType[];
@@ -40,14 +41,14 @@ export default function HomeClientWrapper({ collections }: HomeClientWrapperProp
           <div className="relative">
             <div className="max-w-[1920px] mx-auto px-8 py-16">
               {/* Section Header */}
-              <div className="text-center mb-16">
-                <h2 className="text-4xl font-bold mb-4 tracking-tight">Featured Products</h2>
-                <div className="w-24 h-1 bg-black mx-auto mb-6" />
+              <div className="flex justify-between items-center mb-16">
+                <h2 className="text-4xl font-bold tracking-tight">Featured Products</h2>
                 <a 
                   href="/products" 
-                  className="inline-flex items-center px-6 py-3 bg-black text-white font-medium rounded-lg hover:bg-gray-800 transition-colors duration-300"
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-black text-white font-medium rounded-lg hover:bg-gray-800 transition-colors duration-300"
                 >
-                  View All Products
+                  View All
+                  <ChevronRight className="w-5 h-5" />
                 </a>
               </div>
 
