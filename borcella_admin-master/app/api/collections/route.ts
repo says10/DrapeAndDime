@@ -9,7 +9,18 @@ export const POST = async (req: NextRequest) => {
     const { userId } = auth()
 
     if (!userId) {
-      return new NextResponse("Unauthorized", { status: 403 })
+      return new NextResponse(
+        JSON.stringify({ 
+          success: false, 
+          message: "Unauthorized" 
+        }), 
+        { 
+          status: 403,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      )
     }
 
     await connectToDB()
@@ -19,11 +30,33 @@ export const POST = async (req: NextRequest) => {
     const existingCollection = await Collection.findOne({ title })
 
     if (existingCollection) {
-      return new NextResponse("Collection already exists", { status: 400 })
+      return new NextResponse(
+        JSON.stringify({ 
+          success: false, 
+          message: "Collection already exists" 
+        }), 
+        { 
+          status: 400,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      )
     }
 
     if (!title || !image) {
-      return new NextResponse("Title and image are required", { status: 400 })
+      return new NextResponse(
+        JSON.stringify({ 
+          success: false, 
+          message: "Title and image are required" 
+        }), 
+        { 
+          status: 400,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      )
     }
 
     const newCollection = await Collection.create({
@@ -35,9 +68,21 @@ export const POST = async (req: NextRequest) => {
     await newCollection.save()
 
     return NextResponse.json(newCollection, { status: 200 })
-  } catch (err) {
-    console.log("[collections_POST]", err)
-    return new NextResponse("Internal Server Error", { status: 500 })
+  } catch (err: any) {
+    console.error("❌ Error creating collection:", err);
+    return new NextResponse(
+      JSON.stringify({ 
+        success: false, 
+        message: "Internal Server Error",
+        error: err?.message || "Unknown error"
+      }), 
+      { 
+        status: 500,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
   }
 }
 
@@ -48,9 +93,21 @@ export const GET = async (req: NextRequest) => {
     const collections = await Collection.find().sort({ createdAt: "desc" })
 
     return NextResponse.json(collections, { status: 200 })
-  } catch (err) {
-    console.log("[collections_GET]", err)
-    return new NextResponse("Internal Server Error", { status: 500 })
+  } catch (err: any) {
+    console.error("❌ Error fetching collections:", err);
+    return new NextResponse(
+      JSON.stringify({ 
+        success: false, 
+        message: "Internal Server Error",
+        error: err?.message || "Unknown error"
+      }), 
+      { 
+        status: 500,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
   }
 }
 

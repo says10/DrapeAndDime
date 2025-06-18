@@ -125,6 +125,22 @@ export async function POST(req: NextRequest) {
     );
   } catch (err) {
     console.error("❌ [validationStockRoute_POST] Error:", err);
-    return new NextResponse("Internal Server Error", { status: 500 });
+    return new NextResponse(
+      JSON.stringify({ 
+        success: false, 
+        message: "Internal Server Error",
+        error: err instanceof Error ? err.message : "Unknown error"
+      }), 
+      { 
+        status: 500,
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": allowedOrigin,
+          "Access-Control-Allow-Methods": "POST, OPTIONS",
+          "Access-Control-Allow-Headers": "Content-Type",
+          "Access-Control-Allow-Credentials": "true",
+        },
+      }
+    );
   }
 }

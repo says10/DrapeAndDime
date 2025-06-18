@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs"; // Import auth hook from Clerk
 import Image from "next/image";
-import { CreditCard, Package, ShoppingBag, AlertCircle, Truck, XCircle } from "lucide-react";
+import { CreditCard, Package, ShoppingBag, AlertCircle, Truck, XCircle, Loader2, CheckCircle } from "lucide-react";
 
 // Import the custom useCart hook
 import useCart from "@/lib/hooks/useCart"; // Adjust the path to where your store is located
@@ -28,10 +28,15 @@ const customScrollbarStyles = `
 
 const Payment = () => {
   const router = useRouter();
-  const { cartItems } = useCart(); // Use cartItems from your Zustand store
+  const { cartItems, clearCart } = useCart(); // Use cartItems from your Zustand store
 
   const { user } = useUser(); // Get clerkId from Clerk
   const [cashfreeLoaded, setCashfreeLoaded] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [paymentStep, setPaymentStep] = useState<'form' | 'processing' | 'verifying' | 'complete'>('form');
+  const [retryCount, setRetryCount] = useState(0);
+  const [orderId, setOrderId] = useState<string | null>(null);
+  const [paymentId, setPaymentId] = useState<string | null>(null);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -46,7 +51,7 @@ const Payment = () => {
   });
 
   const [shippingRate, setShippingRate] = useState(0);
-  const [errorMessage, setErrorMessage] = useState(""); // State to manage error messages
+  const [errorMessage, setErrorMessage] = useState("");
   const [showCodMessage, setShowCodMessage] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<'online' | 'cod'>('online');
   const [isFormFilled, setIsFormFilled] = useState(false);
@@ -81,12 +86,14 @@ const Payment = () => {
 
   // Modify handleChange to include pincode check
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = e.target.value;
-    setFormData({ ...formData, [e.target.name]: newValue });
+    const { name, value } = e.target;
+    const newFormData = { ...formData, [name]: value };
+    setFormData(newFormData);
+    setIsFormFilled(checkFormFilled(newFormData));
     
     // Check pincode specifically
-    if (e.target.name === 'postalCode') {
-      if (newValue.length === 6) {
+    if (name === 'postalCode') {
+      if (value.length === 6) {
         setShowCodMessage(true);
         if (paymentMethod === 'cod') {
           setPaymentMethod('online'); // Switch to online payment if COD was selected
@@ -99,8 +106,8 @@ const Payment = () => {
 
   // Validation function
   const validateForm = () => {
-    if (!formData.name || !formData.phone || !formData.email || !formData.street || !formData.city || !formData.state || !formData.postalCode || !formData.country) {
-      setErrorMessage("All fields are required.");
+    if (!isFormFilled) {
+      setErrorMessage("Please fill in all required fields.");
       return false;
     }
 
@@ -129,26 +136,89 @@ const Payment = () => {
     return true;
   };
 
+  // Payment verification with retry mechanism
+  const verifyPayment = async (orderId: string, paymentId: string, retries = 3): Promise<boolean> => {
+    for (let attempt = 1; attempt <= retries; attempt++) {
+      try {
+        console.log(`🔍 Payment verification attempt ${attempt}/${retries}`);
+        
+        const verifyRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/verifypayment`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ orderId, paymentId }),
+        });
+
+        if (!verifyRes.ok) {
+          console.error(`❌ Verification attempt ${attempt} failed with status:`, verifyRes.status);
+          if (attempt === retries) {
+            const errorText = await verifyRes.text();
+            console.error("Final error response:", errorText);
+            return false;
+          }
+          // Wait before retry (exponential backoff)
+          await new Promise(resolve => setTimeout(resolve, 2000 * attempt));
+          continue;
+        }
+
+        const verifyResData = await verifyRes.json();
+        console.log(`📊 Verification attempt ${attempt} response:`, verifyResData);
+
+        if (verifyResData.success) {
+          console.log("✅ Payment verified successfully!");
+          return true;
+        } else if (verifyResData.status === "pending") {
+          console.log("⏳ Payment is pending, waiting...");
+          if (attempt === retries) {
+            // For pending payments, we'll show a message but not treat as failure
+            setErrorMessage("Payment is being processed. You'll receive confirmation shortly.");
+            return false;
+          }
+          // Wait longer for pending payments
+          await new Promise(resolve => setTimeout(resolve, 5000 * attempt));
+          continue;
+        } else {
+          console.error("❌ Payment verification failed:", verifyResData.message);
+          setErrorMessage(verifyResData.message || "Payment verification failed.");
+          return false;
+        }
+      } catch (error) {
+        console.error(`❌ Verification attempt ${attempt} error:`, error);
+        if (attempt === retries) {
+          setErrorMessage("Payment verification failed. Please contact support.");
+          return false;
+        }
+        await new Promise(resolve => setTimeout(resolve, 2000 * attempt));
+      }
+    }
+    return false;
+  };
+
+  // Main payment handler
   const handlePayment = async () => {
-    if (!cashfreeLoaded || !amount) return;
+    if (!cashfreeLoaded || !amount || isProcessing) return;
 
     // Validate form data
     if (!validateForm()) return;
+
+    setIsProcessing(true);
+    setPaymentStep('processing');
+    setErrorMessage("");
 
     const orderData = {
       cartItems,
       customer: {
         email: formData.email,
-        clerkId: user?.id, // Ensure this is populated
+        clerkId: user?.id,
       },
       shippingDetails: formData,
       shippingRate,
       enteredName: formData.name,
     };
 
-    console.log("Sending orderData to API:", JSON.stringify(orderData, null, 2)); // Log before sending request
+    console.log("📤 Sending orderData to API:", JSON.stringify(orderData, null, 2));
 
     try {
+      // Step 1: Create checkout session
       const checkoutResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/checkout`, {
         method: "POST",
         headers: {
@@ -158,90 +228,139 @@ const Payment = () => {
       });
 
       if (!checkoutResponse.ok) {
-        // Try to parse as JSON first, fallback to text if it fails
         let errorData;
         try {
           errorData = await checkoutResponse.json();
         } catch (parseError) {
-          // If JSON parsing fails, get the text response
           const errorText = await checkoutResponse.text();
           console.error("Checkout API error (text response):", errorText);
           setErrorMessage("Checkout failed. Please try again.");
+          setIsProcessing(false);
+          setPaymentStep('form');
           return;
         }
         
         console.error("Checkout API error response:", errorData);
         setErrorMessage(errorData.message || "Some of the items may be out of stock");
+        setIsProcessing(false);
+        setPaymentStep('form');
         return;
       }
 
       const checkoutData = await checkoutResponse.json();
-      console.log("Received checkout response:", checkoutData); // Log response data
+      console.log("✅ Received checkout response:", checkoutData);
 
       if (!checkoutData.paymentSessionId) {
         setErrorMessage("Payment session ID missing. Please try again.");
+        setIsProcessing(false);
+        setPaymentStep('form');
         return;
       }
-      let checkoutOptions = {
-          paymentSessionId: checkoutData.paymentSessionId,
-          redirectTarget: "_modal",
+
+      setOrderId(checkoutData.orderId);
+
+      // Step 2: Process payment with Cashfree
+      const cashfree = await load({ mode: "production" });
+      const checkoutOptions = {
+        paymentSessionId: checkoutData.paymentSessionId,
+        redirectTarget: "_modal",
       };
 
-      // Proceed with payment
-      const cashfree = await load({ mode: "production" });
-      cashfree
-        .checkout(checkoutOptions)
-        .then(async (response: { paymentId: string }) => {
-          console.log("Cashfree Payment Success:", response);
-          
-          // Send verification request with both orderId and paymentId
-          const verifyRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/verifypayment`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              orderId: checkoutData.orderId,
-              paymentId: response.paymentId, // Use the actual paymentId from Cashfree response
-            }),
-          });
+      const paymentResponse = await cashfree.checkout(checkoutOptions);
+      console.log("💳 Cashfree Payment Response:", paymentResponse);
 
-          if (!verifyRes.ok) {
-            console.error("Payment verification failed with status:", verifyRes.status);
-            const errorText = await verifyRes.text();
-            console.error("Error response:", errorText);
-            setErrorMessage("Payment verification failed. Please contact support.");
-            window.location.href = "/payment_fail";
-            return;
-          }
+      if (!paymentResponse.paymentId) {
+        setErrorMessage("Payment failed. Please try again.");
+        setIsProcessing(false);
+        setPaymentStep('form');
+        return;
+      }
 
-          const verifyResData = await verifyRes.json();
-          console.log("Payment Verification Response:", verifyResData);
+      setPaymentId(paymentResponse.paymentId);
 
-          if (verifyResData.success) {
-            console.log("✅ Payment verified successfully, redirecting to success page");
-            window.location.href = "/payment_success";
-          } else {
-            console.error("❌ Payment verification failed:", verifyResData.message);
-            setErrorMessage(verifyResData.message || "Payment verification failed.");
-            
-            // Handle different failure scenarios
-            if (verifyResData.status === "pending") {
-              setErrorMessage("Payment is pending. Please wait for confirmation.");
-              // You might want to redirect to a pending page or show a message
+      // Step 3: Verify payment
+      setPaymentStep('verifying');
+      const verificationSuccess = await verifyPayment(checkoutData.orderId, paymentResponse.paymentId);
+
+      if (verificationSuccess) {
+        setPaymentStep('complete');
+        // Clear cart and redirect to success page
+        clearCart();
+        setTimeout(() => {
+          window.location.href = "/payment_success";
+        }, 1000);
+      } else {
+        // Handle verification failure
+        if (retryCount < 2) {
+          setRetryCount(prev => prev + 1);
+          setErrorMessage("Payment verification failed. Retrying...");
+          // Retry verification after a delay
+          setTimeout(async () => {
+            const retrySuccess = await verifyPayment(checkoutData.orderId, paymentResponse.paymentId, 2);
+            if (retrySuccess) {
+              setPaymentStep('complete');
+              clearCart();
+              setTimeout(() => {
+                window.location.href = "/payment_success";
+              }, 1000);
             } else {
+              setIsProcessing(false);
+              setPaymentStep('form');
               window.location.href = "/payment_fail";
             }
-          }
-        })
-        .catch((error: any) => {
-          console.error("Cashfree payment error:", error);
-          setErrorMessage("Payment failed. Please try again.");
+          }, 3000);
+        } else {
+          setIsProcessing(false);
+          setPaymentStep('form');
           window.location.href = "/payment_fail";
-        });
+        }
+      }
+
     } catch (error) {
-      console.error("Error during checkout process:", error);
+      console.error("❌ Error during checkout process:", error);
       setErrorMessage("An error occurred during checkout. Please try again later.");
+      setIsProcessing(false);
+      setPaymentStep('form');
     }
   };
+
+  // Loading states
+  if (paymentStep === 'processing') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-white via-gray-50/50 to-gray-100/50 flex items-center justify-center">
+        <div className="text-center space-y-6">
+          <div className="relative">
+            <Loader2 className="w-16 h-16 text-gray-900 animate-spin mx-auto" />
+            <div className="absolute inset-0 bg-gray-200 rounded-full animate-ping opacity-20"></div>
+          </div>
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">Processing Payment</h2>
+            <p className="text-gray-600">Please wait while we process your payment...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (paymentStep === 'verifying') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-white via-gray-50/50 to-gray-100/50 flex items-center justify-center">
+        <div className="text-center space-y-6">
+          <div className="relative">
+            <CheckCircle className="w-16 h-16 text-green-600 mx-auto" />
+            <div className="absolute inset-0 bg-green-200 rounded-full animate-ping opacity-20"></div>
+          </div>
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">Verifying Payment</h2>
+            <p className="text-gray-600">Please wait while we verify your payment...</p>
+            {retryCount > 0 && (
+              <p className="text-sm text-orange-600 mt-2">Retry attempt {retryCount}/2</p>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-white via-gray-50/50 to-gray-100/50">
@@ -278,7 +397,7 @@ const Payment = () => {
                 </div>
                 <div className="grid grid-cols-1 gap-6">
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-700">Full Name</label>
+                    <label className="text-sm font-medium text-gray-700">Full Name *</label>
                     <input
                       type="text"
                       name="name"
@@ -290,18 +409,18 @@ const Payment = () => {
                   </div>
                   <div className="grid grid-cols-2 gap-6">
                     <div className="space-y-2">
-                      <label className="text-sm font-medium text-gray-700">Phone Number</label>
+                      <label className="text-sm font-medium text-gray-700">Phone Number *</label>
                       <input
-                        type="text"
+                        type="tel"
                         name="phone"
-                        placeholder="Enter phone number"
+                        placeholder="Enter 10-digit phone number"
                         className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-200 focus:border-transparent transition-all duration-200"
                         onChange={handleChange}
                         required
                       />
                     </div>
                     <div className="space-y-2">
-                      <label className="text-sm font-medium text-gray-700">Email</label>
+                      <label className="text-sm font-medium text-gray-700">Email *</label>
                       <input
                         type="email"
                         name="email"
@@ -313,7 +432,7 @@ const Payment = () => {
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-700">Street Address</label>
+                    <label className="text-sm font-medium text-gray-700">Street Address *</label>
                     <input
                       type="text"
                       name="street"
@@ -325,7 +444,7 @@ const Payment = () => {
                   </div>
                   <div className="grid grid-cols-2 gap-6">
                     <div className="space-y-2">
-                      <label className="text-sm font-medium text-gray-700">City</label>
+                      <label className="text-sm font-medium text-gray-700">City *</label>
                       <input
                         type="text"
                         name="city"
@@ -336,7 +455,7 @@ const Payment = () => {
                       />
                     </div>
                     <div className="space-y-2">
-                      <label className="text-sm font-medium text-gray-700">State</label>
+                      <label className="text-sm font-medium text-gray-700">State *</label>
                       <input
                         type="text"
                         name="state"
@@ -349,7 +468,7 @@ const Payment = () => {
                   </div>
                   <div className="grid grid-cols-2 gap-6">
                     <div className="space-y-2">
-                      <label className="text-sm font-medium text-gray-700">Postal Code</label>
+                      <label className="text-sm font-medium text-gray-700">Postal Code *</label>
                       <input
                         type="text"
                         name="postalCode"
@@ -360,7 +479,7 @@ const Payment = () => {
                       />
                     </div>
                     <div className="space-y-2">
-                      <label className="text-sm font-medium text-gray-700">Country</label>
+                      <label className="text-sm font-medium text-gray-700">Country *</label>
                       <input
                         type="text"
                         name="country"
@@ -444,17 +563,13 @@ const Payment = () => {
                   </button>
 
                   <button
-                    onClick={() => !showCodMessage && setPaymentMethod('cod')}
-                    disabled={showCodMessage}
+                    onClick={() => setPaymentMethod('cod')}
                     className={`p-4 rounded-xl border transition-all duration-200 flex items-center gap-3 ${
                       paymentMethod === 'cod'
                         ? 'border-gray-900 bg-gray-50'
                         : 'border-gray-200 hover:border-gray-300'
-                    } ${showCodMessage ? 'opacity-75 cursor-not-allowed' : ''}`}
+                    }`}
                   >
-                    {showCodMessage && (
-                      <div className="absolute inset-0 bg-white/50 backdrop-blur-[2px] rounded-xl" />
-                    )}
                     <div className={`p-2 rounded-lg ${
                       paymentMethod === 'cod' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-600'
                     }`}>
@@ -467,17 +582,11 @@ const Payment = () => {
                   </button>
                 </div>
 
-                {showCodMessage && (
-                  <div className="mt-4 p-4 bg-amber-50 border border-amber-100 rounded-lg flex items-start gap-3">
-                    <XCircle className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
-                    <div>
-                      <p className="text-sm font-medium text-amber-700">
-                        Cash on Delivery is not available for this pincode
-                      </p>
-                      <p className="text-sm text-amber-600 mt-1">
-                        Please choose online payment to complete your order
-                      </p>
-                    </div>
+                {paymentMethod === 'cod' && (
+                  <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                    <p className="text-sm text-blue-800">
+                      <strong>Note:</strong> Cash on Delivery is not available for this order. Please select online payment.
+                    </p>
                   </div>
                 )}
               </div>
@@ -485,10 +594,24 @@ const Payment = () => {
               {/* Payment Button */}
               <button
                 onClick={handlePayment}
-                className="w-full py-4 px-8 bg-gray-900 text-white font-medium rounded-xl shadow-sm hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 transition-all duration-200 flex items-center justify-center gap-3"
+                disabled={!isFormFilled || isProcessing || !cashfreeLoaded}
+                className={`w-full py-4 px-8 font-medium rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all duration-200 flex items-center justify-center gap-3 ${
+                  isFormFilled && !isProcessing && cashfreeLoaded
+                    ? 'bg-gray-900 text-white hover:bg-gray-800 focus:ring-gray-900'
+                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                }`}
               >
-                <CreditCard className="w-5 h-5" />
-                <span>Proceed to Payment</span>
+                {isProcessing ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    <span>Processing...</span>
+                  </>
+                ) : (
+                  <>
+                    <CreditCard className="w-5 h-5" />
+                    <span>Proceed to Payment</span>
+                  </>
+                )}
               </button>
               <p className="text-center text-sm text-gray-500 mt-4">
                 Secure payment powered by Cashfree

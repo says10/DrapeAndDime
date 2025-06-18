@@ -12,13 +12,36 @@ export const GET = async (
     const banner = await Banner.findById(params.bannerId);
     
     if (!banner) {
-      return new NextResponse("Banner not found", { status: 404 });
+      return new NextResponse(
+        JSON.stringify({ 
+          success: false, 
+          message: "Banner not found" 
+        }), 
+        { 
+          status: 404,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
     }
     
     return NextResponse.json(banner);
   } catch (error) {
     console.error("[banner_GET]", error);
-    return new NextResponse("Internal error", { status: 500 });
+    return new NextResponse(
+      JSON.stringify({ 
+        success: false, 
+        message: "Internal Server Error",
+        error: error instanceof Error ? error.message : "Unknown error"
+      }), 
+      { 
+        status: 500,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
   }
 };
 

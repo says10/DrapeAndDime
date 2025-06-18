@@ -42,9 +42,21 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json(newProduct, { status: 201 });
-  } catch (err) {
-    console.error("[products_POST]", err);
-    return new NextResponse("Internal Error", { status: 500 });
+  } catch (err: any) {
+    console.error("❌ Error creating product:", err);
+    return new NextResponse(
+      JSON.stringify({ 
+        success: false, 
+        message: "Internal Server Error",
+        error: err?.message || "Unknown error"
+      }), 
+      { 
+        status: 500,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
   }
 }
 
@@ -90,9 +102,21 @@ export async function PUT(req: NextRequest) {
     }
 
     return NextResponse.json(updatedProduct, { status: 200 });
-  } catch (err) {
-    console.error("[products_PUT]", err);
-    return new NextResponse("Internal Error", { status: 500 });
+  } catch (err: any) {
+    console.error("❌ Error updating product:", err);
+    return new NextResponse(
+      JSON.stringify({ 
+        success: false, 
+        message: "Internal Server Error",
+        error: err?.message || "Unknown error"
+      }), 
+      { 
+        status: 500,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
   }
 }
 
@@ -105,8 +129,20 @@ export async function GET(req: NextRequest) {
       .populate({ path: "collections", model: Collection });
 
     return NextResponse.json(products, { status: 200 });
-  } catch (err) {
-    console.error("[products_GET]", err);
-    return new NextResponse("Internal Error", { status: 500 });
+  } catch (err: any) {
+    console.error("❌ Error fetching products:", err);
+    return new NextResponse(
+      JSON.stringify({ 
+        success: false, 
+        message: "Internal Server Error",
+        error: err?.message || "Unknown error"
+      }), 
+      { 
+        status: 500,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
   }
 }

@@ -23,8 +23,20 @@ export const GET = async (
 
     return NextResponse.json(collection, { status: 200 });
   } catch (err) {
-    console.log("[collectionId_GET]", err);
-    return new NextResponse("Internal error", { status: 500 });
+    console.log("[collectionId_GET]", err)
+    return new NextResponse(
+      JSON.stringify({ 
+        success: false, 
+        message: "Internal Server Error",
+        error: err instanceof Error ? err.message : "Unknown error"
+      }), 
+      { 
+        status: 500,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
   }
 };
 

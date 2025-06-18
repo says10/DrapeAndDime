@@ -19,6 +19,26 @@ export async function OPTIONS(req: NextRequest) {
   });
 }
 
+// Helper function to create timeout promise
+const createTimeoutPromise = (ms: number) => {
+  return new Promise((_, reject) => {
+    setTimeout(() => reject(new Error('Request timeout')), ms);
+  });
+};
+
+// Helper function to create Cashfree order with timeout
+const createCashfreeOrderWithTimeout = async (orderRequest: any, timeoutMs = 15000): Promise<any> => {
+  try {
+    const orderPromise = Cashfree.PGCreateOrder("2025-01-01", orderRequest);
+    const timeoutPromise = createTimeoutPromise(timeoutMs);
+    
+    const response = await Promise.race([orderPromise, timeoutPromise]);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export async function POST(req: NextRequest) {
   try {
     console.log("🛒 Checkout API called");
@@ -30,6 +50,7 @@ export async function POST(req: NextRequest) {
 
     const { cartItems, customer, shippingDetails, shippingRate, enteredName } = body;
 
+    // Validate required fields
     if (!cartItems || cartItems.length === 0) {
       console.log("❌ No items in cart");
       return new NextResponse(
@@ -50,49 +71,99 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Stock validation: Check if all items in the cart have sufficient stock
+    if (!customer || !customer.email || !customer.clerkId) {
+      console.log("❌ Missing customer information");
+      return new NextResponse(
+        JSON.stringify({ 
+          success: false, 
+          message: "Missing customer information" 
+        }), 
+        { 
+          status: 400,
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": allowedOrigin,
+            "Access-Control-Allow-Methods": "POST, OPTIONS",
+            "Access-Control-Allow-Headers": "Content-Type",
+            "Access-Control-Allow-Credentials": "true",
+          },
+        }
+      );
+    }
+
+    if (!shippingDetails || !enteredName) {
+      console.log("❌ Missing shipping details");
+      return new NextResponse(
+        JSON.stringify({ 
+          success: false, 
+          message: "Missing shipping details" 
+        }), 
+        { 
+          status: 400,
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": allowedOrigin,
+            "Access-Control-Allow-Methods": "POST, OPTIONS",
+            "Access-Control-Allow-Headers": "Content-Type",
+            "Access-Control-Allow-Credentials": "true",
+          },
+        }
+      );
+    }
+
+    // Enhanced stock validation with detailed error messages
+    const stockValidationErrors = [];
+    const validatedItems = [];
+
     for (const cartItem of cartItems) {
       const product = await Product.findById(cartItem.item._id);
+      
       if (!product) {
-        return new NextResponse(
-          JSON.stringify({ 
-            success: false, 
-            message: `Product not found: ${cartItem.item.title}` 
-          }), 
-          { 
-            status: 404,
-            headers: {
-              "Content-Type": "application/json",
-              "Access-Control-Allow-Origin": allowedOrigin,
-              "Access-Control-Allow-Methods": "POST, OPTIONS",
-              "Access-Control-Allow-Headers": "Content-Type",
-              "Access-Control-Allow-Credentials": "true",
-            },
-          }
-        );
+        stockValidationErrors.push(`Product not found: ${cartItem.item.title}`);
+        continue;
       }
+
+      if (!product.isAvailable) {
+        stockValidationErrors.push(`${product.title} is currently unavailable`);
+        continue;
+      }
+
       if (product.quantity < cartItem.quantity) {
-        return new NextResponse(
-          JSON.stringify({ 
-            success: false, 
-            message: `${product.title} is out of stock. Only ${product.quantity} available.` 
-          }), 
-          { 
-            status: 400,
-            headers: {
-              "Content-Type": "application/json",
-              "Access-Control-Allow-Origin": allowedOrigin,
-              "Access-Control-Allow-Methods": "POST, OPTIONS",
-              "Access-Control-Allow-Headers": "Content-Type",
-              "Access-Control-Allow-Credentials": "true",
-            },
-          }
+        stockValidationErrors.push(
+          `${product.title} is out of stock. Only ${product.quantity} available, but ${cartItem.quantity} requested.`
         );
+        continue;
       }
+
+      validatedItems.push({
+        ...cartItem,
+        product: product
+      });
+    }
+
+    if (stockValidationErrors.length > 0) {
+      console.log("❌ Stock validation failed:", stockValidationErrors);
+      return new NextResponse(
+        JSON.stringify({ 
+          success: false, 
+          message: "Some items are out of stock or unavailable",
+          errors: stockValidationErrors
+        }), 
+        { 
+          status: 400,
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": allowedOrigin,
+            "Access-Control-Allow-Methods": "POST, OPTIONS",
+            "Access-Control-Allow-Headers": "Content-Type",
+            "Access-Control-Allow-Credentials": "true",
+          },
+        }
+      );
     }
 
     // Calculate totalAmount
-    const totalAmount = cartItems.reduce(
+    const totalAmount = validatedItems.reduce(
       (acc: number, item: { item: { price: number }; quantity: number }) =>
         acc + item.item.price * item.quantity,
       0
@@ -104,7 +175,7 @@ export async function POST(req: NextRequest) {
     const cashfreeOrderRequest = {
       order_amount: totalAmount,
       order_currency: "INR",
-      order_id: `order_${new Date().getTime()}`,
+      order_id: `order_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       customer_details: {
         customer_id: customer.clerkId,
         customer_phone: shippingDetails.phone,
@@ -118,18 +189,18 @@ export async function POST(req: NextRequest) {
     Cashfree.XClientSecret = process.env.CASHFREE_SECRET_KEY;
     Cashfree.XEnvironment = Cashfree.Environment.PRODUCTION;
 
-    // Create order with Cashfree
-    let cashfreeResponse;
+    // Create order with Cashfree with timeout
+    let cashfreeResponse: any;
     try {
-      cashfreeResponse = await Cashfree.PGCreateOrder("2025-01-01", cashfreeOrderRequest);
+      cashfreeResponse = await createCashfreeOrderWithTimeout(cashfreeOrderRequest, 15000);
       console.log("✅ Cashfree Order Created:", cashfreeResponse.data);
-    } catch (cashfreeError) {
+    } catch (cashfreeError: any) {
       console.error("❌ Error creating Cashfree order:", cashfreeError);
       return new NextResponse(
         JSON.stringify({ 
           success: false, 
           message: "Failed to create payment order",
-          error: cashfreeError.message 
+          error: cashfreeError?.message || "Unknown error"
         }), 
         { 
           status: 500,
@@ -165,13 +236,34 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Validate Cashfree response
+    if (!cashfreeResponse.data.order_id || !cashfreeResponse.data.payment_session_id) {
+      console.error("❌ Invalid Cashfree response:", cashfreeResponse.data);
+      return new NextResponse(
+        JSON.stringify({ 
+          success: false, 
+          message: "Invalid response from payment gateway"
+        }), 
+        { 
+          status: 500,
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": allowedOrigin,
+            "Access-Control-Allow-Methods": "POST, OPTIONS",
+            "Access-Control-Allow-Headers": "Content-Type",
+            "Access-Control-Allow-Credentials": "true",
+          },
+        }
+      );
+    }
+
     // Save order in database
     const newOrder = new Order({
       customerClerkId: customer.clerkId,
       customerEmail: customer.email,
       customerName: enteredName,
       customerPhone: shippingDetails.phone,
-      products: cartItems.map((item: { item: { _id: string }; color?: string; size?: string; quantity: number }) => ({
+      products: validatedItems.map((item: { item: { _id: string }; color?: string; size?: string; quantity: number }) => ({
         product: item.item._id,
         color: item.color || "default",
         size: item.size || "default",
@@ -195,13 +287,13 @@ export async function POST(req: NextRequest) {
     try {
       await newOrder.save();
       console.log("🗃️ Order saved to MongoDB:", newOrder._id);
-    } catch (dbError) {
+    } catch (dbError: any) {
       console.error("❌ Error saving order to database:", dbError);
       return new NextResponse(
         JSON.stringify({ 
           success: false, 
           message: "Failed to save order",
-          error: dbError.message 
+          error: dbError?.message || "Database error"
         }), 
         { 
           status: 500,
@@ -224,7 +316,13 @@ export async function POST(req: NextRequest) {
         paymentSessionId: cashfreeResponse.data.payment_session_id,
         amount: totalAmount,
         currency: "INR",
-        cartItems,
+        cartItems: validatedItems,
+        orderDetails: {
+          orderId: newOrder._id,
+          cashfreeOrderId: cashfreeResponse.data.order_id,
+          totalAmount: totalAmount,
+          expiresAt: newOrder.expiresAt
+        }
       }),
       {
         status: 200,
@@ -237,13 +335,13 @@ export async function POST(req: NextRequest) {
         },
       }
     );
-  } catch (err) {
-    console.error("❌ [checkout_POST] Error:", err);
+  } catch (error: any) {
+    console.error("❌ [checkout_POST] Error:", error);
     return new NextResponse(
       JSON.stringify({ 
         success: false, 
         message: "Internal Server Error",
-        error: err instanceof Error ? err.message : "Unknown error"
+        error: error?.message || "Unknown error"
       }), 
       { 
         status: 500,

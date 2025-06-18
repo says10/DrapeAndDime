@@ -8,6 +8,17 @@ import { Cashfree } from "cashfree-pg"; // Import Cashfree
 
 const allowedOrigin = `https://drapeanddime.shop`;
 
+// Add this type at the top of the file or near the function
+
+type CashfreeTransaction = {
+  cf_payment_id: string;
+  payment_status: string;
+  payment_amount: number;
+  payment_currency: string;
+  payment_time: string;
+  // Add more fields if needed
+};
+
 // Handle OPTIONS preflight request
 export async function OPTIONS(req: NextRequest) {
   return new NextResponse(null, {
@@ -21,6 +32,26 @@ export async function OPTIONS(req: NextRequest) {
   });
 }
 
+// Helper function to create timeout promise
+const createTimeoutPromise = (ms: number) => {
+  return new Promise((_, reject) => {
+    setTimeout(() => reject(new Error('Request timeout')), ms);
+  });
+};
+
+// Helper function to fetch order payments with timeout
+const fetchOrderPaymentsWithTimeout = async (orderId: string, customerId: string, timeoutMs = 10000) => {
+  try {
+    const paymentsPromise = Cashfree.PGOrderFetchPayments("2025-01-01", orderId, customerId);
+    const timeoutPromise = createTimeoutPromise(timeoutMs);
+    
+    const response = await Promise.race([paymentsPromise, timeoutPromise]);
+    return response;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
 export async function POST(req: NextRequest) {
   try {
     console.log("🔐 Verifying Cashfree Payment");
@@ -31,12 +62,27 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     console.log("📩 Received payment verification request body:", body);
 
-    const { orderId, paymentId } = body; // Get both orderId and paymentId
+    const { orderId, paymentId } = body;
 
-    // Check if the necessary fields are present
+    // Validate input
     if (!orderId) {
       console.log("❌ Missing orderId. Verification cannot proceed.");
-      return new NextResponse("Missing orderId", { status: 400 });
+      return new NextResponse(
+        JSON.stringify({ 
+          success: false, 
+          message: "Missing orderId" 
+        }), 
+        { 
+          status: 400,
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": allowedOrigin,
+            "Access-Control-Allow-Methods": "POST, OPTIONS",
+            "Access-Control-Allow-Headers": "Content-Type",
+            "Access-Control-Allow-Credentials": "true",
+          },
+        }
+      );
     }
 
     // Step 1: Fetch the order using the orderId
@@ -44,7 +90,22 @@ export async function POST(req: NextRequest) {
 
     if (!order) {
       console.log("❌ Order not found with the given orderId:", orderId);
-      return new NextResponse("Order not found", { status: 404 });
+      return new NextResponse(
+        JSON.stringify({ 
+          success: false, 
+          message: "Order not found" 
+        }), 
+        { 
+          status: 404,
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": allowedOrigin,
+            "Access-Control-Allow-Methods": "POST, OPTIONS",
+            "Access-Control-Allow-Headers": "Content-Type",
+            "Access-Control-Allow-Credentials": "true",
+          },
+        }
+      );
     }
 
     console.log("📦 Order fetched from DB:", {
@@ -54,7 +115,30 @@ export async function POST(req: NextRequest) {
       totalAmount: order.totalAmount
     });
 
-    // Step 2: Fetch payment status from Cashfree
+    // Check if order is already paid
+    if (order.status === "Paid") {
+      console.log("⚠️ Order is already marked as paid, returning success");
+      return new NextResponse(
+        JSON.stringify({
+          success: true,
+          message: "Order already processed",
+          orderId: order._id,
+          paymentId: order.paymentId,
+        }), 
+        { 
+          status: 200,
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": allowedOrigin,
+            "Access-Control-Allow-Methods": "POST, OPTIONS",
+            "Access-Control-Allow-Headers": "Content-Type",
+            "Access-Control-Allow-Credentials": "true",
+          },
+        }
+      );
+    }
+
+    // Step 2: Initialize Cashfree
     Cashfree.XClientId = process.env.CASHFREE_APP_ID;
     Cashfree.XClientSecret = process.env.CASHFREE_SECRET_KEY;
     Cashfree.XEnvironment = Cashfree.Environment.PRODUCTION;
@@ -63,106 +147,94 @@ export async function POST(req: NextRequest) {
     let paymentDetails = null;
 
     try {
-      // First, try to fetch payment details using the paymentId if available
-      if (paymentId) {
-        try {
-          console.log("🔍 Fetching payment details using paymentId:", paymentId);
-          const paymentResponse = await Cashfree.PGFetchPayment("2025-01-01", paymentId);
-          console.log("💳 Payment details response:", JSON.stringify(paymentResponse.data, null, 2));
-          
-          if (paymentResponse.data && paymentResponse.data.payment_status) {
-            paymentStatus = paymentResponse.data.payment_status === "SUCCESS" ? "Success" : "Failure";
-            paymentDetails = paymentResponse.data;
-            
-            // Store the payment ID
-            order.paymentId = String(paymentId);
-            await order.save();
-            
-            console.log("✅ Payment status determined from paymentId:", paymentStatus);
-          }
-        } catch (paymentError) {
-          console.log("⚠️ Could not fetch payment by paymentId, trying order fetch:", paymentError.message);
-        }
-      }
-
-      // If paymentId method failed or paymentId not provided, try fetching by order
-      if (paymentStatus === "Failure") {
-        console.log("🔍 Fetching payments using orderId:", orderId);
-        console.log("🔍 Customer Clerk ID:", order.customerClerkId);
-        
-        const response = await Cashfree.PGOrderFetchPayments("2025-01-01", orderId, order.customerClerkId);
-        console.log("📊 Order payments response status:", response.status);
-        console.log("📊 Order payments response data:", JSON.stringify(response.data, null, 2));
-        
-        const transactions = response.data || [];
-        console.log("📊 Number of transactions found:", transactions.length);
-        
-        if (transactions.length > 0) {
-          // Log all transaction statuses for debugging
-          transactions.forEach((transaction, index) => {
-            console.log(`📊 Transaction ${index + 1}:`, {
-              cf_payment_id: transaction.cf_payment_id,
-              payment_status: transaction.payment_status,
-              payment_amount: transaction.payment_amount,
-              payment_currency: transaction.payment_currency
-            });
+      // Fetch payments using orderId
+      console.log("🔍 Fetching payments using orderId:", orderId);
+      console.log("🔍 Customer Clerk ID:", order.customerClerkId);
+      
+      const response = await fetchOrderPaymentsWithTimeout(orderId, order.customerClerkId, 8000) as any;
+      console.log("📊 Order payments response status:", response.status);
+      console.log("📊 Order payments response data:", JSON.stringify(response.data, null, 2));
+      
+      const transactions = (response.data || []) as CashfreeTransaction[];
+      console.log("📊 Number of transactions found:", transactions.length);
+      
+      if (transactions.length > 0) {
+        // Log all transaction statuses for debugging
+        transactions.forEach((transaction: CashfreeTransaction, index: number) => {
+          console.log(`📊 Transaction ${index + 1}:`, {
+            cf_payment_id: transaction.cf_payment_id,
+            payment_status: transaction.payment_status,
+            payment_amount: transaction.payment_amount,
+            payment_currency: transaction.payment_currency,
+            payment_time: transaction.payment_time
           });
-          
-          // Find the most recent successful payment
-          const successfulPayment = transactions.find(transaction => 
-            transaction.payment_status === "SUCCESS"
+        });
+        
+        // Find the most recent successful payment
+        const successfulPayment = transactions.find(transaction => 
+          transaction.payment_status === "SUCCESS"
+        );
+        
+        if (successfulPayment) {
+          paymentStatus = "Success";
+          paymentDetails = successfulPayment;
+          order.paymentId = String(successfulPayment.cf_payment_id);
+          await order.save();
+          console.log("✅ Payment status determined from order payments: Success");
+        } else {
+          // Check for pending payments
+          const pendingPayment = transactions.find(transaction => 
+            transaction.payment_status === "PENDING"
           );
           
-          if (successfulPayment) {
-            paymentStatus = "Success";
-            paymentDetails = successfulPayment;
-            order.paymentId = String(successfulPayment.cf_payment_id);
-            await order.save();
-            console.log("✅ Payment status determined from order payments: Success");
+          if (pendingPayment) {
+            paymentStatus = "Pending";
+            paymentDetails = pendingPayment;
+            console.log("⏳ Payment status: Pending");
           } else {
-            // Check for pending payments
-            const pendingPayment = transactions.find(transaction => 
-              transaction.payment_status === "PENDING"
+            // Check for failed payments
+            const failedPayment = transactions.find(transaction => 
+              transaction.payment_status === "FAILED"
             );
             
-            if (pendingPayment) {
-              paymentStatus = "Pending";
-              paymentDetails = pendingPayment;
-              console.log("⏳ Payment status: Pending");
+            if (failedPayment) {
+              paymentStatus = "Failed";
+              paymentDetails = failedPayment;
+              console.log("❌ Payment status: Failed");
             } else {
               paymentStatus = "Failure";
-              console.log("❌ No successful or pending payments found");
+              console.log("❌ No successful, pending, or failed payments found");
             }
           }
-        } else {
-          console.log("❌ No transactions found for this order");
         }
+      } else {
+        console.log("❌ No transactions found for this order");
       }
 
-    } catch (error) {
+    } catch (error: any) {
       console.error("❌ Error fetching payment status from Cashfree:", error);
       return new NextResponse(
         JSON.stringify({ 
           success: false, 
           message: "Error fetching payment status from payment gateway",
-          error: error.message 
+          error: error?.message || "Unknown error"
         }), 
-        { status: 500 }
+        { 
+          status: 500,
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": allowedOrigin,
+            "Access-Control-Allow-Methods": "POST, OPTIONS",
+            "Access-Control-Allow-Headers": "Content-Type",
+            "Access-Control-Allow-Credentials": "true",
+          },
+        }
       );
     }
 
     console.log("📊 Final Payment Status:", paymentStatus);
 
     if (paymentStatus === "Success") {
-      // Check if order is already paid to prevent double processing
-      if (order.status === "Paid") {
-        console.log("⚠️ Order is already marked as paid, skipping processing");
-        return NextResponse.json({
-          success: true,
-          message: "Order already processed",
-        }, { status: 200 });
-      }
-
       // Step 3: Update the order status to 'Paid'
       order.status = "Paid";
       order.trackingLink = "";
@@ -183,6 +255,12 @@ export async function POST(req: NextRequest) {
 
         if (!product) {
           console.error(`❌ Product not found for ID: ${cartItem.product}`);
+          continue;
+        }
+
+        // Check if we have enough stock before reducing
+        if (product.quantity < cartItem.quantity) {
+          console.error(`❌ Insufficient stock for product ${product._id}: Required ${cartItem.quantity}, Available ${product.quantity}`);
           continue;
         }
 
@@ -208,7 +286,11 @@ export async function POST(req: NextRequest) {
 
         if (customer) {
           console.log("👤 Customer found, updating order history...");
-          customer.orders.push(order._id);
+          // Check if order is already in customer's orders
+          if (!customer.orders.includes(order._id)) {
+            customer.orders.push(order._id);
+            await customer.save();
+          }
         } else {
           console.log("🆕 Creating a new customer record...");
           customer = new Customer({
@@ -217,9 +299,9 @@ export async function POST(req: NextRequest) {
             email: customerEmail,
             orders: [order._id],
           });
+          await customer.save();
         }
 
-        await customer.save();
         console.log("✅ Customer record updated successfully!");
       }
 
@@ -228,7 +310,7 @@ export async function POST(req: NextRequest) {
         try {
           await sendEmail({
             to: order.customerEmail,
-            subject: "🛒 Order Confirmation",
+            subject: "🛒 Order Confirmation - DrapeAndDime",
             text: `Thank you for your order! Your payment of ₹${order.totalAmount} has been received.`,
             html: `
               <html>
@@ -253,6 +335,10 @@ export async function POST(req: NextRequest) {
                             <td style="font-size: 16px; color: #333333; padding: 8px; border: 1px solid #ddd;">Total Amount</td>
                             <td style="font-size: 16px; color: #333333; padding: 8px; border: 1px solid #ddd;">₹${order.totalAmount}</td>
                           </tr>
+                          <tr>
+                            <td style="font-size: 16px; color: #333333; padding: 8px; border: 1px solid #ddd;">Payment ID</td>
+                            <td style="font-size: 16px; color: #333333; padding: 8px; border: 1px solid #ddd;">${order.paymentId || 'N/A'}</td>
+                          </tr>
                         </table>
                         <p style="font-size: 16px; color: #333333; margin-top: 20px;">We will notify you when your order is shipped. If you have any questions, feel free to reach out to our support team.</p>
                         <p style="font-size: 16px; color: #333333; margin-top: 20px;">Thank you for choosing us!</p>
@@ -272,42 +358,88 @@ export async function POST(req: NextRequest) {
           });
 
           console.log(`📧 Confirmation email sent to: ${order.customerEmail}`);
-        } catch (emailError) {
+        } catch (emailError: any) {
           console.error("❌ Error sending confirmation email:", emailError);
           // Don't fail the entire process if email fails
         }
       }
 
-      return NextResponse.json({
-        success: true,
-        message: "Payment verified, order updated, and customer stored",
-        orderId: order._id,
-        paymentId: order.paymentId,
-      }, { status: 200 });
+      return new NextResponse(
+        JSON.stringify({
+          success: true,
+          message: "Payment verified, order updated, and customer stored",
+          orderId: order._id,
+          paymentId: order.paymentId,
+        }), 
+        { 
+          status: 200,
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": allowedOrigin,
+            "Access-Control-Allow-Methods": "POST, OPTIONS",
+            "Access-Control-Allow-Headers": "Content-Type",
+            "Access-Control-Allow-Credentials": "true",
+          },
+        }
+      );
 
     } else if (paymentStatus === "Pending") {
-      return NextResponse.json({
-        success: false,
-        message: "Payment is pending, please wait for confirmation",
-        status: "pending"
-      }, { status: 200 });
+      return new NextResponse(
+        JSON.stringify({
+          success: false,
+          message: "Payment is pending, please wait for confirmation",
+          status: "pending"
+        }), 
+        { 
+          status: 200,
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": allowedOrigin,
+            "Access-Control-Allow-Methods": "POST, OPTIONS",
+            "Access-Control-Allow-Headers": "Content-Type",
+            "Access-Control-Allow-Credentials": "true",
+          },
+        }
+      );
     } else {
-      return NextResponse.json({
-        success: false,
-        message: "Payment verification failed - payment not successful",
-        status: "failed"
-      }, { status: 400 });
+      return new NextResponse(
+        JSON.stringify({
+          success: false,
+          message: "Payment verification failed - payment not successful",
+          status: "failed",
+          paymentStatus: paymentStatus
+        }), 
+        { 
+          status: 400,
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": allowedOrigin,
+            "Access-Control-Allow-Methods": "POST, OPTIONS",
+            "Access-Control-Allow-Headers": "Content-Type",
+            "Access-Control-Allow-Credentials": "true",
+          },
+        }
+      );
     }
 
-  } catch (error) {
-    console.error("❌ Payment verification error:", error);
+  } catch (error: any) {
+    console.error("❌ [verifypayment_POST] Error:", error);
     return new NextResponse(
       JSON.stringify({ 
         success: false, 
-        message: "Payment verification failed",
-        error: error.message 
+        message: "Internal Server Error",
+        error: error?.message || "Unknown error"
       }), 
-      { status: 500 }
+      { 
+        status: 500,
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": allowedOrigin,
+          "Access-Control-Allow-Methods": "POST, OPTIONS",
+          "Access-Control-Allow-Headers": "Content-Type",
+          "Access-Control-Allow-Credentials": "true",
+        },
+      }
     );
   }
 }

@@ -44,9 +44,21 @@ export const GET = async (req: NextRequest, { params }: { params: { orderId: str
       console.warn(`⚠️ No order found with ObjectId: ${objectId}`);
       return new NextResponse(JSON.stringify({ message: "Order Not Found" }), { status: 404 });
     }
-  } catch (err) {
-    console.error("❌ [orderId_GET] Error:", err);
-    return new NextResponse("Internal Server Error", { status: 500 });
+  } catch (err: any) {
+    console.error("❌ Error fetching order:", err);
+    return new NextResponse(
+      JSON.stringify({ 
+        success: false, 
+        message: "Internal Server Error",
+        error: err?.message || "Unknown error"
+      }), 
+      { 
+        status: 500,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
   }
 };
 

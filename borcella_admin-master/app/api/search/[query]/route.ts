@@ -15,9 +15,21 @@ export const GET = async (req: NextRequest, { params }: { params: { query: strin
     })
 
     return NextResponse.json(searchedProducts, { status: 200 })
-  } catch (err) {
-    console.log("[search_GET]", err)
-    return new NextResponse("Internal Server Error", { status: 500 })
+  } catch (err: any) {
+    console.error("❌ Error in admin search API:", err);
+    return new NextResponse(
+      JSON.stringify({ 
+        success: false, 
+        message: "Internal Server Error",
+        error: err?.message || "Unknown error"
+      }), 
+      { 
+        status: 500,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
   }
 }
 

@@ -33,9 +33,21 @@ export const GET = async (
         "Access-Control-Allow-Headers": "Content-Type",
       },
     });
-  } catch (err) {
-    console.log("[productId_GET]", err);
-    return new NextResponse("Internal error", { status: 500 });
+  } catch (err: any) {
+    console.error("❌ Error fetching product:", err);
+    return new NextResponse(
+      JSON.stringify({ 
+        success: false, 
+        message: "Internal Server Error",
+        error: err?.message || "Unknown error"
+      }), 
+      { 
+        status: 500,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
   }
 };
 
@@ -129,9 +141,21 @@ export const POST = async (
     await updatedProduct.save();
 
     return NextResponse.json(updatedProduct, { status: 200 });
-  } catch (err) {
-    console.log("[productId_POST]", err);
-    return new NextResponse("Internal error", { status: 500 });
+  } catch (err: any) {
+    console.error("❌ Error updating product:", err);
+    return new NextResponse(
+      JSON.stringify({ 
+        success: false, 
+        message: "Internal Server Error",
+        error: err?.message || "Unknown error"
+      }), 
+      { 
+        status: 500,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
   }
 };
 
@@ -172,9 +196,21 @@ export const DELETE = async (
     return new NextResponse(JSON.stringify({ message: "Product deleted" }), {
       status: 200,
     });
-  } catch (err) {
-    console.log("[productId_DELETE]", err);
-    return new NextResponse("Internal error", { status: 500 });
+  } catch (err: any) {
+    console.error("❌ Error deleting product:", err);
+    return new NextResponse(
+      JSON.stringify({ 
+        success: false, 
+        message: "Internal Server Error",
+        error: err?.message || "Unknown error"
+      }), 
+      { 
+        status: 500,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
   }
 };
 

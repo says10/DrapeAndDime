@@ -101,11 +101,20 @@ export async function GET(
     console.log("Search results found:", products.length);
     
     return NextResponse.json(products);
-  } catch (error) {
-    console.error("Search API error:", error);
-    return NextResponse.json(
-      { error: "Failed to search products" },
-      { status: 500 }
+  } catch (err: any) {
+    console.error("❌ Error in search API:", err);
+    return new NextResponse(
+      JSON.stringify({ 
+        success: false, 
+        message: "Internal Server Error",
+        error: err?.message || "Unknown error"
+      }), 
+      { 
+        status: 500,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
     );
   }
 } 

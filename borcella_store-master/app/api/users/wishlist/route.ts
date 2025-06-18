@@ -50,8 +50,20 @@ export const POST = async (req: NextRequest) => {
     await user.save()
     
     return NextResponse.json(user, { status: 200 })
-  } catch (err) {
-    console.log("[wishlist_POST]", err);
-    return new NextResponse("Internal Server Error", { status: 500 });
+  } catch (err: any) {
+    console.error("❌ Error in wishlist API:", err);
+    return new NextResponse(
+      JSON.stringify({ 
+        success: false, 
+        message: "Internal Server Error",
+        error: err?.message || "Unknown error"
+      }), 
+      { 
+        status: 500,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
   }
 }

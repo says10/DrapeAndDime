@@ -9,7 +9,19 @@ export const GET = async () => {
     return NextResponse.json(banners);
   } catch (error) {
     console.error("[banners_GET]", error);
-    return new NextResponse("Internal error", { status: 500 });
+    return new NextResponse(
+      JSON.stringify({ 
+        success: false, 
+        message: "Internal Server Error",
+        error: error instanceof Error ? error.message : "Unknown error"
+      }), 
+      { 
+        status: 500,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
   }
 };
 
@@ -26,6 +38,18 @@ export const POST = async (req: NextRequest) => {
     return NextResponse.json(banner);
   } catch (error) {
     console.error("[banners_POST]", error);
-    return new NextResponse("Internal error", { status: 500 });
+    return new NextResponse(
+      JSON.stringify({ 
+        success: false, 
+        message: "Internal Server Error",
+        error: error instanceof Error ? error.message : "Unknown error"
+      }), 
+      { 
+        status: 500,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
   }
 }; 
