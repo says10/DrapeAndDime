@@ -150,47 +150,183 @@ if (filteredPayment) {
 
       // Step 6: Send confirmation email
       if (order.customerEmail) {
+        // Fetch product details for email
+        const productDetails = await Promise.all(
+          order.products.map(async (item: any) => {
+            const product = await Product.findById(item.product);
+            return {
+              ...item,
+              product: product || { title: 'Product', price: 0 }
+            };
+          })
+        );
+
         await sendEmail({
           to: order.customerEmail,
-          subject: "🛒 Order Confirmation",
-          text: `Thank you for your order! Your payment of ₹${order.totalAmount} has been received.`,
+          subject: "🎉 Order Confirmed - DrapeAndDime",
+          text: `Thank you for your order! Your payment of ₹${order.totalAmount} has been received. Order ID: ${order._id}`,
           html: `
-            <html>
-              <body style="font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f4f4;">
-                <table style="width: 100%; max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden;">
-                  <tr>
-                    <td style="background-color: #3399cc; padding: 20px; text-align: center;">
-                      <h1 style="color: white; font-size: 24px; margin: 0;">Thank You for Your Order!</h1>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td style="padding: 20px;">
-                      <p style="font-size: 16px; color: #333333;">Dear ${order.customerName},</p>
-                      <p style="font-size: 16px; color: #333333;">Thank you for your order! We're excited to inform you that your payment of <strong>₹${order.totalAmount}</strong> has been successfully received.</p>
-                      <p style="font-size: 16px; color: #333333;">Your order details are as follows:</p>
-                      <table style="width: 100%; margin-top: 20px; border-collapse: collapse;">
-                        <tr>
-                          <td style="font-size: 16px; color: #333333; padding: 8px; border: 1px solid #ddd;">Order ID</td>
-                          <td style="font-size: 16px; color: #333333; padding: 8px; border: 1px solid #ddd;">${order._id}</td>
-                        </tr>
-                        <tr>
-                          <td style="font-size: 16px; color: #333333; padding: 8px; border: 1px solid #ddd;">Total Amount</td>
-                          <td style="font-size: 16px; color: #333333; padding: 8px; border: 1px solid #ddd;">₹${order.totalAmount}</td>
-                        </tr>
-                      </table>
-                      <p style="font-size: 16px; color: #333333; margin-top: 20px;">We will notify you when your order is shipped. If you have any questions, feel free to reach out to our support team.</p>
-                      <p style="font-size: 16px; color: #333333; margin-top: 20px;">Thank you for choosing us!</p>
-                      <p style="font-size: 16px; color: #333333;">Best regards,</p>
-                      <p style="font-size: 16px; color: #333333;">DrapeAndDime</p>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td style="background-color: #f4f4f4; padding: 10px; text-align: center; font-size: 14px; color: #777777;">
-                      <p style="margin: 0;">&copy; ${new Date().getFullYear()} DrapeAndDime. All rights reserved.</p>
-                    </td>
-                  </tr>
-                </table>
-              </body>
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Order Confirmation - DrapeAndDime</title>
+                <style>
+                    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background-color: #f8f9fa; }
+                    .container { max-width: 600px; margin: 0 auto; background-color: #ffffff; }
+                    .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px 30px; text-align: center; }
+                    .header h1 { color: white; margin: 0; font-size: 28px; font-weight: 600; }
+                    .header p { color: rgba(255,255,255,0.9); margin: 10px 0 0 0; font-size: 16px; }
+                    .content { padding: 40px 30px; }
+                    .greeting { font-size: 18px; color: #333; margin-bottom: 20px; }
+                    .order-details { background-color: #f8f9fa; border-radius: 12px; padding: 25px; margin: 25px 0; }
+                    .order-row { display: flex; justify-content: space-between; margin: 12px 0; padding: 8px 0; border-bottom: 1px solid #e9ecef; }
+                    .order-row:last-child { border-bottom: none; font-weight: 600; font-size: 18px; color: #2c3e50; }
+                    .order-label { color: #6c757d; font-weight: 500; }
+                    .order-value { color: #2c3e50; font-weight: 600; }
+                    .products-section { margin: 30px 0; }
+                    .product-item { display: flex; align-items: center; padding: 15px; background-color: #f8f9fa; border-radius: 8px; margin: 10px 0; }
+                    .product-info { flex: 1; margin-left: 15px; }
+                    .product-name { font-weight: 600; color: #2c3e50; margin-bottom: 5px; }
+                    .product-details { color: #6c757d; font-size: 14px; }
+                    .product-price { font-weight: 600; color: #28a745; }
+                    .shipping-info { background-color: #e8f5e8; border-left: 4px solid #28a745; padding: 20px; border-radius: 8px; margin: 25px 0; }
+                    .shipping-title { font-weight: 600; color: #155724; margin-bottom: 10px; }
+                    .shipping-address { color: #155724; line-height: 1.6; }
+                    .footer { background-color: #2c3e50; color: white; text-align: center; padding: 30px; }
+                    .footer p { margin: 5px 0; }
+                    .social-links { margin: 20px 0; }
+                    .social-links a { color: white; text-decoration: none; margin: 0 10px; }
+                    .cta-button { display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px 30px; text-decoration: none; border-radius: 25px; font-weight: 600; margin: 20px 0; }
+                    .divider { height: 1px; background-color: #e9ecef; margin: 25px 0; }
+                    .total-section { background-color: #f8f9fa; border-radius: 12px; padding: 20px; margin: 20px 0; }
+                    .total-row { display: flex; justify-content: space-between; margin: 8px 0; }
+                    .total-final { font-size: 18px; font-weight: 700; color: #2c3e50; border-top: 2px solid #e9ecef; padding-top: 10px; }
+                    @media (max-width: 600px) {
+                        .container { margin: 0; }
+                        .header, .content, .footer { padding: 20px; }
+                        .order-row { flex-direction: column; }
+                        .product-item { flex-direction: column; text-align: center; }
+                        .product-info { margin: 10px 0 0 0; }
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <div class="header">
+                        <h1>🎉 Order Confirmed!</h1>
+                        <p>Thank you for choosing DrapeAndDime</p>
+                    </div>
+                    
+                    <div class="content">
+                        <div class="greeting">
+                            Dear <strong>${order.customerName}</strong>,
+                        </div>
+                        
+                        <p style="color: #333; line-height: 1.6; margin-bottom: 20px;">
+                            We're excited to confirm that your order has been successfully placed and your payment of <strong>₹${order.totalAmount}</strong> has been received. 
+                            Your order is now being processed and will be shipped soon!
+                        </p>
+                        
+                        <div class="order-details">
+                            <h3 style="margin: 0 0 20px 0; color: #2c3e50;">📋 Order Details</h3>
+                            <div class="order-row">
+                                <span class="order-label">Order ID:</span>
+                                <span class="order-value">#${order._id.toString().slice(-8).toUpperCase()}</span>
+                            </div>
+                            <div class="order-row">
+                                <span class="order-label">Order Date:</span>
+                                <span class="order-value">${new Date(order.createdAt).toLocaleDateString('en-IN', { 
+                                    year: 'numeric', 
+                                    month: 'long', 
+                                    day: 'numeric',
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                })}</span>
+                            </div>
+                            <div class="order-row">
+                                <span class="order-label">Payment Status:</span>
+                                <span class="order-value" style="color: #28a745;">✅ Paid</span>
+                            </div>
+                            <div class="order-row">
+                                <span class="order-label">Payment ID:</span>
+                                <span class="order-value">${order.paymentId || 'N/A'}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="products-section">
+                            <h3 style="margin: 0 0 20px 0; color: #2c3e50;">🛍️ Your Items</h3>
+                            ${productDetails.map((item: any) => `
+                                <div class="product-item">
+                                    <div class="product-info">
+                                        <div class="product-name">${item.product.title}</div>
+                                        <div class="product-details">
+                                            Quantity: ${item.quantity} | 
+                                            ${item.color && item.color !== 'default' ? `Color: ${item.color} | ` : ''}
+                                            ${item.size && item.size !== 'default' ? `Size: ${item.size} | ` : ''}
+                                            <span class="product-price">₹${item.product.price} each</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                        
+                        <div class="total-section">
+                            <div class="total-row">
+                                <span>Subtotal:</span>
+                                <span>₹${order.totalAmount}</span>
+                            </div>
+                            <div class="total-row">
+                                <span>Shipping:</span>
+                                <span style="color: #28a745;">Free</span>
+                            </div>
+                            <div class="total-row total-final">
+                                <span>Total:</span>
+                                <span>₹${order.totalAmount}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="shipping-info">
+                            <div class="shipping-title">📦 Shipping Address</div>
+                            <div class="shipping-address">
+                                ${order.shippingAddress?.street}<br>
+                                ${order.shippingAddress?.city}, ${order.shippingAddress?.state} ${order.shippingAddress?.postalCode}<br>
+                                ${order.shippingAddress?.country}
+                            </div>
+                        </div>
+                        
+                        <div style="text-align: center; margin: 30px 0;">
+                            <a href="https://drapeanddime.shop" class="cta-button">Continue Shopping</a>
+                        </div>
+                        
+                        <div class="divider"></div>
+                        
+                        <p style="color: #6c757d; line-height: 1.6; margin-bottom: 20px;">
+                            <strong>What's Next?</strong><br>
+                            • We'll send you a shipping confirmation email with tracking details<br>
+                            • Your order will be carefully packaged and shipped within 1-2 business days<br>
+                            • You can track your order status on our website
+                        </p>
+                        
+                        <p style="color: #6c757d; line-height: 1.6;">
+                            If you have any questions about your order, please don't hesitate to contact our customer support team. 
+                            We're here to help!
+                        </p>
+                    </div>
+                    
+                    <div class="footer">
+                        <p style="font-size: 18px; font-weight: 600; margin-bottom: 10px;">DrapeAndDime</p>
+                        <p style="margin: 5px 0; font-size: 14px;">Your Fashion Destination</p>
+                        <div class="social-links">
+                            <a href="mailto:support@drapeanddime.shop">📧 support@drapeanddime.shop</a>
+                        </div>
+                        <p style="font-size: 12px; margin-top: 20px; opacity: 0.8;">
+                            © ${new Date().getFullYear()} DrapeAndDime. All rights reserved.
+                        </p>
+                    </div>
+                </div>
+            </body>
             </html>
           `,
         });

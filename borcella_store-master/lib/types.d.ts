@@ -16,7 +16,6 @@ type ProductType = {
   tags: [string];
   price: number;
   originalPrice?: number;
-  cost: number;
   sizes: string;
   colors: string;
   createdAt: string;
