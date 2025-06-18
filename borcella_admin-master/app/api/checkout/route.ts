@@ -172,15 +172,20 @@ export async function POST(req: NextRequest) {
     console.log(`💰 Calculated totalAmount: ₹${totalAmount}`);
 
     // Create Cashfree order request
+    const orderId = `order_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     const cashfreeOrderRequest = {
       order_amount: totalAmount,
       order_currency: "INR",
-      order_id: `order_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      order_id: orderId,
       customer_details: {
         customer_id: customer.clerkId,
         customer_phone: shippingDetails.phone,
         customer_name: enteredName,
         customer_email: customer.email,
+      },
+      order_meta: {
+        return_url: `${process.env.NEXT_PUBLIC_SITE_URL}/payment_success?orderId=${orderId}`,
+        notify_url: `${process.env.NEXT_PUBLIC_SITE_URL}/api/webhooks/cashfree`,
       },
     };
 

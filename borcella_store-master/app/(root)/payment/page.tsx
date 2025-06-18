@@ -259,63 +259,22 @@ const Payment = () => {
 
       setOrderId(checkoutData.orderId);
 
-      // Step 2: Process payment with Cashfree
-      const cashfree = await load({ mode: "production" });
-      const checkoutOptions = {
-        paymentSessionId: checkoutData.paymentSessionId,
-        redirectTarget: "_modal",
-      };
-
-      const paymentResponse = await cashfree.checkout(checkoutOptions);
-      console.log("💳 Cashfree Payment Response:", paymentResponse);
-
-      if (!paymentResponse.paymentId) {
-        setErrorMessage("Payment failed. Please try again.");
-        setIsProcessing(false);
-        setPaymentStep('form');
-        return;
-      }
-
-      setPaymentId(paymentResponse.paymentId);
-
-      // Step 3: Verify payment
-      setPaymentStep('verifying');
-      const verificationSuccess = await verifyPayment(checkoutData.orderId, paymentResponse.paymentId);
-
-      if (verificationSuccess) {
-        setPaymentStep('complete');
-        // Clear cart and redirect to success page
-        clearCart();
-        setTimeout(() => {
-          window.location.href = "/payment_success";
-        }, 1000);
-      } else {
-        // Handle verification failure
-        if (retryCount < 2) {
-          setRetryCount(prev => prev + 1);
-          setErrorMessage("Payment verification failed. Retrying...");
-          // Retry verification after a delay
-          setTimeout(async () => {
-            const retrySuccess = await verifyPayment(checkoutData.orderId, paymentResponse.paymentId, 2);
-            if (retrySuccess) {
-              setPaymentStep('complete');
-              clearCart();
-              setTimeout(() => {
-                window.location.href = "/payment_success";
-              }, 1000);
-            } else {
-              setIsProcessing(false);
-              setPaymentStep('form');
-              window.location.href = "/payment_fail";
-            }
-          }, 3000);
-        } else {
-          setIsProcessing(false);
-          setPaymentStep('form');
-          window.location.href = "/payment_fail";
-        }
-      }
-
+      // Step 2: Redirect to Cashfree's hosted checkout page
+      console.log("🔄 Redirecting to Cashfree hosted checkout...");
+      
+      // Instead of using the SDK modal, redirect directly to Cashfree's hosted page
+      const cashfreeUrl = `https://payments.cashfree.com/order/${checkoutData.orderId}`;
+      console.log("🔗 Cashfree URL:", cashfreeUrl);
+      
+      // Store order info in localStorage for verification after redirect
+      localStorage.setItem('pendingOrder', JSON.stringify({
+        orderId: checkoutData.orderId,
+        amount: checkoutData.amount,
+        timestamp: Date.now()
+      }));
+      
+      // Redirect to Cashfree
+      window.location.href = cashfreeUrl;
     } catch (error) {
       console.error("❌ Error during checkout process:", error);
       setErrorMessage("An error occurred during checkout. Please try again later.");

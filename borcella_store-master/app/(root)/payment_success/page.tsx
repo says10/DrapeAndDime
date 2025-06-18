@@ -2,15 +2,100 @@
 
 import useCart from "@/lib/hooks/useCart";
 import Link from "next/link";
-import { useEffect } from "react";
-import { CheckCircle, ShoppingBag, Home, Mail } from "lucide-react";
+import { useEffect, useState } from "react";
+import { CheckCircle, ShoppingBag, Home, Mail, Loader2 } from "lucide-react";
+import { useSearchParams } from "next/navigation";
 
 const SuccessfulPayment = () => {
   const cart = useCart();
+  const searchParams = useSearchParams();
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [verificationStatus, setVerificationStatus] = useState<'pending' | 'success' | 'failed'>('pending');
 
   useEffect(() => {
     cart.clearCart();
-  }, []);
+    
+    // Check if we have orderId and paymentId from Cashfree redirect
+    const orderId = searchParams.get('orderId');
+    const paymentId = searchParams.get('paymentId');
+    
+    if (orderId && paymentId) {
+      verifyPayment(orderId, paymentId);
+    } else {
+      setVerificationStatus('success'); // Assume success if no params
+    }
+  }, [searchParams]);
+
+  const verifyPayment = async (orderId: string, paymentId: string) => {
+    setIsVerifying(true);
+    try {
+      console.log("🔍 Verifying payment after redirect...");
+      
+      const verifyRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/verifypayment`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderId, paymentId }),
+      });
+
+      if (verifyRes.ok) {
+        const verifyData = await verifyRes.json();
+        if (verifyData.success) {
+          console.log("✅ Payment verified successfully after redirect!");
+          setVerificationStatus('success');
+        } else {
+          console.error("❌ Payment verification failed:", verifyData.message);
+          setVerificationStatus('failed');
+        }
+      } else {
+        console.error("❌ Verification request failed:", verifyRes.status);
+        setVerificationStatus('failed');
+      }
+    } catch (error) {
+      console.error("❌ Verification error:", error);
+      setVerificationStatus('failed');
+    } finally {
+      setIsVerifying(false);
+    }
+  };
+
+  // Show loading while verifying
+  if (isVerifying) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-white via-gray-50/50 to-gray-100/50 flex items-center justify-center">
+        <div className="text-center space-y-6">
+          <div className="relative">
+            <Loader2 className="w-16 h-16 text-gray-900 animate-spin mx-auto" />
+            <div className="absolute inset-0 bg-gray-200 rounded-full animate-ping opacity-20"></div>
+          </div>
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">Verifying Payment</h2>
+            <p className="text-gray-600">Please wait while we verify your payment...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error if verification failed
+  if (verificationStatus === 'failed') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-white via-gray-50/50 to-gray-100/50 flex items-center justify-center">
+        <div className="text-center space-y-6">
+          <div className="max-w-md mx-auto bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl border border-gray-100 p-8">
+            <h2 className="text-2xl font-bold text-red-600 mb-4">Payment Verification Failed</h2>
+            <p className="text-gray-600 mb-6">We couldn't verify your payment. Please contact support.</p>
+            <Link
+              href="/"
+              className="inline-flex items-center gap-3 px-6 py-3 bg-gray-900 text-white font-semibold rounded-xl hover:bg-gray-800 transition-all duration-300"
+            >
+              <Home className="w-5 h-5" />
+              Go Home
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-white via-gray-50/50 to-gray-100/50">
