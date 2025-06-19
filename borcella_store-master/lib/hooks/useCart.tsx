@@ -172,79 +172,44 @@ export function useCartWithUser() {
   // Wrapped cart actions
   const addItem = async (data: CartItem) => {
     cart.addItem(data);
+    setTimeout(() => trackCartSession({ action: 'update_session', cartItems: cart.cartItems }), 0);
     await syncBackend('update_session');
-    await trackCartSession({ action: 'update_session', cartItems: cart.cartItems });
   };
   const removeItem = async (id: string) => {
     cart.removeItem(id);
+    setTimeout(() => trackCartSession({ action: cart.cartItems.length === 0 ? 'clear_session' : 'update_session', cartItems: cart.cartItems }), 0);
     if (cart.cartItems.length === 0) {
       await syncBackend('clear_session');
-      await trackCartSession({ action: 'clear_session' });
     } else {
       await syncBackend('update_session');
-      await trackCartSession({ action: 'update_session', cartItems: cart.cartItems });
     }
-    if (user) {
-      fetch(`/api/cart-tracking`, { method: 'GET' })
-        .then(res => res.json())
-        .then(data => {
-          const backendCartRaw = (data.sessions && data.sessions.length > 0) ? data.sessions[0].cartItems || [] : [];
-          const backendCart = backendCartRaw.map((item: any) => ({
-            item: {
-              _id: item.productId || item._id,
-              title: item.title,
-              price: item.price,
-              media: item.image ? [item.image] : [],
-              isAvailable: true,
-              quantity: item.quantity,
-            },
-            quantity: item.quantity,
-            color: item.color,
-            size: item.size,
-          }));
-          cart.cartItems = backendCart;
-        });
+    if (typeof window !== 'undefined') {
+      window.location.reload();
     }
   };
   const increaseQuantity = async (id: string) => {
     cart.increaseQuantity(id);
+    setTimeout(() => trackCartSession({ action: 'update_session', cartItems: cart.cartItems }), 0);
     await syncBackend('update_session');
-    await trackCartSession({ action: 'update_session', cartItems: cart.cartItems });
   };
   const decreaseQuantity = async (id: string) => {
     cart.decreaseQuantity(id);
+    setTimeout(() => trackCartSession({ action: cart.cartItems.length === 0 ? 'clear_session' : 'update_session', cartItems: cart.cartItems }), 0);
     if (cart.cartItems.length === 0) {
       await syncBackend('clear_session');
-      await trackCartSession({ action: 'clear_session' });
     } else {
       await syncBackend('update_session');
-      await trackCartSession({ action: 'update_session', cartItems: cart.cartItems });
+    }
+    if (typeof window !== 'undefined') {
+      window.location.reload();
     }
   };
   const clearCart = async () => {
     cart.clearCart();
+    setTimeout(() => trackCartSession({ action: 'clear_session' }), 0);
     await syncBackend('clear_session');
-    await trackCartSession({ action: 'clear_session' });
-    if (user) {
-      fetch(`/api/cart-tracking`, { method: 'GET' })
-        .then(res => res.json())
-        .then(data => {
-          const backendCartRaw = (data.sessions && data.sessions.length > 0) ? data.sessions[0].cartItems || [] : [];
-          const backendCart = backendCartRaw.map((item: any) => ({
-            item: {
-              _id: item.productId || item._id,
-              title: item.title,
-              price: item.price,
-              media: item.image ? [item.image] : [],
-              isAvailable: true,
-              quantity: item.quantity,
-            },
-            quantity: item.quantity,
-            color: item.color,
-            size: item.size,
-          }));
-          cart.cartItems = backendCart;
-        });
+    if (typeof window !== 'undefined') {
+      window.location.reload();
     }
   };
 
