@@ -15,7 +15,7 @@ const SuccessfulPayment = () => {
   const [cartCleared, setCartCleared] = useState(false);
 
   useEffect(() => {
-    if (!cartCleared) {
+    if (!cartCleared && cart.cartItems.length > 0) {
       cart.clearCart();
       setCartCleared(true);
     }
@@ -28,7 +28,7 @@ const SuccessfulPayment = () => {
     } else {
       setVerificationStatus('success'); // Assume success if no params
     }
-  }, [searchParams, cartCleared]);
+  }, [searchParams, cartCleared, cart.cartItems.length]);
 
   const verifyPayment = async (orderId: string, paymentId: string) => {
     setIsVerifying(true);
