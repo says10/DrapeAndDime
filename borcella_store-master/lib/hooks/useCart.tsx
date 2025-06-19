@@ -201,26 +201,41 @@ export function useCartWithUser() {
 
   useEffect(() => {
     if (isUserLoaded && user) {
-      fetch(`/api/cart-tracking`, { method: 'GET' })
-        .then(res => res.json())
-        .then(async data => {
-          const backendCartRaw = (data.sessions && data.sessions.length > 0) ? data.sessions[0].cartItems || [] : [];
-          // Normalize backend cart to local cart structure
-          const backendCart = backendCartRaw.map((item: any) => ({
-            item: {
-              _id: item.productId || item._id,
-              title: item.title,
-              price: item.price,
-              media: item.image ? [item.image] : [],
-              isAvailable: true,
+      // 1. Push local cart to backend
+      (async () => {
+        if (cart.cartItems.length > 0) {
+          await syncBackend('update_session', cart.cartItems);
+        }
+        // 2. Fetch backend cart and merge
+        fetch(`/api/cart-tracking`, { method: 'GET' })
+          .then(res => res.json())
+          .then(async data => {
+            const backendCartRaw = (data.sessions && data.sessions.length > 0) ? data.sessions[0].cartItems || [] : [];
+            // Normalize backend cart to local cart structure
+            const backendCart = backendCartRaw.map((item: any) => ({
+              item: {
+                _id: item.productId || item._id,
+                title: item.title,
+                price: item.price,
+                media: item.image ? [item.image] : [],
+                isAvailable: true,
+                quantity: item.quantity,
+              },
               quantity: item.quantity,
-            },
-            quantity: item.quantity,
-            color: item.color,
-            size: item.size,
-          }));
-          cart.cartItems = backendCart;
-        });
+              color: item.color,
+              size: item.size,
+            }));
+            // Merge: prefer local cart items for same product/variant
+            const mergedCart = [...backendCart];
+            cart.cartItems.forEach(localItem => {
+              const exists = mergedCart.find(
+                b => b.item._id === localItem.item._id && b.color === localItem.color && b.size === localItem.size
+              );
+              if (!exists) mergedCart.push(localItem);
+            });
+            cart.cartItems = mergedCart;
+          });
+      })();
     }
   }, [isUserLoaded, user]);
 
