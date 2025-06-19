@@ -12,10 +12,13 @@ const SuccessfulPayment = () => {
   const searchParams = useSearchParams();
   const [isVerifying, setIsVerifying] = useState(false);
   const [verificationStatus, setVerificationStatus] = useState<'pending' | 'success' | 'failed'>('pending');
+  const [cartCleared, setCartCleared] = useState(false);
 
   useEffect(() => {
-    cart.clearCart();
-    
+    if (!cartCleared) {
+      cart.clearCart();
+      setCartCleared(true);
+    }
     // Check if we have orderId and paymentId from Cashfree redirect
     const orderId = searchParams.get('orderId');
     const paymentId = searchParams.get('paymentId');
@@ -25,7 +28,7 @@ const SuccessfulPayment = () => {
     } else {
       setVerificationStatus('success'); // Assume success if no params
     }
-  }, [searchParams]);
+  }, [searchParams, cartCleared]);
 
   const verifyPayment = async (orderId: string, paymentId: string) => {
     setIsVerifying(true);
