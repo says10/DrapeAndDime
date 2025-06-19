@@ -130,7 +130,7 @@ const useCart = create(
 
 // Custom hook for user/session logic and cart syncing
 import { useUser } from "@clerk/nextjs";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { trackCartSession } from "@/lib/actions/cartTracking";
 
 export function useCartWithUser() {
@@ -168,6 +168,15 @@ export function useCartWithUser() {
       console.error('[Cart Sync] Backend sync failed:', err);
     }
   };
+
+  // Robust: clear backend session when cart becomes empty
+  const prevCartLength = useRef(cart.cartItems.length);
+  useEffect(() => {
+    if (prevCartLength.current > 0 && cart.cartItems.length === 0) {
+      syncBackend('clear_session');
+    }
+    prevCartLength.current = cart.cartItems.length;
+  }, [cart.cartItems.length]);
 
   // Wrapped cart actions
   const addItem = async (data: CartItem) => {
