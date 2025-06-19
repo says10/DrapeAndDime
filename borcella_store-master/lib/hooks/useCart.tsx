@@ -177,7 +177,6 @@ export function useCartWithUser() {
   };
   const removeItem = async (id: string) => {
     cart.removeItem(id);
-    setTimeout(() => trackCartSession({ action: cart.cartItems.length === 0 ? 'clear_session' : 'update_session', cartItems: cart.cartItems }), 0);
     if (cart.cartItems.length === 0) {
       await syncBackend('clear_session');
     } else {
@@ -194,7 +193,6 @@ export function useCartWithUser() {
   };
   const decreaseQuantity = async (id: string) => {
     cart.decreaseQuantity(id);
-    setTimeout(() => trackCartSession({ action: cart.cartItems.length === 0 ? 'clear_session' : 'update_session', cartItems: cart.cartItems }), 0);
     if (cart.cartItems.length === 0) {
       await syncBackend('clear_session');
     } else {
