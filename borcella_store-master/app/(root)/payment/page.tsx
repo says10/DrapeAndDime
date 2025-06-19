@@ -7,7 +7,7 @@ import Image from "next/image";
 import { CreditCard, Package, ShoppingBag, AlertCircle, Truck, XCircle, Loader2, CheckCircle } from "lucide-react";
 
 // Import the custom useCart hook
-import useCart from "@/lib/hooks/useCart"; // Adjust the path to where your store is located
+import { useCartWithUser } from "@/lib/hooks/useCart"; // Adjust the path to where your store is located
 import { load } from '@cashfreepayments/cashfree-js'; // Import Cashfree SDK
 
 // Add this at the top of the file, after imports
@@ -29,7 +29,7 @@ const customScrollbarStyles = `
 
 const Payment = () => {
   const router = useRouter();
-  const { cartItems, clearCart } = useCart(); // Use cartItems from your Zustand store
+  const { cartItems, clearCart } = useCartWithUser(); // Use cartItems from your Zustand store
 
   const { user } = useUser(); // Get clerkId from Clerk
   const [cashfreeLoaded, setCashfreeLoaded] = useState(false);

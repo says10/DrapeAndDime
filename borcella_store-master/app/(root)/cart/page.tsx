@@ -2,6 +2,7 @@
 export const dynamic = "force-dynamic";
 
 import useCart from "@/lib/hooks/useCart";
+import { useCartWithUser } from "@/lib/hooks/useCart";
 import { MinusCircle, PlusCircle, Trash, ShoppingBag, ArrowRight, AlertTriangle, AlertCircle } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -24,7 +25,7 @@ const useAuth = () => {
 const Cart = () => {
   const router = useRouter();
   const { user } = useAuth();
-  const cart = useCart();
+  const cart = useCartWithUser();
   const [stockValidation, setStockValidation] = useState<{ [key: string]: boolean }>({});
   const [isValidating, setIsValidating] = useState(false);
   const [validationErrors, setValidationErrors] = useState<string[]>([]);

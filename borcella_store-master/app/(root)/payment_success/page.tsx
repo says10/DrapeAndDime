@@ -1,14 +1,14 @@
 "use client";
 export const dynamic = "force-dynamic";
 
-import useCart from "@/lib/hooks/useCart";
+import { useCartWithUser } from "@/lib/hooks/useCart";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { CheckCircle, ShoppingBag, Home, Mail, Loader2 } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 
 const SuccessfulPayment = () => {
-  const cart = useCart();
+  const cart = useCartWithUser();
   const searchParams = useSearchParams();
   const [isVerifying, setIsVerifying] = useState(false);
   const [verificationStatus, setVerificationStatus] = useState<'pending' | 'success' | 'failed'>('pending');
