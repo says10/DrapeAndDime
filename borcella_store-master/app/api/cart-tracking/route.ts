@@ -84,6 +84,11 @@ export async function POST(request: NextRequest) {
 
         return NextResponse.json({ success: true });
 
+      case "clear_session":
+        // Delete the user's active cart session
+        await CartSession.findOneAndDelete({ userId, status: "active" });
+        return NextResponse.json({ success: true });
+
       default:
         return NextResponse.json({ error: "Invalid action" }, { status: 400 });
     }

@@ -53,7 +53,7 @@ const useCart = create(
           description: `${item.title} has been added to your cart.`
         });
       },
-      removeItem: (idToRemove: string) => {
+      removeItem: async (idToRemove: string) => {
         const currentItems = get().cartItems;
         const itemToRemove = currentItems.find(item => item.item._id === idToRemove);
         const newCartItems = currentItems.filter(
@@ -64,6 +64,13 @@ const useCart = create(
           toast.success("Item removed from cart", {
             description: `${itemToRemove.item.title} has been removed from your cart.`
           });
+        }
+        // If cart is now empty and user is logged in, clear session
+        if (newCartItems.length === 0) {
+          const { user } = require("@clerk/nextjs").useUser();
+          if (user) {
+            await require("@/lib/actions/cartTracking").trackCartSession({ action: 'clear_session' });
+          }
         }
       },
       increaseQuantity: (idToIncrease: string) => {
@@ -92,11 +99,16 @@ const useCart = create(
         );
         set({ cartItems: newCartItems });
       },
-      clearCart: () => {
+      clearCart: async () => {
         set({ cartItems: [] });
         toast.success("Cart cleared", {
           description: "All items have been removed from your cart."
         });
+        // If user is logged in, clear session
+        const { user } = require("@clerk/nextjs").useUser();
+        if (user) {
+          await require("@/lib/actions/cartTracking").trackCartSession({ action: 'clear_session' });
+        }
       },
       validateStock: async (itemId: string, quantity: number) => {
         try {
@@ -166,7 +178,22 @@ export function useCartWithUser() {
       fetch(`/api/cart-tracking`, { method: 'GET' })
         .then(res => res.json())
         .then(async data => {
-          const backendCart = (data.sessions && data.sessions.length > 0) ? data.sessions[0].cartItems || [] : [];
+          const backendCartRaw = (data.sessions && data.sessions.length > 0) ? data.sessions[0].cartItems || [] : [];
+          // Normalize backend cart to local cart structure
+          const backendCart = backendCartRaw.map((item: any) => ({
+            item: {
+              _id: item.productId || item._id,
+              title: item.title,
+              price: item.price,
+              image: item.image,
+              isAvailable: true, // or infer from backend if available
+              quantity: item.quantity, // stock quantity if available, else item.quantity
+              // add other fields as needed
+            },
+            quantity: item.quantity,
+            color: item.color,
+            size: item.size,
+          }));
           const localCart = cart.cartItems || [];
           console.log("[useCartWithUser] Local cart before merge:", localCart);
           console.log("[useCartWithUser] Backend cart:", backendCart);

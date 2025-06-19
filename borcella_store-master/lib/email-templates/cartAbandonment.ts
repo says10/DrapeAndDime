@@ -1,3 +1,10 @@
+// Helper to ensure absolute image URLs
+function getAbsoluteImageUrl(image: string) {
+  if (!image) return '';
+  if (image.startsWith('http://') || image.startsWith('https://')) return image;
+  return `${process.env.NEXT_PUBLIC_APP_URL}${image.startsWith('/') ? '' : '/'}${image}`;
+}
+
 export const cartAbandonmentTemplates = {
   // 1 hour abandonment - gentle reminder
   abandonment_1h: (userName: string, cartItems: any[], totalValue: number) => ({
@@ -37,21 +44,21 @@ export const cartAbandonmentTemplates = {
             <h2>Your Cart Items:</h2>
             ${cartItems.map(item => `
               <div class="cart-item">
-                <img src="${item.image}" alt="${item.title}" class="item-image">
+                <img src="${getAbsoluteImageUrl(item.image)}" alt="${item.title}" class="item-image">
                 <div class="item-details">
                   <div class="item-title">${item.title}</div>
-                  <div class="item-price">$${item.price} x ${item.quantity}</div>
+                  <div class="item-price">₹${item.price} x ${item.quantity}</div>
                 </div>
               </div>
             `).join('')}
             
             <div class="total">
-              Total: $${totalValue.toFixed(2)}
+              Total: ₹${totalValue.toFixed(2)}
             </div>
           </div>
           
           <div style="text-align: center; margin: 30px 0;">
-            <a href="${process.env.NEXT_PUBLIC_APP_URL}/cart" class="cta-button">
+            <a href="https://drapeanddime.shop/cart" class="cta-button">
               Complete Your Purchase
             </a>
           </div>
@@ -108,21 +115,21 @@ export const cartAbandonmentTemplates = {
             <h2>Your Cart Items:</h2>
             ${cartItems.map(item => `
               <div class="cart-item">
-                <img src="${item.image}" alt="${item.title}" class="item-image">
+                <img src="${getAbsoluteImageUrl(item.image)}" alt="${item.title}" class="item-image">
                 <div class="item-details">
                   <div class="item-title">${item.title}</div>
-                  <div class="item-price">$${item.price} x ${item.quantity}</div>
+                  <div class="item-price">₹${item.price} x ${item.quantity}</div>
                 </div>
               </div>
             `).join('')}
             
             <div class="total">
-              Total: $${totalValue.toFixed(2)}
+              Total: ₹${totalValue.toFixed(2)}
             </div>
           </div>
           
           <div style="text-align: center; margin: 30px 0;">
-            <a href="${process.env.NEXT_PUBLIC_APP_URL}/cart" class="cta-button">
+            <a href="https://drapeanddime.shop/cart" class="cta-button">
               Complete Your Purchase Now
             </a>
           </div>
@@ -183,23 +190,23 @@ export const cartAbandonmentTemplates = {
             <h2>Your Cart Items:</h2>
             ${cartItems.map(item => `
               <div class="cart-item">
-                <img src="${item.image}" alt="${item.title}" class="item-image">
+                <img src="${getAbsoluteImageUrl(item.image)}" alt="${item.title}" class="item-image">
                 <div class="item-details">
                   <div class="item-title">${item.title}</div>
-                  <div class="item-price">$${item.price} x ${item.quantity}</div>
+                  <div class="item-price">₹${item.price} x ${item.quantity}</div>
                 </div>
               </div>
             `).join('')}
             
             <div class="total">
-              Original Total: $${totalValue.toFixed(2)}<br>
-              <span class="savings">With 10% off: $${(totalValue * 0.9).toFixed(2)}</span><br>
-              <span class="savings">You save: $${(totalValue * 0.1).toFixed(2)}</span>
+              Original Total: ₹${totalValue.toFixed(2)}<br>
+              <span class="savings">With 10% off: ₹${(totalValue * 0.9).toFixed(2)}</span><br>
+              <span class="savings">You save: ₹${(totalValue * 0.1).toFixed(2)}</span>
             </div>
           </div>
           
           <div style="text-align: center; margin: 30px 0;">
-            <a href="${process.env.NEXT_PUBLIC_APP_URL}/cart" class="cta-button">
+            <a href="https://drapeanddime.shop/cart" class="cta-button">
               Claim Your Discount Now
             </a>
           </div>
@@ -250,7 +257,7 @@ export const cartAbandonmentTemplates = {
           <div class="order-details">
             <h3>Order Details:</h3>
             <p><strong>Order Number:</strong> ${orderNumber}</p>
-            <p><strong>Total Amount:</strong> $${totalValue.toFixed(2)}</p>
+            <p><strong>Total Amount:</strong> ₹${totalValue.toFixed(2)}</p>
             <p>You'll receive a shipping confirmation email once your order is on its way.</p>
           </div>
           
