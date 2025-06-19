@@ -262,7 +262,6 @@ if (filteredPayment) {
                                     <div class="product-info">
                                         <div class="product-name">${item.product.title}</div>
                                         <div class="product-details">
-                                            Quantity: ${item.quantity} | 
                                             ${item.color && item.color !== 'default' ? `Color: ${item.color} | ` : ''}
                                             ${item.size && item.size !== 'default' ? `Size: ${item.size} | ` : ''}
                                             <span class="product-price">₹${item.product.price} each</span>
