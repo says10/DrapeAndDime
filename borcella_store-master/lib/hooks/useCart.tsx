@@ -173,15 +173,17 @@ export function useCartWithUser() {
   const addItem = async (data: CartItem) => {
     cart.addItem(data);
     await syncBackend('update_session');
+    await trackCartSession({ action: 'update_session', cartItems: cart.cartItems });
   };
   const removeItem = async (id: string) => {
     cart.removeItem(id);
     if (cart.cartItems.length === 0) {
       await syncBackend('clear_session');
+      await trackCartSession({ action: 'clear_session' });
     } else {
       await syncBackend('update_session');
+      await trackCartSession({ action: 'update_session', cartItems: cart.cartItems });
     }
-    // Refetch backend cart and set local cart to backend (no merge)
     if (user) {
       fetch(`/api/cart-tracking`, { method: 'GET' })
         .then(res => res.json())
@@ -207,19 +209,22 @@ export function useCartWithUser() {
   const increaseQuantity = async (id: string) => {
     cart.increaseQuantity(id);
     await syncBackend('update_session');
+    await trackCartSession({ action: 'update_session', cartItems: cart.cartItems });
   };
   const decreaseQuantity = async (id: string) => {
     cart.decreaseQuantity(id);
     if (cart.cartItems.length === 0) {
       await syncBackend('clear_session');
+      await trackCartSession({ action: 'clear_session' });
     } else {
       await syncBackend('update_session');
+      await trackCartSession({ action: 'update_session', cartItems: cart.cartItems });
     }
   };
   const clearCart = async () => {
     cart.clearCart();
     await syncBackend('clear_session');
-    // Refetch backend cart and set local cart to backend (no merge)
+    await trackCartSession({ action: 'clear_session' });
     if (user) {
       fetch(`/api/cart-tracking`, { method: 'GET' })
         .then(res => res.json())
