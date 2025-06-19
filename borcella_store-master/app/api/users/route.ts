@@ -14,7 +14,13 @@ export const GET = async (req: NextRequest) => {
     let userId = auth()?.userId;
     console.log("[API /api/users] Clerk auth userId:", userId);
     
-    // If not available from auth, try to get from query params
+    // If not available from auth, try to get from headers as a fallback
+    if (!userId) {
+      userId = req.headers.get("x-user-id");
+      console.log("[API /api/users] Header x-user-id:", userId);
+    }
+    
+    // If still not available, try to get from query params
     if (!userId) {
       const url = new URL(req.url);
       const queryUserId = url.searchParams.get('userId');

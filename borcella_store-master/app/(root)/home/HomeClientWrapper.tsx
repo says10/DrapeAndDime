@@ -7,57 +7,12 @@ import VerticalBanners from "@/components/VerticalBanners";
 import HomeBanner from "@/components/HomeBanner";
 import ScrollEffectsWrapper from "@/components/ScrollEffectsWrapper";
 import { ChevronRight } from "lucide-react";
-import { useUser } from "@clerk/nextjs";
-import { useEffect } from "react";
 
 interface HomeClientWrapperProps {
   collections: CollectionType[];
 }
 
 export default function HomeClientWrapper({ collections }: HomeClientWrapperProps) {
-  const { user, isLoaded } = useUser();
-
-  useEffect(() => {
-    console.log("[HomeClientWrapper] useEffect triggered");
-    console.log("[HomeClientWrapper] isLoaded:", isLoaded);
-    console.log("[HomeClientWrapper] user:", user);
-    if (isLoaded && user && typeof window !== "undefined") {
-      const key = `customer_created_${user.id}`;
-      console.log("[HomeClientWrapper] localStorage key:", key);
-      if (!localStorage.getItem(key)) {
-        const email = user.emailAddresses?.[0]?.emailAddress || "";
-        console.log("[HomeClientWrapper] About to call /api/users with:", {
-          userId: user.id,
-          email,
-        });
-        fetch("/api/users", {
-          method: "GET",
-          headers: {
-            "x-user-email": email,
-          },
-        })
-          .then((res) => {
-            console.log("[HomeClientWrapper] /api/users response status:", res.status);
-            if (res.ok) {
-              localStorage.setItem(key, "true");
-              console.log("[HomeClientWrapper] User creation/check succeeded. localStorage updated.");
-            } else {
-              console.error("[HomeClientWrapper] /api/users response not ok:", res.status);
-            }
-            return res.json().catch(() => ({}));
-          })
-          .then((data) => {
-            console.log("[HomeClientWrapper] /api/users response data:", data);
-          })
-          .catch((err) => {
-            console.error("[HomeClientWrapper] API call failed:", err);
-          });
-      } else {
-        console.log("[HomeClientWrapper] User already created in DB (localStorage key present)");
-      }
-    }
-  }, [isLoaded, user]);
-
   return (
     <div className="flex flex-col">
       {/* Hero Banner with 16:9 Aspect Ratio */}
