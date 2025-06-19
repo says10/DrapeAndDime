@@ -38,12 +38,21 @@ export const GET = async (req: NextRequest) => {
         to: req.headers.get("x-user-email") || "",
         subject: "Welcome to DrapeAndDime!",
         html: `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto;">
-            <h1 style="color: #764ba2;">Welcome!</h1>
-            <p>Thank you for joining <b>DrapeAndDime</b>. We're thrilled to have you as part of our fashion community!</p>
-            <p>Start shopping the latest trends now: <a href="https://drapeanddime.shop" style="color: #667eea;">Visit our store</a></p>
-            <hr/>
-            <p style="font-size: 12px; color: #888;">If you have any questions, reply to this email or contact our support team.</p>
+          <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #f8f9fa; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); overflow: hidden;">
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 32px 24px; text-align: center;">
+              <img src="https://drapeanddime.shop/logo.png" alt="DrapeAndDime Logo" style="width: 80px; margin-bottom: 16px;" />
+              <h1 style="color: #fff; margin: 0; font-size: 2rem; font-weight: 700;">Welcome to DrapeAndDime!</h1>
+              <p style="color: #e0e0e0; margin: 12px 0 0 0; font-size: 1.1rem;">Your Fashion Journey Begins Here</p>
+            </div>
+            <div style="padding: 32px 24px; background: #fff;">
+              <p style="font-size: 1.1rem; color: #333;">Hi there,</p>
+              <p style="font-size: 1.1rem; color: #333;">Thank you for joining <b>DrapeAndDime</b>! We're thrilled to have you as part of our fashion community. Explore the latest trends, exclusive collections, and enjoy a seamless shopping experience.</p>
+              <a href="https://drapeanddime.shop" style="display: inline-block; margin: 24px 0; padding: 14px 32px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #fff; border-radius: 24px; text-decoration: none; font-weight: 600; font-size: 1.1rem;">Start Shopping</a>
+              <p style="color: #888; font-size: 0.95rem; margin-top: 32px;">If you have any questions, just reply to this email or contact our support team. We're here to help!</p>
+            </div>
+            <div style="background: #2c3e50; color: #fff; text-align: center; padding: 18px 12px; font-size: 0.95rem;">
+              &copy; ${new Date().getFullYear()} DrapeAndDime. All rights reserved.
+            </div>
           </div>
         `,
       });

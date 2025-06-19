@@ -204,7 +204,7 @@ const Navbar = () => {
             )}
 
             {user ? (
-              <UserButton afterSignOutUrl="/sign-in" />
+              <UserButton afterSignOutUrl="/" />
             ) : pathname !== "/" ? (
               <Link href="/sign-in">
                 <CircleUserRound className="w-6 h-6 hover:text-red-1 transition-colors" />
