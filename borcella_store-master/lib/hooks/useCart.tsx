@@ -177,14 +177,16 @@ export function useCartWithUser() {
   };
   const removeItem = async (id: string) => {
     cart.removeItem(id);
-    if (cart.cartItems.length === 0) {
-      await syncBackend('clear_session');
-    } else {
-      await syncBackend('update_session');
-    }
-    if (typeof window !== 'undefined') {
-      window.location.reload();
-    }
+    setTimeout(async () => {
+      if (cart.cartItems.length === 0) {
+        await syncBackend('clear_session');
+      } else {
+        await syncBackend('update_session');
+      }
+      if (typeof window !== 'undefined') {
+        window.location.reload();
+      }
+    }, 0);
   };
   const increaseQuantity = async (id: string) => {
     cart.increaseQuantity(id);
@@ -193,14 +195,16 @@ export function useCartWithUser() {
   };
   const decreaseQuantity = async (id: string) => {
     cart.decreaseQuantity(id);
-    if (cart.cartItems.length === 0) {
-      await syncBackend('clear_session');
-    } else {
-      await syncBackend('update_session');
-    }
-    if (typeof window !== 'undefined') {
-      window.location.reload();
-    }
+    setTimeout(async () => {
+      if (cart.cartItems.length === 0) {
+        await syncBackend('clear_session');
+      } else {
+        await syncBackend('update_session');
+      }
+      if (typeof window !== 'undefined') {
+        window.location.reload();
+      }
+    }, 0);
   };
   const clearCart = async () => {
     cart.clearCart();
