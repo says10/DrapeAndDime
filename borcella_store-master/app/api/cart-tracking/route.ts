@@ -89,6 +89,32 @@ export async function POST(request: NextRequest) {
         await CartSession.findOneAndDelete({ userId, status: "active" });
         return NextResponse.json({ success: true });
 
+      case "update_session":
+        // Upsert (update or create) the user's active cart session
+        const update = {
+          userId,
+          userEmail,
+          userName,
+          cartItems: Array.isArray(cartItems) ? cartItems.map((item: any) => ({
+            productId: item?.item?._id ?? null,
+            quantity: item?.quantity ?? 0,
+            price: item?.item?.price ?? 0,
+            title: item?.item?.title ?? '',
+            image: Array.isArray(item?.item?.media) && item.item.media.length > 0 ? item.item.media[0] : null,
+            size: item?.size ?? null,
+            color: item?.color ?? null
+          })) : [],
+          totalValue: Array.isArray(cartItems) ? cartItems.reduce((sum: number, item: any) => sum + ((item?.item?.price ?? 0) * (item?.quantity ?? 0)), 0) : 0,
+          status: "active",
+          lastActivity: new Date()
+        };
+        await CartSession.findOneAndUpdate(
+          { userId, status: "active" },
+          update,
+          { upsert: true, new: true }
+        );
+        return NextResponse.json({ success: true });
+
       default:
         return NextResponse.json({ error: "Invalid action" }, { status: 400 });
     }
