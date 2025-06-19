@@ -181,6 +181,28 @@ export function useCartWithUser() {
     } else {
       await syncBackend('update_session');
     }
+    // Refetch backend cart and set local cart to backend (no merge)
+    if (user) {
+      fetch(`/api/cart-tracking`, { method: 'GET' })
+        .then(res => res.json())
+        .then(data => {
+          const backendCartRaw = (data.sessions && data.sessions.length > 0) ? data.sessions[0].cartItems || [] : [];
+          const backendCart = backendCartRaw.map((item: any) => ({
+            item: {
+              _id: item.productId || item._id,
+              title: item.title,
+              price: item.price,
+              media: item.image ? [item.image] : [],
+              isAvailable: true,
+              quantity: item.quantity,
+            },
+            quantity: item.quantity,
+            color: item.color,
+            size: item.size,
+          }));
+          cart.cartItems = backendCart;
+        });
+    }
   };
   const increaseQuantity = async (id: string) => {
     cart.increaseQuantity(id);
@@ -197,6 +219,28 @@ export function useCartWithUser() {
   const clearCart = async () => {
     cart.clearCart();
     await syncBackend('clear_session');
+    // Refetch backend cart and set local cart to backend (no merge)
+    if (user) {
+      fetch(`/api/cart-tracking`, { method: 'GET' })
+        .then(res => res.json())
+        .then(data => {
+          const backendCartRaw = (data.sessions && data.sessions.length > 0) ? data.sessions[0].cartItems || [] : [];
+          const backendCart = backendCartRaw.map((item: any) => ({
+            item: {
+              _id: item.productId || item._id,
+              title: item.title,
+              price: item.price,
+              media: item.image ? [item.image] : [],
+              isAvailable: true,
+              quantity: item.quantity,
+            },
+            quantity: item.quantity,
+            color: item.color,
+            size: item.size,
+          }));
+          cart.cartItems = backendCart;
+        });
+    }
   };
 
   useEffect(() => {
@@ -206,7 +250,7 @@ export function useCartWithUser() {
         if (cart.cartItems.length > 0) {
           await syncBackend('update_session', cart.cartItems);
         }
-        // 2. Fetch backend cart and merge
+        // 2. Fetch backend cart and merge (only on login/session load)
         fetch(`/api/cart-tracking`, { method: 'GET' })
           .then(res => res.json())
           .then(async data => {
@@ -225,7 +269,7 @@ export function useCartWithUser() {
               color: item.color,
               size: item.size,
             }));
-            // Merge: prefer local cart items for same product/variant
+            // Merge: prefer local cart items for same product/variant (only on login/session load)
             const mergedCart = [...backendCart];
             cart.cartItems.forEach(localItem => {
               const exists = mergedCart.find(
