@@ -23,7 +23,7 @@ const useCart = create(
   persist<CartStore>(
     (set, get) => ({
       cartItems: [],
-      addItem: (data: CartItem) => {
+      addItem: async (data: CartItem) => {
         const { item, quantity, color, size } = data;
         const currentItems = get().cartItems;
         const isExisting = currentItems.find(
@@ -52,6 +52,13 @@ const useCart = create(
         toast.success("Item added to cart", { 
           description: `${item.title} has been added to your cart.`
         });
+        // Sync backend
+        const { user } = require("@clerk/nextjs").useUser();
+        const { trackCartSession } = require("@/lib/actions/cartTracking");
+        if (user) {
+          console.log('[Cart Sync] Cart after add, updating session:', newCart);
+          await trackCartSession({ action: 'update_session', cartItems: newCart });
+        }
       },
       removeItem: async (idToRemove: string) => {
         const currentItems = get().cartItems;
@@ -65,15 +72,20 @@ const useCart = create(
             description: `${itemToRemove.item.title} has been removed from your cart.`
           });
         }
-        // If cart is now empty and user is logged in, clear session
-        if (newCartItems.length === 0) {
-          const { user } = require("@clerk/nextjs").useUser();
-          if (user) {
-            await require("@/lib/actions/cartTracking").trackCartSession({ action: 'clear_session' });
+        // Always sync backend
+        const { user } = require("@clerk/nextjs").useUser();
+        const { trackCartSession } = require("@/lib/actions/cartTracking");
+        if (user) {
+          if (newCartItems.length === 0) {
+            console.log('[Cart Sync] Cart is empty after remove, clearing session');
+            await trackCartSession({ action: 'clear_session' });
+          } else {
+            console.log('[Cart Sync] Cart after remove, updating session:', newCartItems);
+            await trackCartSession({ action: 'update_session', cartItems: newCartItems });
           }
         }
       },
-      increaseQuantity: (idToIncrease: string) => {
+      increaseQuantity: async (idToIncrease: string) => {
         const currentItems = get().cartItems;
         const itemToIncrease = currentItems.find(item => item.item._id === idToIncrease);
         if (!itemToIncrease) return;
@@ -89,8 +101,15 @@ const useCart = create(
             : cartItem
         );
         set({ cartItems: newCartItems });
+        // Sync backend
+        const { user } = require("@clerk/nextjs").useUser();
+        const { trackCartSession } = require("@/lib/actions/cartTracking");
+        if (user) {
+          console.log('[Cart Sync] Cart after increase, updating session:', newCartItems);
+          await trackCartSession({ action: 'update_session', cartItems: newCartItems });
+        }
       },
-      decreaseQuantity: (idToDecrease: string) => {
+      decreaseQuantity: async (idToDecrease: string) => {
         const currentItems = get().cartItems;
         const newCartItems = currentItems.map((cartItem) =>
           cartItem.item._id === idToDecrease
@@ -98,6 +117,18 @@ const useCart = create(
             : cartItem
         );
         set({ cartItems: newCartItems });
+        // Sync backend
+        const { user } = require("@clerk/nextjs").useUser();
+        const { trackCartSession } = require("@/lib/actions/cartTracking");
+        if (user) {
+          if (newCartItems.length === 0) {
+            console.log('[Cart Sync] Cart is empty after decrease, clearing session');
+            await trackCartSession({ action: 'clear_session' });
+          } else {
+            console.log('[Cart Sync] Cart after decrease, updating session:', newCartItems);
+            await trackCartSession({ action: 'update_session', cartItems: newCartItems });
+          }
+        }
       },
       clearCart: async () => {
         set({ cartItems: [] });
