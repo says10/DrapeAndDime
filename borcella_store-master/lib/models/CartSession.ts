@@ -45,8 +45,7 @@ const cartSessionSchema = new mongoose.Schema({
   },
   createdAt: {
     type: Date,
-    default: Date.now,
-    index: true
+    default: Date.now
   },
   lastActivity: {
     type: Date,

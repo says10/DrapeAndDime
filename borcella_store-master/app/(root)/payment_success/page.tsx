@@ -1,4 +1,5 @@
 "use client";
+export const dynamic = "force-dynamic";
 
 import useCart from "@/lib/hooks/useCart";
 import Link from "next/link";
@@ -187,4 +188,3 @@ const SuccessfulPayment = () => {
 };
 
 export default SuccessfulPayment;
-export const dynamic = "force-static";

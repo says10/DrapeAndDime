@@ -1,4 +1,5 @@
 "use client";
+export const dynamic = "force-dynamic";
 
 import useCart from "@/lib/hooks/useCart";
 import { MinusCircle, PlusCircle, Trash, ShoppingBag, ArrowRight, AlertTriangle, AlertCircle } from "lucide-react";
