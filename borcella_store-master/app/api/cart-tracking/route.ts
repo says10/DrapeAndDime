@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
             quantity: item?.quantity ?? 0,
             price: item?.item?.price ?? 0,
             title: item?.item?.title ?? '',
-            image: Array.isArray(item?.item?.images) && item.item.images.length > 0 ? item.item.images[0] : null,
+            image: Array.isArray(item?.item?.media) && item.item.media.length > 0 ? item.item.media[0] : null,
             size: item?.size ?? null,
             color: item?.color ?? null
           })) : [],

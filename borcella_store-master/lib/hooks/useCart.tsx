@@ -211,7 +211,7 @@ export function useCartWithUser() {
               _id: item.productId || item._id,
               title: item.title,
               price: item.price,
-              image: Array.isArray(item.images) && item.images.length > 0 ? item.images[0] : item.image || '',
+              media: item.image ? [item.image] : [],
               isAvailable: true,
               quantity: item.quantity,
             },

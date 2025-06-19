@@ -252,7 +252,7 @@ const Cart = () => {
                         >
                           <div className="relative w-32 h-32 flex-shrink-0">
                             <Image
-                              src={cartItem.item.media[0]}
+                              src={cartItem.item.media && cartItem.item.media.length > 0 && cartItem.item.media[0] ? cartItem.item.media[0] : "/logo.png"}
                               fill
                               className="rounded-lg object-cover"
                               alt={cartItem.item.title}
