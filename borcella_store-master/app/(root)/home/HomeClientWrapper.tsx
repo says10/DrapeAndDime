@@ -7,12 +7,37 @@ import VerticalBanners from "@/components/VerticalBanners";
 import HomeBanner from "@/components/HomeBanner";
 import ScrollEffectsWrapper from "@/components/ScrollEffectsWrapper";
 import { ChevronRight } from "lucide-react";
+import { useUser } from "@clerk/nextjs";
+import { useEffect } from "react";
 
 interface HomeClientWrapperProps {
   collections: CollectionType[];
 }
 
 export default function HomeClientWrapper({ collections }: HomeClientWrapperProps) {
+  const { user, isLoaded } = useUser();
+
+  useEffect(() => {
+    if (isLoaded && user && typeof window !== "undefined") {
+      const key = `customer_created_${user.id}`;
+      if (!localStorage.getItem(key)) {
+        fetch("https://your-admin-domain.com/api/create-customer", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            clerkId: user.id,
+            email: user.emailAddresses[0].emailAddress,
+            name: [user.firstName, user.lastName].filter(Boolean).join(" "),
+          }),
+        })
+          .then((res) => {
+            if (res.ok) localStorage.setItem(key, "true");
+          })
+          .catch(() => {});
+      }
+    }
+  }, [isLoaded, user]);
+
   return (
     <div className="flex flex-col">
       {/* Hero Banner with 16:9 Aspect Ratio */}
