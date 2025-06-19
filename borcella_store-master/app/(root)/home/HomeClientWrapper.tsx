@@ -21,14 +21,11 @@ export default function HomeClientWrapper({ collections }: HomeClientWrapperProp
     if (isLoaded && user && typeof window !== "undefined") {
       const key = `customer_created_${user.id}`;
       if (!localStorage.getItem(key)) {
-        fetch("https://your-admin-domain.com/api/create-customer", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            clerkId: user.id,
-            email: user.emailAddresses[0].emailAddress,
-            name: [user.firstName, user.lastName].filter(Boolean).join(" "),
-          }),
+        fetch("/api/users", {
+          method: "GET",
+          headers: {
+            "x-user-email": user.emailAddresses[0].emailAddress,
+          },
         })
           .then((res) => {
             if (res.ok) localStorage.setItem(key, "true");

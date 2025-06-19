@@ -1,6 +1,7 @@
 import User from "@/lib/models/User";
 import { connectToDB } from "@/lib/mongoDB";
 import { auth } from "@clerk/nextjs";
+import { sendEmail } from "@/lib/email";
 
 import { NextRequest, NextResponse } from "next/server";
 
@@ -32,6 +33,20 @@ export const GET = async (req: NextRequest) => {
     if (!user) {
       user = await User.create({ clerkId: userId })
       await user.save()
+      // Send welcome email
+      await sendEmail({
+        to: req.headers.get("x-user-email") || "",
+        subject: "Welcome to DrapeAndDime!",
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto;">
+            <h1 style="color: #764ba2;">Welcome!</h1>
+            <p>Thank you for joining <b>DrapeAndDime</b>. We're thrilled to have you as part of our fashion community!</p>
+            <p>Start shopping the latest trends now: <a href="https://drapeanddime.shop" style="color: #667eea;">Visit our store</a></p>
+            <hr/>
+            <p style="font-size: 12px; color: #888;">If you have any questions, reply to this email or contact our support team.</p>
+          </div>
+        `,
+      });
     }
 
     return NextResponse.json(user, { status: 200 })
