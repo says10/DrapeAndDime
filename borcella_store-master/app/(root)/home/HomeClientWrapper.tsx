@@ -18,28 +18,42 @@ export default function HomeClientWrapper({ collections }: HomeClientWrapperProp
   const { user, isLoaded } = useUser();
 
   useEffect(() => {
-    console.log("isLoaded:", isLoaded, "user:", user);
+    console.log("[HomeClientWrapper] useEffect triggered");
+    console.log("[HomeClientWrapper] isLoaded:", isLoaded);
+    console.log("[HomeClientWrapper] user:", user);
     if (isLoaded && user && typeof window !== "undefined") {
       const key = `customer_created_${user.id}`;
+      console.log("[HomeClientWrapper] localStorage key:", key);
       if (!localStorage.getItem(key)) {
-        console.log("Calling /api/users for user:", user.id, user.emailAddresses[0].emailAddress);
+        const email = user.emailAddresses?.[0]?.emailAddress || "";
+        console.log("[HomeClientWrapper] About to call /api/users with:", {
+          userId: user.id,
+          email,
+        });
         fetch("/api/users", {
           method: "GET",
           headers: {
-            "x-user-email": user.emailAddresses[0].emailAddress,
+            "x-user-email": email,
           },
         })
           .then((res) => {
+            console.log("[HomeClientWrapper] /api/users response status:", res.status);
             if (res.ok) {
               localStorage.setItem(key, "true");
-              console.log("User creation/check succeeded for:", user.id);
+              console.log("[HomeClientWrapper] User creation/check succeeded. localStorage updated.");
             } else {
-              console.error("/api/users response not ok:", res.status);
+              console.error("[HomeClientWrapper] /api/users response not ok:", res.status);
             }
+            return res.json().catch(() => ({}));
+          })
+          .then((data) => {
+            console.log("[HomeClientWrapper] /api/users response data:", data);
           })
           .catch((err) => {
-            console.error("API call failed:", err);
+            console.error("[HomeClientWrapper] API call failed:", err);
           });
+      } else {
+        console.log("[HomeClientWrapper] User already created in DB (localStorage key present)");
       }
     }
   }, [isLoaded, user]);

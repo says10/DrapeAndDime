@@ -9,40 +9,41 @@ export const dynamic = "force-dynamic";
 
 export const GET = async (req: NextRequest) => {
   try {
-    console.log("[API] /api/users called");
+    console.log("[API /api/users] Incoming request");
     // Try to get userId from Clerk auth first
     let userId = auth()?.userId;
-    console.log("[API] Clerk auth userId:", userId);
+    console.log("[API /api/users] Clerk auth userId:", userId);
     
     // If not available from auth, try to get from query params
     if (!userId) {
       const url = new URL(req.url);
       const queryUserId = url.searchParams.get('userId');
+      console.log("[API /api/users] Query param userId:", queryUserId);
       if (queryUserId) {
         userId = queryUserId;
-        console.log("[API] userId from query param:", userId);
       }
     }
 
     if (!userId) {
-      console.warn("[API] No userId found, unauthorized");
+      console.warn("[API /api/users] No userId found, unauthorized");
       return new NextResponse(JSON.stringify({ message: "Unauthorized" }), { status: 401 })
     }
 
     await connectToDB()
-    console.log("[API] Connected to DB");
+    console.log("[API /api/users] Connected to DB");
 
     let user = await User.findOne({ clerkId: userId })
-    console.log("[API] User found in DB:", !!user);
+    console.log("[API /api/users] User found in DB:", user);
 
     // When the user sign-in for the 1st, immediately we will create a new user for them
     if (!user) {
-      console.log("[API] Creating new user for clerkId:", userId);
+      console.log("[API /api/users] User not found, creating new user with clerkId:", userId);
       user = await User.create({ clerkId: userId })
       await user.save()
+      console.log("[API /api/users] New user created and saved:", user);
       // Send welcome email
       const email = req.headers.get("x-user-email") || "";
-      console.log("[API] Sending welcome email to:", email);
+      console.log("[API /api/users] Sending welcome email to:", email);
       await sendEmail({
         to: email,
         subject: "Welcome to DrapeAndDime!",
@@ -65,12 +66,12 @@ export const GET = async (req: NextRequest) => {
           </div>
         `,
       });
-      console.log("[API] User created and welcome email sent");
+      console.log("[API /api/users] Welcome email sent");
     }
 
     return NextResponse.json(user, { status: 200 })
   } catch (err: any) {
-    console.error("❌ Error in users API:", err);
+    console.error("❌ [API /api/users] Error:", err);
     return new NextResponse(
       JSON.stringify({ 
         success: false, 
