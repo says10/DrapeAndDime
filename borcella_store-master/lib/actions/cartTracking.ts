@@ -4,7 +4,7 @@ export async function trackCartSession({
   userEmail = '',
   userName = ''
 }: {
-  action: 'create_session' | 'update_activity' | 'mark_abandoned' | 'mark_recovered' | 'mark_purchased',
+  action: 'create_session' | 'update_activity' | 'mark_abandoned' | 'mark_recovered' | 'mark_purchased' | 'clear_session' | 'update_session',
   cartItems?: any[],
   userEmail?: string,
   userName?: string

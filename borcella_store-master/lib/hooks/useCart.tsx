@@ -23,7 +23,7 @@ const useCart = create(
   persist<CartStore>(
     (set, get) => ({
       cartItems: [],
-      addItem: async (data: CartItem) => {
+      addItem: (data: CartItem) => {
         const { item, quantity, color, size } = data;
         const currentItems = get().cartItems;
         const isExisting = currentItems.find(
@@ -52,15 +52,8 @@ const useCart = create(
         toast.success("Item added to cart", { 
           description: `${item.title} has been added to your cart.`
         });
-        // Sync backend
-        const { user } = require("@clerk/nextjs").useUser();
-        const { trackCartSession } = require("@/lib/actions/cartTracking");
-        if (user) {
-          console.log('[Cart Sync] Cart after add, updating session:', newCart);
-          await trackCartSession({ action: 'update_session', cartItems: newCart });
-        }
       },
-      removeItem: async (idToRemove: string) => {
+      removeItem: (idToRemove: string) => {
         const currentItems = get().cartItems;
         const itemToRemove = currentItems.find(item => item.item._id === idToRemove);
         const newCartItems = currentItems.filter(
@@ -72,20 +65,8 @@ const useCart = create(
             description: `${itemToRemove.item.title} has been removed from your cart.`
           });
         }
-        // Always sync backend
-        const { user } = require("@clerk/nextjs").useUser();
-        const { trackCartSession } = require("@/lib/actions/cartTracking");
-        if (user) {
-          if (newCartItems.length === 0) {
-            console.log('[Cart Sync] Cart is empty after remove, clearing session');
-            await trackCartSession({ action: 'clear_session' });
-          } else {
-            console.log('[Cart Sync] Cart after remove, updating session:', newCartItems);
-            await trackCartSession({ action: 'update_session', cartItems: newCartItems });
-          }
-        }
       },
-      increaseQuantity: async (idToIncrease: string) => {
+      increaseQuantity: (idToIncrease: string) => {
         const currentItems = get().cartItems;
         const itemToIncrease = currentItems.find(item => item.item._id === idToIncrease);
         if (!itemToIncrease) return;
@@ -101,15 +82,8 @@ const useCart = create(
             : cartItem
         );
         set({ cartItems: newCartItems });
-        // Sync backend
-        const { user } = require("@clerk/nextjs").useUser();
-        const { trackCartSession } = require("@/lib/actions/cartTracking");
-        if (user) {
-          console.log('[Cart Sync] Cart after increase, updating session:', newCartItems);
-          await trackCartSession({ action: 'update_session', cartItems: newCartItems });
-        }
       },
-      decreaseQuantity: async (idToDecrease: string) => {
+      decreaseQuantity: (idToDecrease: string) => {
         const currentItems = get().cartItems;
         const newCartItems = currentItems.map((cartItem) =>
           cartItem.item._id === idToDecrease
@@ -117,29 +91,12 @@ const useCart = create(
             : cartItem
         );
         set({ cartItems: newCartItems });
-        // Sync backend
-        const { user } = require("@clerk/nextjs").useUser();
-        const { trackCartSession } = require("@/lib/actions/cartTracking");
-        if (user) {
-          if (newCartItems.length === 0) {
-            console.log('[Cart Sync] Cart is empty after decrease, clearing session');
-            await trackCartSession({ action: 'clear_session' });
-          } else {
-            console.log('[Cart Sync] Cart after decrease, updating session:', newCartItems);
-            await trackCartSession({ action: 'update_session', cartItems: newCartItems });
-          }
-        }
       },
-      clearCart: async () => {
+      clearCart: () => {
         set({ cartItems: [] });
         toast.success("Cart cleared", {
           description: "All items have been removed from your cart."
         });
-        // If user is logged in, clear session
-        const { user } = require("@clerk/nextjs").useUser();
-        if (user) {
-          await require("@/lib/actions/cartTracking").trackCartSession({ action: 'clear_session' });
-        }
       },
       validateStock: async (itemId: string, quantity: number) => {
         try {
@@ -185,23 +142,61 @@ export function useCartWithUser() {
     if (!user) return { userId: '', userEmail: '', userName: '' };
     return {
       userId: user.id,
-      userEmail: user.emailAddresses?.[0]?.emailAddress || '',
+      userEmail: Array.isArray(user.emailAddresses) && user.emailAddresses.length > 0 ? user.emailAddresses[0].emailAddress : '',
       userName: (user.firstName || '') + (user.lastName ? ' ' + user.lastName : '')
     };
   };
 
-  // Merge two cart arrays (avoid duplicates by productId, sum quantities)
-  const mergeCarts = (cartA: CartItem[], cartB: CartItem[]): CartItem[] => {
-    const merged = [...cartA];
-    cartB.forEach((itemB: CartItem) => {
-      const idx = merged.findIndex(itemA => itemA.item._id === itemB.item._id && itemA.size === itemB.size && itemA.color === itemB.color);
-      if (idx > -1) {
-        merged[idx].quantity += itemB.quantity;
+  // Backend sync logic for all cart actions
+  const syncBackend = async (action: string, cartItems?: CartItem[]) => {
+    if (!user) {
+      console.log('[Cart Sync] No user, skipping backend sync');
+      return;
+    }
+    const { userEmail, userName } = getUserInfo();
+    try {
+      if (action === 'clear_session') {
+        console.log('[Cart Sync] Clearing session');
+        await trackCartSession({ action });
+        console.log('[Cart Sync] Session cleared');
       } else {
-        merged.push(itemB);
+        console.log('[Cart Sync] Updating session with cartItems:', cartItems);
+        await trackCartSession({ action: 'update_session', cartItems: cartItems || cart.cartItems, userEmail, userName });
+        console.log('[Cart Sync] Session updated');
       }
-    });
-    return merged;
+    } catch (err) {
+      console.error('[Cart Sync] Backend sync failed:', err);
+    }
+  };
+
+  // Wrapped cart actions
+  const addItem = async (data: CartItem) => {
+    cart.addItem(data);
+    await syncBackend('update_session');
+  };
+  const removeItem = async (id: string) => {
+    cart.removeItem(id);
+    if (cart.cartItems.length === 0) {
+      await syncBackend('clear_session');
+    } else {
+      await syncBackend('update_session');
+    }
+  };
+  const increaseQuantity = async (id: string) => {
+    cart.increaseQuantity(id);
+    await syncBackend('update_session');
+  };
+  const decreaseQuantity = async (id: string) => {
+    cart.decreaseQuantity(id);
+    if (cart.cartItems.length === 0) {
+      await syncBackend('clear_session');
+    } else {
+      await syncBackend('update_session');
+    }
+  };
+  const clearCart = async () => {
+    cart.clearCart();
+    await syncBackend('clear_session');
   };
 
   useEffect(() => {
@@ -216,38 +211,27 @@ export function useCartWithUser() {
               _id: item.productId || item._id,
               title: item.title,
               price: item.price,
-              image: item.image,
-              isAvailable: true, // or infer from backend if available
-              quantity: item.quantity, // stock quantity if available, else item.quantity
-              // add other fields as needed
+              image: Array.isArray(item.images) && item.images.length > 0 ? item.images[0] : item.image || '',
+              isAvailable: true,
+              quantity: item.quantity,
             },
             quantity: item.quantity,
             color: item.color,
             size: item.size,
           }));
-          const localCart = cart.cartItems || [];
-          console.log("[useCartWithUser] Local cart before merge:", localCart);
-          console.log("[useCartWithUser] Backend cart:", backendCart);
-          let mergedCart = backendCart;
-          if (localCart.length > 0) {
-            mergedCart = mergeCarts(backendCart, localCart);
-            const { userId, userEmail, userName } = getUserInfo();
-            console.log("[useCartWithUser] Merging carts for user:", userId, userEmail, userName);
-            await trackCartSession({
-              action: 'create_session',
-              cartItems: mergedCart,
-              userEmail,
-              userName
-            });
-          }
-          console.log("[useCartWithUser] Cart after merge:", mergedCart);
-          cart.cartItems = mergedCart;
+          cart.cartItems = backendCart;
         });
     }
   }, [isUserLoaded, user]);
 
-  // Optionally, you can wrap addItem/removeItem/etc. to sync with backend here
-  return cart;
+  return {
+    ...cart,
+    addItem,
+    removeItem,
+    increaseQuantity,
+    decreaseQuantity,
+    clearCart,
+  };
 }
 
 export default useCart;
