@@ -18,9 +18,11 @@ export default function HomeClientWrapper({ collections }: HomeClientWrapperProp
   const { user, isLoaded } = useUser();
 
   useEffect(() => {
+    console.log("isLoaded:", isLoaded, "user:", user);
     if (isLoaded && user && typeof window !== "undefined") {
       const key = `customer_created_${user.id}`;
       if (!localStorage.getItem(key)) {
+        console.log("Calling /api/users for user:", user.id, user.emailAddresses[0].emailAddress);
         fetch("/api/users", {
           method: "GET",
           headers: {
@@ -28,9 +30,16 @@ export default function HomeClientWrapper({ collections }: HomeClientWrapperProp
           },
         })
           .then((res) => {
-            if (res.ok) localStorage.setItem(key, "true");
+            if (res.ok) {
+              localStorage.setItem(key, "true");
+              console.log("User creation/check succeeded for:", user.id);
+            } else {
+              console.error("/api/users response not ok:", res.status);
+            }
           })
-          .catch(() => {});
+          .catch((err) => {
+            console.error("API call failed:", err);
+          });
       }
     }
   }, [isLoaded, user]);

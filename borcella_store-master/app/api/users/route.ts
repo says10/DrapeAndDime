@@ -9,8 +9,10 @@ export const dynamic = "force-dynamic";
 
 export const GET = async (req: NextRequest) => {
   try {
+    console.log("[API] /api/users called");
     // Try to get userId from Clerk auth first
     let userId = auth()?.userId;
+    console.log("[API] Clerk auth userId:", userId);
     
     // If not available from auth, try to get from query params
     if (!userId) {
@@ -18,24 +20,31 @@ export const GET = async (req: NextRequest) => {
       const queryUserId = url.searchParams.get('userId');
       if (queryUserId) {
         userId = queryUserId;
+        console.log("[API] userId from query param:", userId);
       }
     }
 
     if (!userId) {
+      console.warn("[API] No userId found, unauthorized");
       return new NextResponse(JSON.stringify({ message: "Unauthorized" }), { status: 401 })
     }
 
     await connectToDB()
+    console.log("[API] Connected to DB");
 
     let user = await User.findOne({ clerkId: userId })
+    console.log("[API] User found in DB:", !!user);
 
     // When the user sign-in for the 1st, immediately we will create a new user for them
     if (!user) {
+      console.log("[API] Creating new user for clerkId:", userId);
       user = await User.create({ clerkId: userId })
       await user.save()
       // Send welcome email
+      const email = req.headers.get("x-user-email") || "";
+      console.log("[API] Sending welcome email to:", email);
       await sendEmail({
-        to: req.headers.get("x-user-email") || "",
+        to: email,
         subject: "Welcome to DrapeAndDime!",
         html: `
           <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #f8f9fa; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); overflow: hidden;">
@@ -56,6 +65,7 @@ export const GET = async (req: NextRequest) => {
           </div>
         `,
       });
+      console.log("[API] User created and welcome email sent");
     }
 
     return NextResponse.json(user, { status: 200 })
