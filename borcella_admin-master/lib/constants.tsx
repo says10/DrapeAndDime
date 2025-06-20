@@ -44,4 +44,9 @@ export const navLinks = [
     icon: <UsersRound />,
     label: "Customers",
   },
+  {
+    url: "/coupons",
+    icon: <Tag />,
+    label: "Coupons",
+  },
 ];
