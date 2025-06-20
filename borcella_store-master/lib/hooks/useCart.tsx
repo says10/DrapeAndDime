@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { toast } from "sonner";
 import { persist, createJSONStorage } from "zustand/middleware";
+import { useState } from "react";
 
 interface CartItem {
   item: ProductType;
@@ -136,6 +137,7 @@ import { trackCartSession } from "@/lib/actions/cartTracking";
 export function useCartWithUser() {
   const cart = useCart();
   const { user, isLoaded: isUserLoaded } = useUser();
+  const [cartClearing, setCartClearing] = useState(false);
 
   // Helper to get user info
   const getUserInfo = () => {
@@ -149,8 +151,8 @@ export function useCartWithUser() {
 
   // Backend sync logic for all cart actions
   const syncBackend = async (action: string, cartItems?: CartItem[]) => {
-    if (!user) {
-      console.log('[Cart Sync] No user, skipping backend sync');
+    if (!user || cartClearing) {
+      console.log('[Cart Sync] No user or cart is clearing, skipping backend sync');
       return;
     }
     const { userEmail, userName } = getUserInfo();
@@ -180,11 +182,13 @@ export function useCartWithUser() {
 
   // Wrapped cart actions
   const addItem = async (data: CartItem) => {
+    if (cartClearing) return;
     cart.addItem(data);
     setTimeout(() => trackCartSession({ action: 'update_session', cartItems: cart.cartItems }), 0);
     await syncBackend('update_session');
   };
   const removeItem = async (id: string) => {
+    if (cartClearing) return;
     cart.removeItem(id);
     setTimeout(async () => {
       if (cart.cartItems.length === 0) {
@@ -192,17 +196,16 @@ export function useCartWithUser() {
       } else {
         await syncBackend('update_session');
       }
-      if (typeof window !== 'undefined') {
-        window.location.reload();
-      }
     }, 0);
   };
   const increaseQuantity = async (id: string) => {
+    if (cartClearing) return;
     cart.increaseQuantity(id);
     setTimeout(() => trackCartSession({ action: 'update_session', cartItems: cart.cartItems }), 0);
     await syncBackend('update_session');
   };
   const decreaseQuantity = async (id: string) => {
+    if (cartClearing) return;
     cart.decreaseQuantity(id);
     setTimeout(async () => {
       if (cart.cartItems.length === 0) {
@@ -210,23 +213,24 @@ export function useCartWithUser() {
       } else {
         await syncBackend('update_session');
       }
-      if (typeof window !== 'undefined') {
-        window.location.reload();
-      }
     }, 0);
   };
   const clearCart = async () => {
+    setCartClearing(true);
     cart.clearCart();
-    setTimeout(() => trackCartSession({ action: 'clear_session' }), 0);
-    await syncBackend('clear_session');
-    if (typeof window !== 'undefined') {
-      window.location.reload();
+    const res = await trackCartSession({ action: 'clear_session' });
+    if (res && res.success) {
+      setCartClearing(false);
+      // UI will update automatically
+    } else {
+      setCartClearing(false);
+      // Optionally show error or retry
     }
   };
 
   useEffect(() => {
-    if (isUserLoaded && user) {
-      // 1. Push local cart to backend
+    if (isUserLoaded && user && !cartClearing) {
+      // 1. Push local cart to backend if not empty
       (async () => {
         if (cart.cartItems.length > 0) {
           await syncBackend('update_session', cart.cartItems);
@@ -235,6 +239,7 @@ export function useCartWithUser() {
         fetch(`/api/cart-tracking`, { method: 'GET' })
           .then(res => res.json())
           .then(async data => {
+            if (cartClearing) return;
             const backendCartRaw = (data.sessions && data.sessions.length > 0) ? data.sessions[0].cartItems || [] : [];
             // Normalize backend cart to local cart structure
             const backendCart = backendCartRaw.map((item: any) => ({
@@ -264,7 +269,7 @@ export function useCartWithUser() {
           });
       })();
     }
-  }, [isUserLoaded, user]);
+  }, [isUserLoaded, user, cartClearing]);
 
   return {
     ...cart,
