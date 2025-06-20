@@ -32,19 +32,19 @@ export async function POST(req: NextRequest) {
 
     if (!cartItems || cartItems.length === 0) {
       console.log("❌ No items in cart");
-      return new NextResponse("No items to checkout", { status: 400 });
+      return new NextResponse(JSON.stringify({ error: "No items to checkout" }), { status: 400, headers: { "Content-Type": "application/json" } });
     }
 
     // Stock validation: Check if all items in the cart have sufficient stock
     for (const cartItem of cartItems) {
       const product = await Product.findById(cartItem.item._id);
       if (!product) {
-        return new NextResponse(`Product not found: ${cartItem.item.title}`, { status: 404 });
+        return new NextResponse(JSON.stringify({ error: `Product not found: ${cartItem.item.title}` }), { status: 404, headers: { "Content-Type": "application/json" } });
       }
       if (product.quantity < cartItem.quantity) {
         return new NextResponse(
-          `${product.title} is out of stock. Only ${product.quantity} available.`,
-          { status: 400 }
+          JSON.stringify({ error: `${product.title} is out of stock. Only ${product.quantity} available.` }),
+          { status: 400, headers: { "Content-Type": "application/json" } }
         );
       }
     }
@@ -149,6 +149,6 @@ export async function POST(req: NextRequest) {
     );
   } catch (err) {
     console.error("❌ [checkout_POST] Error:", err);
-    return new NextResponse("Internal Server Error", { status: 500 });
+    return new NextResponse(JSON.stringify({ error: "Internal Server Error" }), { status: 500, headers: { "Content-Type": "application/json" } });
   }
 }

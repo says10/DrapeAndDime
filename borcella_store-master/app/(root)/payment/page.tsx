@@ -1,6 +1,6 @@
 "use client";
 export const dynamic = "force-dynamic";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Fragment } from "react";
 import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs"; // Import auth hook from Clerk
 import Image from "next/image";
@@ -63,6 +63,10 @@ const Payment = () => {
   const [discountPercent, setDiscountPercent] = useState(0);
   const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null);
   const [isApplyingCoupon, setIsApplyingCoupon] = useState(false);
+
+  // Modal state
+  const [showCouponModal, setShowCouponModal] = useState(false);
+  const [modalError, setModalError] = useState("");
 
   const amount = cartItems.reduce(
     (total, cartItem) => total + cartItem.item.price * cartItem.quantity,
@@ -259,9 +263,33 @@ const Payment = () => {
     },
   ];
 
-  const handleQuickApplyCoupon = (code: string) => {
+  const handleQuickApplyCoupon = async (code: string) => {
     setCouponCode(code);
-    setTimeout(() => handleApplyCoupon(), 0); // Ensure state updates before applying
+    setIsApplyingCoupon(true);
+    setModalError("");
+    try {
+      const res = await fetch("/api/coupons/validate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code, userId: user?.id }),
+      });
+      const data = await res.json();
+      if (data.valid) {
+        setDiscountPercent(data.discountPercent);
+        setAppliedCoupon(data.appliedCoupon);
+        setCouponStatus(data.message);
+        setShowCouponModal(false); // Close modal on success
+      } else {
+        setDiscountPercent(0);
+        setAppliedCoupon(null);
+        setCouponStatus("");
+        setModalError(data.message || "This coupon cannot be applied.");
+      }
+    } catch (err) {
+      setModalError("Error applying coupon. Please try again.");
+    } finally {
+      setIsApplyingCoupon(false);
+    }
   };
 
   // Main payment handler
@@ -618,67 +646,58 @@ const Payment = () => {
               </div>
 
               {/* Available Coupons UI */}
-              <div className="mb-4 p-4 border rounded bg-blue-50">
-                <div className="font-semibold mb-2">Available Coupons:</div>
-                <ul className="space-y-2">
-                  {availableCoupons.map((coupon) => (
-                    <li key={coupon.code} className="flex items-center justify-between">
-                      <div>
-                        <span className="font-mono font-bold">{coupon.code}</span>: {coupon.description}
-                      </div>
-                      <button
-                        type="button"
-                        className="bg-blue-600 text-white px-3 py-1 rounded disabled:opacity-50 ml-4"
-                        disabled={!!appliedCoupon || isApplyingCoupon}
-                        onClick={() => handleQuickApplyCoupon(coupon.code)}
-                      >
-                        Apply
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              {/* Coupon Input UI */}
-              <div className="my-4 p-4 border rounded bg-gray-50">
-                <label htmlFor="coupon" className="block mb-2 font-medium">Have a coupon?</label>
-                <div className="flex gap-2">
-                  <input
-                    id="coupon"
-                    type="text"
-                    value={couponCode}
-                    onChange={e => setCouponCode(e.target.value)}
-                    className="border px-2 py-1 rounded w-40"
-                    placeholder="Enter code (e.g. WELCOME5)"
-                    disabled={!!appliedCoupon}
-                  />
+              <div className="mb-4">
+                <button
+                  type="button"
+                  className="bg-blue-600 text-white px-4 py-2 rounded shadow hover:bg-blue-700 transition"
+                  onClick={() => setShowCouponModal(true)}
+                  disabled={!!appliedCoupon}
+                >
+                  {appliedCoupon ? "Coupon Applied" : "Apply Coupon"}
+                </button>
+                {appliedCoupon && (
                   <button
                     type="button"
-                    onClick={handleApplyCoupon}
-                    className="bg-black text-white px-4 py-1 rounded disabled:opacity-50"
-                    disabled={isApplyingCoupon || !!appliedCoupon}
+                    onClick={handleRemoveCoupon}
+                    className="ml-4 text-red-500 underline"
                   >
-                    {isApplyingCoupon ? "Applying..." : "Apply"}
+                    Remove Coupon
                   </button>
-                  {appliedCoupon && (
-                    <button
-                      type="button"
-                      onClick={handleRemoveCoupon}
-                      className="text-red-500 underline ml-2"
-                    >
-                      Remove
-                    </button>
-                  )}
-                </div>
-                {couponStatus && (
-                  <div className={`mt-2 text-sm ${discountPercent > 0 ? "text-green-600" : "text-red-600"}`}>{couponStatus}</div>
-                )}
-                {discountPercent > 0 && (
-                  <div className="mt-2 text-green-700 font-semibold">
-                    Coupon applied: -{discountPercent}%
-                  </div>
                 )}
               </div>
+
+              {/* Coupon Modal Dialog */}
+              {showCouponModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+                  <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md relative">
+                    <button
+                      className="absolute top-2 right-2 text-gray-400 hover:text-gray-600"
+                      onClick={() => setShowCouponModal(false)}
+                    >
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h2 className="text-lg font-bold mb-4">Available Coupons</h2>
+                    <ul className="space-y-3 mb-4">
+                      {availableCoupons.map((coupon) => (
+                        <li key={coupon.code} className="flex items-center justify-between">
+                          <div>
+                            <span className="font-mono font-bold">{coupon.code}</span>: {coupon.description}
+                          </div>
+                          <button
+                            type="button"
+                            className="bg-blue-600 text-white px-3 py-1 rounded disabled:opacity-50 ml-4"
+                            disabled={isApplyingCoupon}
+                            onClick={() => handleQuickApplyCoupon(coupon.code)}
+                          >
+                            Apply
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                    {modalError && <div className="text-red-600 text-sm mb-2">{modalError}</div>}
+                  </div>
+                </div>
+              )}
 
               {/* Payment Button */}
               <button
