@@ -247,6 +247,23 @@ const Payment = () => {
     setCouponStatus("");
   };
 
+  // Available coupons
+  const availableCoupons = [
+    {
+      code: "WELCOME5",
+      description: "5% off for new users (one-time use)",
+    },
+    {
+      code: "PREPAID2",
+      description: "2% off on prepaid orders (unlimited use)",
+    },
+  ];
+
+  const handleQuickApplyCoupon = (code: string) => {
+    setCouponCode(code);
+    setTimeout(() => handleApplyCoupon(), 0); // Ensure state updates before applying
+  };
+
   // Main payment handler
   const handlePayment = async () => {
     if (!cashfreeLoaded || !amount) return;
@@ -598,6 +615,28 @@ const Payment = () => {
                     </p>
                   </div>
                 )}
+              </div>
+
+              {/* Available Coupons UI */}
+              <div className="mb-4 p-4 border rounded bg-blue-50">
+                <div className="font-semibold mb-2">Available Coupons:</div>
+                <ul className="space-y-2">
+                  {availableCoupons.map((coupon) => (
+                    <li key={coupon.code} className="flex items-center justify-between">
+                      <div>
+                        <span className="font-mono font-bold">{coupon.code}</span>: {coupon.description}
+                      </div>
+                      <button
+                        type="button"
+                        className="bg-blue-600 text-white px-3 py-1 rounded disabled:opacity-50 ml-4"
+                        disabled={!!appliedCoupon || isApplyingCoupon}
+                        onClick={() => handleQuickApplyCoupon(coupon.code)}
+                      >
+                        Apply
+                      </button>
+                    </li>
+                  ))}
+                </ul>
               </div>
 
               {/* Coupon Input UI */}

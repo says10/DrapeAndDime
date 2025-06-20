@@ -24,8 +24,6 @@ export async function POST(req: NextRequest) {
       discountPercent = 5;
       message = 'Welcome coupon applied!';
       appliedCoupon = 'WELCOME5';
-      // Record usage
-      await UsedCoupon.create({ userId, code: 'WELCOME5' });
     }
   } else if (code === 'PREPAID2') {
     valid = true;

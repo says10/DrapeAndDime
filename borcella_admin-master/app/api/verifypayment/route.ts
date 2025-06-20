@@ -5,6 +5,7 @@ import Customer from "@/lib/models/Customer"; // Import Customer model
 import { connectToDB } from "@/lib/mongoDB";
 import { sendEmail } from "@/lib/email";
 import { Cashfree } from "cashfree-pg"; // Import Cashfree
+import UsedCoupon from '@/lib/models/UsedCoupon'; // Import UsedCoupon model
 
 const allowedOrigin = `https://drapeanddime.shop`;
 
@@ -94,6 +95,15 @@ if (filteredPayment) {
       order.cashfreeOrderId=orderId;
       await order.save();
       console.log("✅ Payment successfully verified and order updated!");
+
+      // Mark coupon as used if applicable
+      if (order.appliedCoupon && order.customerClerkId && order.appliedCoupon === 'WELCOME5') {
+        const alreadyUsed = await UsedCoupon.findOne({ userId: order.customerClerkId, code: 'WELCOME5' });
+        if (!alreadyUsed) {
+          await UsedCoupon.create({ userId: order.customerClerkId, code: 'WELCOME5' });
+          console.log(`🎟️ Marked coupon WELCOME5 as used for user ${order.customerClerkId}`);
+        }
+      }
 
       // Step 4: Reduce stock for each product in the order
       for (const cartItem of order.products) {
