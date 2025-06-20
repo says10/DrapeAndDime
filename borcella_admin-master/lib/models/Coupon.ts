@@ -7,6 +7,10 @@ const couponSchema = new mongoose.Schema({
   type: { type: String, enum: ["percentage", "fixed"], default: "percentage" },
   allowedPayments: { type: String, enum: ["online", "cod", "both"], default: "both" },
   createdAt: { type: Date, default: Date.now },
+  minOrderValue: { type: Number },
+  maxDiscount: { type: Number },
+  minOrderCount: { type: Number },
+  maxOrderCount: { type: Number },
 });
 
 const Coupon = mongoose.models.Coupon || mongoose.model("Coupon", couponSchema);

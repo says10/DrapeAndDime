@@ -339,7 +339,7 @@ if (filteredPayment) {
                         <p style="font-size: 18px; font-weight: 600; margin-bottom: 10px;">DrapeAndDime</p>
                         <p style="margin: 5px 0; font-size: 14px;">Your Fashion Destination</p>
                         <div class="social-links">
-                            <a href="mailto:support@drapeanddime.shop">📧 support@drapeanddime.shop</a>
+                            <a href="mailto:drapeanddime@gmail.com">📧 drapeanddime@gmail.com</a>
                         </div>
                         <p style="font-size: 12px; margin-top: 20px; opacity: 0.8;">
                             © ${new Date().getFullYear()} DrapeAndDime. All rights reserved.

@@ -11,18 +11,18 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   await connectToDB();
-  const { code, description, discount, type, allowedPayments } = await req.json();
+  const { code, description, discount, type, allowedPayments, minOrderValue, maxDiscount, minOrderCount, maxOrderCount } = await req.json();
   if (!code || !description || !discount || !type) {
     return NextResponse.json({ error: "All fields are required." }, { status: 400 });
   }
   try {
-    const coupon = await Coupon.create({ code, description, discount, type, allowedPayments: allowedPayments || "both" });
+    const coupon = await Coupon.create({ code, description, discount, type, allowedPayments: allowedPayments || "both", minOrderValue, maxDiscount, minOrderCount, maxOrderCount });
 
     // Also upsert in store DB
     const StoreCoupon = await getStoreCouponModel();
     await StoreCoupon.updateOne(
       { code: coupon.code },
-      { $set: { description, discount, type, allowedPayments: allowedPayments || "both", createdAt: coupon.createdAt } },
+      { $set: { description, discount, type, allowedPayments: allowedPayments || "both", createdAt: coupon.createdAt, minOrderValue, maxDiscount, minOrderCount, maxOrderCount } },
       { upsert: true }
     );
 

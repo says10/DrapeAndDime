@@ -7,12 +7,16 @@ interface Coupon {
   discount: number;
   type: string;
   allowedPayments?: string;
+  minOrderValue?: number;
+  maxDiscount?: number;
+  minOrderCount?: number;
+  maxOrderCount?: number;
   _id?: string;
 }
 
 export default function CouponsPage() {
   const [coupons, setCoupons] = useState<Coupon[]>([]);
-  const [form, setForm] = useState({ code: "", description: "", discount: "", type: "percentage", allowedPayments: "both" });
+  const [form, setForm] = useState({ code: "", description: "", discount: "", type: "percentage", allowedPayments: "both", minOrderValue: "", maxDiscount: "", minOrderCount: "", maxOrderCount: "" });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [apiError, setApiError] = useState("");
@@ -57,12 +61,16 @@ export default function CouponsPage() {
           discount: Number(form.discount),
           type: form.type,
           allowedPayments: form.allowedPayments,
+          minOrderValue: form.minOrderValue ? Number(form.minOrderValue) : undefined,
+          maxDiscount: form.maxDiscount ? Number(form.maxDiscount) : undefined,
+          minOrderCount: form.minOrderCount ? Number(form.minOrderCount) : undefined,
+          maxOrderCount: form.maxOrderCount ? Number(form.maxOrderCount) : undefined,
         }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to add coupon.");
       setCoupons([data, ...coupons]);
-      setForm({ code: "", description: "", discount: "", type: "percentage", allowedPayments: "both" });
+      setForm({ code: "", description: "", discount: "", type: "percentage", allowedPayments: "both", minOrderValue: "", maxDiscount: "", minOrderCount: "", maxOrderCount: "" });
     } catch (err: any) {
       setApiError(err.message);
     } finally {
@@ -121,6 +129,22 @@ export default function CouponsPage() {
               <option value="online">Online</option>
               <option value="cod">COD</option>
             </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Min Order Value</label>
+            <input name="minOrderValue" type="number" min="0" value={form.minOrderValue} onChange={handleChange} className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-black focus:outline-none" placeholder="e.g. 5000" />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Max Discount</label>
+            <input name="maxDiscount" type="number" min="0" value={form.maxDiscount} onChange={handleChange} className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-black focus:outline-none" placeholder="e.g. 250" />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Min Order Count</label>
+            <input name="minOrderCount" type="number" min="1" value={form.minOrderCount} onChange={handleChange} className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-black focus:outline-none" placeholder="e.g. 3 (for 3rd order)" />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Max Order Count</label>
+            <input name="maxOrderCount" type="number" min="1" value={form.maxOrderCount} onChange={handleChange} className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-black focus:outline-none" placeholder="e.g. 3 (up to 3rd order)" />
           </div>
           <div className="md:col-span-2 flex items-center gap-4 mt-2">
             <button type="submit" className="bg-black text-white px-6 py-2 rounded-lg font-semibold shadow hover:bg-gray-900 transition" disabled={adding}>{adding ? "Adding..." : "Add Coupon"}</button>

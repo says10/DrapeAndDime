@@ -63,6 +63,7 @@ export const GET = async (req: NextRequest) => {
             <div style="padding: 32px 24px; background: #fff;">
               <p style="font-size: 1.1rem; color: #333;">Hi there,</p>
               <p style="font-size: 1.1rem; color: #333;">Thank you for joining <b>DrapeAndDime</b>! We're thrilled to have you as part of our fashion community. Explore the latest trends, exclusive collections, and enjoy a seamless shopping experience.</p>
+              <p style="font-size: 1.1rem; color: #333; margin-top: 18px;"><b>Use code <span style='color:#764ba2;'>WELCOME5</span> to get 5% off your first online order!</b></p>
               <a href="https://drapeanddime.shop" style="display: inline-block; margin: 24px 0; padding: 14px 32px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #fff; border-radius: 24px; text-decoration: none; font-weight: 600; font-size: 1.1rem;">Start Shopping</a>
               <p style="color: #888; font-size: 0.95rem; margin-top: 32px;">If you have any questions, just reply to this email or contact our support team. We're here to help!</p>
             </div>

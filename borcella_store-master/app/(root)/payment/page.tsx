@@ -9,6 +9,7 @@ import { CreditCard, Package, ShoppingBag, AlertCircle, Truck, XCircle, Loader2,
 // Import the custom useCart hook
 import { useCartWithUser } from "@/lib/hooks/useCart"; // Adjust the path to where your store is located
 import { load } from '@cashfreepayments/cashfree-js'; // Import Cashfree SDK
+import { getOrders } from "@/lib/actions/actions";
 
 // Add this at the top of the file, after imports
 const customScrollbarStyles = `
@@ -70,6 +71,8 @@ const Payment = () => {
   const [showCouponModal, setShowCouponModal] = useState(false);
   const [modalError, setModalError] = useState("");
 
+  const [userOrderCount, setUserOrderCount] = useState<number | null>(null);
+
   const amount = cartItems.reduce(
     (total, cartItem) => total + cartItem.item.price * cartItem.quantity,
     0
@@ -106,6 +109,20 @@ const Payment = () => {
       })
       .catch(() => setLoadingCoupons(false));
   }, []);
+
+  useEffect(() => {
+    const fetchOrderCount = async () => {
+      if (user?.id) {
+        try {
+          const orders = await getOrders(user.id);
+          setUserOrderCount(Array.isArray(orders) ? orders.length : 0);
+        } catch {
+          setUserOrderCount(0);
+        }
+      }
+    };
+    fetchOrderCount();
+  }, [user?.id]);
 
   // Add this function to check if form is filled
   const checkFormFilled = (formData: any) => {
@@ -238,7 +255,7 @@ const Payment = () => {
       const res = await fetch("/api/coupons/validate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ code: couponCode.trim().toUpperCase(), userId: user.id, paymentMethod }),
+        body: JSON.stringify({ code: couponCode.trim().toUpperCase(), userId: user.id, paymentMethod, orderTotal: amount, userOrderCount }),
       });
       const data = await res.json();
       if (data.valid) {
@@ -288,7 +305,7 @@ const Payment = () => {
       const res = await fetch("/api/coupons/validate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ code, userId: user?.id, paymentMethod }),
+        body: JSON.stringify({ code, userId: user?.id, paymentMethod, orderTotal: amount, userOrderCount }),
       });
       const data = await res.json();
       if (data.valid) {
