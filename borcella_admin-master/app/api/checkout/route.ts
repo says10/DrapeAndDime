@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     console.log("📩 Received request body:", body);
 
-    const { cartItems, customer, shippingDetails, shippingRate, enteredName } = body;
+    const { cartItems, customer, shippingDetails, shippingRate, enteredName, discountedAmount, appliedCoupon } = body;
 
     if (!cartItems || cartItems.length === 0) {
       console.log("❌ No items in cart");
@@ -56,11 +56,14 @@ export async function POST(req: NextRequest) {
       0
     );
 
-    console.log(`💰 Calculated totalAmount: ₹${totalAmount}`);
+    // Use discountedAmount if provided, else use totalAmount
+    const finalAmount = typeof discountedAmount === 'number' && discountedAmount > 0 ? discountedAmount : totalAmount;
+
+    console.log(`💰 Calculated totalAmount: ₹${totalAmount}, Final amount (after discount if any): ₹${finalAmount}`);
 
     // Create Cashfree order request
     const cashfreeOrderRequest = {
-      order_amount: totalAmount,
+      order_amount: finalAmount,
       order_currency: "INR",
       order_id: `order_${new Date().getTime()}`,
       customer_details: {
@@ -113,7 +116,8 @@ export async function POST(req: NextRequest) {
         country: shippingDetails.country,
       },
       shippingRate,
-      totalAmount,
+      totalAmount: finalAmount,
+      appliedCoupon: appliedCoupon || null,
       cashfreeOrderId: cashfreeResponse.data.order_id,
       status: "NOT PAID",
       createdAt: new Date(),
@@ -128,7 +132,7 @@ export async function POST(req: NextRequest) {
       JSON.stringify({
         orderId: cashfreeResponse.data.order_id,
         paymentSessionId: cashfreeResponse.data.payment_session_id,
-        amount: totalAmount,
+        amount: finalAmount,
         currency: "INR",
         cartItems,
       }),

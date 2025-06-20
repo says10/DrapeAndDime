@@ -57,10 +57,20 @@ const Payment = () => {
   const [paymentMethod, setPaymentMethod] = useState<'online' | 'cod'>('online');
   const [isFormFilled, setIsFormFilled] = useState(false);
 
+  // Coupon state
+  const [couponCode, setCouponCode] = useState("");
+  const [couponStatus, setCouponStatus] = useState("");
+  const [discountPercent, setDiscountPercent] = useState(0);
+  const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null);
+  const [isApplyingCoupon, setIsApplyingCoupon] = useState(false);
+
   const amount = cartItems.reduce(
     (total, cartItem) => total + cartItem.item.price * cartItem.quantity,
     0
   );
+
+  // Calculate discounted amount
+  const discountedAmount = discountPercent > 0 ? amount * (1 - discountPercent / 100) : amount;
 
   // Initialize Cashfree SDK when the component mounts
   useEffect(() => {
@@ -194,6 +204,49 @@ const Payment = () => {
     return false;
   };
 
+  // Coupon apply handler
+  const handleApplyCoupon = async () => {
+    if (!couponCode) {
+      setCouponStatus("Please enter a coupon code.");
+      return;
+    }
+    if (!user?.id) {
+      setCouponStatus("You must be logged in to apply a coupon.");
+      return;
+    }
+    setIsApplyingCoupon(true);
+    setCouponStatus("");
+    try {
+      const res = await fetch("/api/coupons/validate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: couponCode.trim().toUpperCase(), userId: user.id }),
+      });
+      const data = await res.json();
+      if (data.valid) {
+        setDiscountPercent(data.discountPercent);
+        setAppliedCoupon(data.appliedCoupon);
+        setCouponStatus(data.message);
+      } else {
+        setDiscountPercent(0);
+        setAppliedCoupon(null);
+        setCouponStatus(data.message || "Invalid coupon code.");
+      }
+    } catch (err) {
+      setCouponStatus("Error applying coupon. Please try again.");
+    } finally {
+      setIsApplyingCoupon(false);
+    }
+  };
+
+  // Remove coupon handler
+  const handleRemoveCoupon = () => {
+    setCouponCode("");
+    setDiscountPercent(0);
+    setAppliedCoupon(null);
+    setCouponStatus("");
+  };
+
   // Main payment handler
   const handlePayment = async () => {
     if (!cashfreeLoaded || !amount) return;
@@ -210,6 +263,8 @@ const Payment = () => {
       shippingDetails: formData,
       shippingRate,
       enteredName: formData.name,
+      discountedAmount: discountedAmount, // Pass discounted amount
+      appliedCoupon: appliedCoupon, // Pass applied coupon code
     };
 
     console.log("Sending orderData to API:", JSON.stringify(orderData, null, 2)); // Log before sending request
@@ -486,7 +541,7 @@ const Payment = () => {
                   </div>
                   <div className="flex items-center justify-between text-lg font-semibold text-gray-900">
                     <span>Total</span>
-                    <span>₹{amount}</span>
+                    <span>₹{discountedAmount.toFixed(2)}</span>
                   </div>
                 </div>
               </div>
@@ -541,6 +596,47 @@ const Payment = () => {
                     <p className="text-sm text-blue-800">
                       <strong>Note:</strong> Cash on Delivery is not available for this order. Please select online payment.
                     </p>
+                  </div>
+                )}
+              </div>
+
+              {/* Coupon Input UI */}
+              <div className="my-4 p-4 border rounded bg-gray-50">
+                <label htmlFor="coupon" className="block mb-2 font-medium">Have a coupon?</label>
+                <div className="flex gap-2">
+                  <input
+                    id="coupon"
+                    type="text"
+                    value={couponCode}
+                    onChange={e => setCouponCode(e.target.value)}
+                    className="border px-2 py-1 rounded w-40"
+                    placeholder="Enter code (e.g. WELCOME5)"
+                    disabled={!!appliedCoupon}
+                  />
+                  <button
+                    type="button"
+                    onClick={handleApplyCoupon}
+                    className="bg-black text-white px-4 py-1 rounded disabled:opacity-50"
+                    disabled={isApplyingCoupon || !!appliedCoupon}
+                  >
+                    {isApplyingCoupon ? "Applying..." : "Apply"}
+                  </button>
+                  {appliedCoupon && (
+                    <button
+                      type="button"
+                      onClick={handleRemoveCoupon}
+                      className="text-red-500 underline ml-2"
+                    >
+                      Remove
+                    </button>
+                  )}
+                </div>
+                {couponStatus && (
+                  <div className={`mt-2 text-sm ${discountPercent > 0 ? "text-green-600" : "text-red-600"}`}>{couponStatus}</div>
+                )}
+                {discountPercent > 0 && (
+                  <div className="mt-2 text-green-700 font-semibold">
+                    Coupon applied: -{discountPercent}%
                   </div>
                 )}
               </div>
