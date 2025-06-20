@@ -238,7 +238,7 @@ const Payment = () => {
       const res = await fetch("/api/coupons/validate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ code: couponCode.trim().toUpperCase(), userId: user.id }),
+        body: JSON.stringify({ code: couponCode.trim().toUpperCase(), userId: user.id, paymentMethod }),
       });
       const data = await res.json();
       if (data.valid) {
@@ -288,7 +288,7 @@ const Payment = () => {
       const res = await fetch("/api/coupons/validate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ code, userId: user?.id }),
+        body: JSON.stringify({ code, userId: user?.id, paymentMethod }),
       });
       const data = await res.json();
       if (data.valid) {
