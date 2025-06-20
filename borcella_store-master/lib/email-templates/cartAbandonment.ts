@@ -2,7 +2,7 @@
 function getAbsoluteImageUrl(image: string) {
   if (!image) return '';
   if (image.startsWith('http://') || image.startsWith('https://')) return image;
-  return `${process.env.NEXT_PUBLIC_APP_URL}${image.startsWith('/') ? '' : '/'}${image}`;
+  return `${process.env.ECOMMERCE_STORE_URL}${image.startsWith('/') ? '' : '/'}${image}`;
 }
 
 export const cartAbandonmentTemplates = {
@@ -69,7 +69,7 @@ export const cartAbandonmentTemplates = {
           </div>
           <div class="footer">
             <p>Need help? <a href="mailto:support@drapeanddime.com" class="support-link">Contact our support team</a></p>
-            <p><a href="${process.env.NEXT_PUBLIC_APP_URL}/unsubscribe">Unsubscribe</a></p>
+            <p><a href="${process.env.ECOMMERCE_STORE_URL}/unsubscribe">Unsubscribe</a></p>
           </div>
         </div>
       </body>
@@ -142,7 +142,7 @@ export const cartAbandonmentTemplates = {
           </div>
           <div class="footer">
             <p>Need help? <a href="mailto:support@drapeanddime.com" class="support-link">Contact our support team</a></p>
-            <p><a href="${process.env.NEXT_PUBLIC_APP_URL}/unsubscribe">Unsubscribe</a></p>
+            <p><a href="${process.env.ECOMMERCE_STORE_URL}/unsubscribe">Unsubscribe</a></p>
           </div>
         </div>
       </body>
@@ -218,7 +218,7 @@ export const cartAbandonmentTemplates = {
           </div>
           <div class="footer">
             <p>Need help? <a href="mailto:support@drapeanddime.com" class="support-link">Contact our support team</a></p>
-            <p><a href="${process.env.NEXT_PUBLIC_APP_URL}/unsubscribe">Unsubscribe</a></p>
+            <p><a href="${process.env.ECOMMERCE_STORE_URL}/unsubscribe">Unsubscribe</a></p>
           </div>
         </div>
       </body>
@@ -250,7 +250,7 @@ export const cartAbandonmentTemplates = {
       <body>
         <div class="container">
           <div class="header">
-            <img src="${process.env.NEXT_PUBLIC_APP_URL}/logo.png" alt="Logo" class="logo">
+            <img src="${process.env.ECOMMERCE_STORE_URL}/logo.png" alt="Logo" class="logo">
             <h1>Thank you, ${userName}!</h1>
           </div>
           
@@ -267,14 +267,14 @@ export const cartAbandonmentTemplates = {
           </div>
           
           <div style="text-align: center; margin: 30px 0;">
-            <a href="${process.env.NEXT_PUBLIC_APP_URL}/orders" class="cta-button">
+            <a href="${process.env.ECOMMERCE_STORE_URL}/orders" class="cta-button">
               View Your Orders
             </a>
           </div>
           
           <div class="footer">
             <p>Questions? Contact us at support@drapeanddime.com</p>
-            <p><a href="${process.env.NEXT_PUBLIC_APP_URL}/unsubscribe">Unsubscribe</a></p>
+            <p><a href="${process.env.ECOMMERCE_STORE_URL}/unsubscribe">Unsubscribe</a></p>
           </div>
         </div>
       </body>
