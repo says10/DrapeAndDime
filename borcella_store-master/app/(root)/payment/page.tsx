@@ -452,6 +452,11 @@ const Payment = () => {
     );
   }
 
+  if (showCouponModal) {
+    console.log('All coupons from API:', couponList);
+    console.log('Filtered coupons for modal:', filteredCoupons);
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-white via-gray-50/50 to-gray-100/50">
       {/* Add the style tag without jsx global */}
