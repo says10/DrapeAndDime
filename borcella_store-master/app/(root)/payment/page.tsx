@@ -62,6 +62,7 @@ const Payment = () => {
   const [couponCode, setCouponCode] = useState("");
   const [couponStatus, setCouponStatus] = useState("");
   const [discountPercent, setDiscountPercent] = useState(0);
+  const [discountAmount, setDiscountAmount] = useState(0);
   const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null);
   const [isApplyingCoupon, setIsApplyingCoupon] = useState(false);
   const [couponList, setCouponList] = useState<any[]>([]);
@@ -79,7 +80,7 @@ const Payment = () => {
   );
 
   // Calculate discounted amount
-  const discountedAmount = discountPercent > 0 ? amount * (1 - discountPercent / 100) : amount;
+  const discountedAmount = discountAmount > 0 ? amount - discountAmount : amount;
 
   // Initialize Cashfree SDK when the component mounts
   useEffect(() => {
@@ -260,10 +261,12 @@ const Payment = () => {
       const data = await res.json();
       if (data.valid) {
         setDiscountPercent(data.discountPercent);
+        setDiscountAmount(data.discountAmount);
         setAppliedCoupon(data.appliedCoupon);
         setCouponStatus(data.message);
       } else {
         setDiscountPercent(0);
+        setDiscountAmount(0);
         setAppliedCoupon(null);
         setCouponStatus(data.message || "Invalid coupon code.");
       }
@@ -278,6 +281,7 @@ const Payment = () => {
   const handleRemoveCoupon = () => {
     setCouponCode("");
     setDiscountPercent(0);
+    setDiscountAmount(0);
     setAppliedCoupon(null);
     setCouponStatus("");
   };
@@ -312,11 +316,13 @@ const Payment = () => {
         // Find the coupon details from couponList
         const couponObj = couponList.find((c) => c.code === code);
         setDiscountPercent(couponObj ? couponObj.discount : data.discountPercent);
+        setDiscountAmount(data.discountAmount);
         setAppliedCoupon(data.appliedCoupon);
         setCouponStatus(data.message);
         setShowCouponModal(false); // Close modal on success
       } else {
         setDiscountPercent(0);
+        setDiscountAmount(0);
         setAppliedCoupon(null);
         setCouponStatus("");
         setModalError(data.message || "This coupon cannot be applied.");
