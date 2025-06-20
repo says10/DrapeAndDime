@@ -57,7 +57,9 @@ export async function POST(req: NextRequest) {
     );
 
     // Use discountedAmount if provided, else use totalAmount
-    const finalAmount = typeof discountedAmount === 'number' && discountedAmount > 0 ? discountedAmount : totalAmount;
+    let finalAmount = typeof discountedAmount === 'number' && discountedAmount > 0 ? discountedAmount : totalAmount;
+    // Round to 2 decimals
+    finalAmount = Math.round(finalAmount * 100) / 100;
 
     console.log(`💰 Calculated totalAmount: ₹${totalAmount}, Final amount (after discount if any): ₹${finalAmount}`);
 
