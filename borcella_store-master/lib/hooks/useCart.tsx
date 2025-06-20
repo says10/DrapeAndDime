@@ -250,6 +250,8 @@ export function useCartWithUser() {
               color: item.color,
               size: item.size,
             }));
+            // Safeguard: if both backend and local cart are empty, do nothing
+            if (backendCart.length === 0 && cart.cartItems.length === 0) return;
             // Merge: prefer local cart items for same product/variant (only on login/session load)
             const mergedCart = [...backendCart];
             cart.cartItems.forEach(localItem => {

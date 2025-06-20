@@ -30,7 +30,7 @@ const customScrollbarStyles = `
 
 const Payment = () => {
   const router = useRouter();
-  const { cartItems, clearCart } = useCartWithUser(); // Use cartItems from your Zustand store
+  const { cartItems, clearCart, ...cartActions } = useCartWithUser(); // Use cartItems from your Zustand store
 
   const { user } = useUser(); // Get clerkId from Clerk
   const [cashfreeLoaded, setCashfreeLoaded] = useState(false);
@@ -404,6 +404,7 @@ const Payment = () => {
           console.log("Payment Verification Response:", verifyResData);
 
           if (verifyResData.success) {
+            await clearCart(); // Clear both local and backend cart
             window.location.href = "/payment_success";
           } else {
             setErrorMessage("Payment verification failed.");
