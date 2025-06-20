@@ -668,24 +668,26 @@ const Payment = () => {
 
               {/* Coupon Modal Dialog */}
               {showCouponModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-                  <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md relative">
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 transition-opacity">
+                  <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm relative border border-gray-200 animate-fade-in">
                     <button
-                      className="absolute top-2 right-2 text-gray-400 hover:text-gray-600"
+                      className="absolute top-3 right-3 text-gray-400 hover:text-gray-700 focus:outline-none"
                       onClick={() => setShowCouponModal(false)}
+                      aria-label="Close"
                     >
-                      <span aria-hidden="true">&times;</span>
+                      <svg width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M18 6 6 18M6 6l12 12"/></svg>
                     </button>
-                    <h2 className="text-lg font-bold mb-4">Available Coupons</h2>
+                    <h2 className="text-xl font-bold mb-4 text-gray-900 text-center">Apply a Coupon</h2>
                     <ul className="space-y-3 mb-4">
                       {availableCoupons.map((coupon) => (
-                        <li key={coupon.code} className="flex items-center justify-between">
-                          <div>
-                            <span className="font-mono font-bold">{coupon.code}</span>: {coupon.description}
+                        <li key={coupon.code} className="flex items-center justify-between bg-gray-50 rounded-lg px-4 py-3 border border-gray-100">
+                          <div className="flex flex-col">
+                            <span className="inline-block bg-blue-100 text-blue-700 text-xs font-semibold rounded px-2 py-0.5 mb-1 tracking-wide">{coupon.code}</span>
+                            <span className="text-gray-700 text-sm">{coupon.description}</span>
                           </div>
                           <button
                             type="button"
-                            className="bg-blue-600 text-white px-3 py-1 rounded disabled:opacity-50 ml-4"
+                            className="ml-4 bg-blue-600 hover:bg-blue-700 focus:ring-2 focus:ring-blue-400 text-white px-4 py-1.5 rounded-lg font-medium shadow-sm transition disabled:opacity-50"
                             disabled={isApplyingCoupon}
                             onClick={() => handleQuickApplyCoupon(coupon.code)}
                           >
@@ -694,7 +696,7 @@ const Payment = () => {
                         </li>
                       ))}
                     </ul>
-                    {modalError && <div className="text-red-600 text-sm mb-2">{modalError}</div>}
+                    {modalError && <div className="text-red-600 text-sm mb-2 text-center font-medium">{modalError}</div>}
                   </div>
                 </div>
               )}

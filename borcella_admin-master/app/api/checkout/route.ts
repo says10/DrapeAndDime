@@ -93,7 +93,7 @@ export async function POST(req: NextRequest) {
     const cashfreeResponse = await Cashfree.PGCreateOrder("2025-01-01", cashfreeOrderRequest);
 
     if (cashfreeResponse.status === 200) {
-      console.error("order created");
+      console.log("order created");
     }
 
     console.log("✅ Cashfree Order Created:", cashfreeResponse.data);

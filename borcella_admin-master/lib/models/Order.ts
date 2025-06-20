@@ -38,6 +38,7 @@ const orderSchema = new mongoose.Schema(
     trackingLink:String,
     paymentId: String,
     expiresAt: { type: Date, required: true }, // Custom expiration date field
+    appliedCoupon: { type: String, default: null },
   },
   { timestamps: true }
 );
