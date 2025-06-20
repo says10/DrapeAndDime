@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
     // Check if the necessary field is present
     if (!orderId) {
       console.log("❌ Missing orderId. Verification cannot proceed.");
-      return new NextResponse("Missing orderId", { status: 400 });
+      return new NextResponse(JSON.stringify({ error: "Missing orderId" }), { status: 400, headers: { "Content-Type": "application/json" } });
     }
 
     // Step 1: Fetch the order using the orderId
@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
 
     if (!order) {
       console.log("❌ Order not found with the given orderId");
-      return new NextResponse("Order not found", { status: 404 });
+      return new NextResponse(JSON.stringify({ error: "Order not found" }), { status: 404, headers: { "Content-Type": "application/json" } });
     }
 
     console.log("📦 Order fetched from DB:", order);
@@ -82,7 +82,7 @@ if (filteredPayment) {
 
     } catch (error) {
       console.error("❌ Error fetching payment status from Cashfree:", error);
-      return new NextResponse("Error fetching payment status", { status: 500 });
+      return new NextResponse(JSON.stringify({ error: "Error fetching payment status from Cashfree" }), { status: 500, headers: { "Content-Type": "application/json" } });
     }
 
     console.log("📊 Payment Status:", paymentStatus);
@@ -136,26 +136,37 @@ if (filteredPayment) {
       // Step 5: Store Customer Details (NEW CODE ADDED)
       const { customerClerkId, customerEmail, customerName } = order;
 
+      console.log("Customer details for creation:", { customerClerkId, customerName, customerEmail });
+
       if (!customerClerkId || !customerEmail || !customerName) {
         console.warn("⚠️ Missing customer details, skipping customer creation.");
       } else {
-        let customer = await Customer.findOne({ clerkId: customerClerkId });
-
+        // Try to find by clerkId or email
+        let customer = await Customer.findOne({ $or: [ { clerkId: customerClerkId }, { email: customerEmail } ] });
         if (customer) {
-          console.log("👤 Customer found, updating order history...");
-          customer.orders.push(order._id);
+          console.log("👤 Customer found, updating order history and details...");
+          // Update details if needed
+          customer.clerkId = customerClerkId;
+          customer.name = customerName;
+          customer.email = customerEmail;
+          if (!customer.orders.includes(order._id)) {
+            customer.orders.push(order._id);
+          }
         } else {
           console.log("🆕 Creating a new customer record...");
           customer = new Customer({
             clerkId: customerClerkId,
             name: customerName,
             email: customerEmail,
-            orders: [order._id], // Store the order reference
+            orders: [order._id],
           });
         }
-
-        await customer.save();
-        console.log("✅ Customer record updated successfully!");
+        try {
+          await customer.save();
+          console.log("✅ Customer record updated successfully!");
+        } catch (err) {
+          console.error("❌ Error saving customer record:", err);
+        }
       }
 
       // Step 6: Send confirmation email
@@ -343,13 +354,12 @@ if (filteredPayment) {
         console.log(`📧 Confirmation email sent to: ${order.customerEmail}`);
       }
 
-      return NextResponse.json({
-        success: true,
-        message: "Payment verified, order updated, and customer stored",
-      }, { status: 200 });
+      return new NextResponse(JSON.stringify({ success: true, message: "Payment verified and order updated." }), { status: 200, headers: { "Content-Type": "application/json" } });
 
+    } else if (paymentStatus === "Pending") {
+      return new NextResponse(JSON.stringify({ success: false, status: "pending", message: "Payment is pending." }), { status: 200, headers: { "Content-Type": "application/json" } });
     } else {
-      return new NextResponse("Payment verification failed", { status: 400 });
+      return new NextResponse(JSON.stringify({ success: false, message: "Payment verification failed." }), { status: 400, headers: { "Content-Type": "application/json" } });
     }
 
   } catch (error) {
