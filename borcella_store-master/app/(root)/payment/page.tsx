@@ -63,6 +63,8 @@ const Payment = () => {
   const [discountPercent, setDiscountPercent] = useState(0);
   const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null);
   const [isApplyingCoupon, setIsApplyingCoupon] = useState(false);
+  const [couponList, setCouponList] = useState<any[]>([]);
+  const [loadingCoupons, setLoadingCoupons] = useState(false);
 
   // Modal state
   const [showCouponModal, setShowCouponModal] = useState(false);
@@ -91,6 +93,18 @@ const Payment = () => {
     };
     
     initializeCashfreeSDK();
+  }, []);
+
+  // Fetch coupons from backend
+  useEffect(() => {
+    setLoadingCoupons(true);
+    fetch("/api/coupons")
+      .then((res) => res.json())
+      .then((data) => {
+        setCouponList(data);
+        setLoadingCoupons(false);
+      })
+      .catch(() => setLoadingCoupons(false));
   }, []);
 
   // Add this function to check if form is filled
@@ -251,17 +265,20 @@ const Payment = () => {
     setCouponStatus("");
   };
 
-  // Available coupons
-  const availableCoupons = [
-    {
-      code: "WELCOME5",
-      description: "5% off for new users (one-time use)",
-    },
-    {
-      code: "PREPAID2",
-      description: "2% off on prepaid orders (unlimited use)",
-    },
-  ];
+  // Only show coupons allowed for the selected payment method
+  const filteredCoupons = couponList.filter(
+    (coupon) =>
+      coupon.allowedPayments === "both" ||
+      coupon.allowedPayments === paymentMethod
+  );
+
+  // Remove PREPAID2 if applied and paymentMethod switches to COD
+  useEffect(() => {
+    if (appliedCoupon === "PREPAID2" && paymentMethod !== "online") {
+      handleRemoveCoupon();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [paymentMethod]);
 
   const handleQuickApplyCoupon = async (code: string) => {
     setCouponCode(code);
@@ -275,7 +292,9 @@ const Payment = () => {
       });
       const data = await res.json();
       if (data.valid) {
-        setDiscountPercent(data.discountPercent);
+        // Find the coupon details from couponList
+        const couponObj = couponList.find((c) => c.code === code);
+        setDiscountPercent(couponObj ? couponObj.discount : data.discountPercent);
         setAppliedCoupon(data.appliedCoupon);
         setCouponStatus(data.message);
         setShowCouponModal(false); // Close modal on success
@@ -678,24 +697,31 @@ const Payment = () => {
                       <svg width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M18 6 6 18M6 6l12 12"/></svg>
                     </button>
                     <h2 className="text-xl font-bold mb-4 text-gray-900 text-center">Apply a Coupon</h2>
-                    <ul className="space-y-3 mb-4">
-                      {availableCoupons.map((coupon) => (
-                        <li key={coupon.code} className="flex items-center justify-between bg-gray-50 rounded-lg px-4 py-3 border border-gray-100">
-                          <div className="flex flex-col">
-                            <span className="inline-block bg-blue-100 text-blue-700 text-xs font-semibold rounded px-2 py-0.5 mb-1 tracking-wide">{coupon.code}</span>
-                            <span className="text-gray-700 text-sm">{coupon.description}</span>
-                          </div>
-                          <button
-                            type="button"
-                            className="ml-4 bg-blue-600 hover:bg-blue-700 focus:ring-2 focus:ring-blue-400 text-white px-4 py-1.5 rounded-lg font-medium shadow-sm transition disabled:opacity-50"
-                            disabled={isApplyingCoupon}
-                            onClick={() => handleQuickApplyCoupon(coupon.code)}
-                          >
-                            Apply
-                          </button>
-                        </li>
-                      ))}
-                    </ul>
+                    {loadingCoupons ? (
+                      <div className="text-gray-500 py-8 text-center">Loading coupons...</div>
+                    ) : (
+                      <ul className="space-y-3 mb-4">
+                        {filteredCoupons.length === 0 && (
+                          <li className="text-gray-500 text-center">No coupons available.</li>
+                        )}
+                        {filteredCoupons.map((coupon) => (
+                          <li key={coupon.code} className="flex items-center justify-between bg-gray-50 rounded-lg px-4 py-3 border border-gray-100">
+                            <div className="flex flex-col">
+                              <span className="inline-block bg-gray-200 text-black text-xs font-semibold rounded px-2 py-0.5 mb-1 tracking-wide">{coupon.code}</span>
+                              <span className="text-gray-700 text-sm">{coupon.description}</span>
+                            </div>
+                            <button
+                              type="button"
+                              className="ml-4 bg-black hover:bg-gray-900 focus:ring-2 focus:ring-gray-400 text-white px-4 py-1.5 rounded-lg font-medium shadow-sm transition disabled:opacity-50"
+                              disabled={isApplyingCoupon}
+                              onClick={() => handleQuickApplyCoupon(coupon.code)}
+                            >
+                              Apply
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
                     {modalError && <div className="text-red-600 text-sm mb-2 text-center font-medium">{modalError}</div>}
                   </div>
                 </div>
