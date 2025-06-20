@@ -90,6 +90,11 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ success: true });
 
       case "update_session":
+        // If cartItems is empty, delete the session instead of upserting
+        if (!cartItems || cartItems.length === 0) {
+          await CartSession.findOneAndDelete({ userId, status: "active" });
+          return NextResponse.json({ success: true, cleared: true });
+        }
         // Upsert (update or create) the user's active cart session
         const update = {
           userId,

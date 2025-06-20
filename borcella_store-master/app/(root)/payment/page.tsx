@@ -668,7 +668,7 @@ const Payment = () => {
               <div className="mb-4">
                 <button
                   type="button"
-                  className="bg-blue-600 text-white px-4 py-2 rounded shadow hover:bg-blue-700 transition"
+                  className={`px-4 py-2 rounded shadow font-medium transition focus:outline-none focus:ring-2 focus:ring-gray-400 ${appliedCoupon ? 'bg-black text-white cursor-default' : 'bg-black text-white hover:bg-gray-900'}`}
                   onClick={() => setShowCouponModal(true)}
                   disabled={!!appliedCoupon}
                 >
