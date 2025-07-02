@@ -262,52 +262,52 @@ const Navbar = () => {
         </div>
         {/* Mobile Dropdown Menu (unchanged) */}
         {dropdownMenu && (
-          <div className="fixed inset-0 z-50 flex items-start justify-end lg:hidden">
+          <div className="fixed inset-0 z-50 flex items-center justify-center lg:hidden">
             {/* Overlay */}
             <div
-              className="absolute inset-0 bg-black/60 transition-opacity animate-fadeIn"
+              className="absolute inset-0 bg-black/70 backdrop-blur-sm transition-opacity animate-fadeIn"
               onClick={() => setDropdownMenu(false)}
             />
             {/* Menu */}
-            <div className="relative w-4/5 max-w-xs h-full bg-white shadow-lg flex flex-col gap-4 p-6 animate-slideInRight">
+            <div className="relative w-11/12 max-w-sm h-[90vh] bg-white rounded-xl border border-gray-200 shadow-2xl flex flex-col py-8 px-6 space-y-4 animate-slideInRight overflow-y-auto">
               <button
-                className="absolute top-4 right-4 p-2 rounded hover:bg-gray-200 transition-colors"
+                className="absolute top-4 right-4 p-3 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors shadow"
                 onClick={() => setDropdownMenu(false)}
                 aria-label="Close menu"
               >
-                <X className="w-6 h-6" />
+                <X className="w-7 h-7" />
               </button>
-              <Link href="/" className="hover:text-red-1 transition-colors" onClick={() => setDropdownMenu(false)}>
+              <Link href="/" className="block text-lg font-semibold py-2 px-3 rounded-lg hover:bg-gray-100 transition" onClick={() => setDropdownMenu(false)}>
                 Home
               </Link>
               <Link
                 href="/products"
-                className={`hover:text-red-1 transition-colors ${pathname === "/products" && "text-red-1"}`}
+                className={`block text-lg font-semibold py-2 px-3 rounded-lg hover:bg-gray-100 transition ${pathname === "/products" ? "text-red-500" : ""}`}
                 onClick={() => setDropdownMenu(false)}
               >
                 BestSellers
               </Link>
               <Link
                 href={user ? "/wishlist" : "/sign-in"}
-                className="hover:text-red-1 transition-colors"
+                className="block text-lg font-semibold py-2 px-3 rounded-lg hover:bg-gray-100 transition"
                 onClick={() => setDropdownMenu(false)}
               >
                 Wishlist
               </Link>
               <Link
                 href={user ? "/orders" : "/sign-in"}
-                className="hover:text-red-1 transition-colors"
+                className="block text-lg font-semibold py-2 px-3 rounded-lg hover:bg-gray-100 transition"
                 onClick={() => setDropdownMenu(false)}
               >
                 Orders
               </Link>
               <Link
                 href="/cart"
-                className="flex items-center gap-3 border rounded-lg px-3 py-2 hover:bg-black hover:text-white transition-all duration-300"
+                className="flex items-center gap-3 bg-gray-900 text-white text-lg font-semibold py-3 px-4 rounded-lg mt-4 hover:bg-gray-800 transition"
                 onClick={() => setDropdownMenu(false)}
               >
-                <ShoppingCart />
-                <p className="text-base-bold">Cart ({cart.cartItems.length})</p>
+                <ShoppingCart className="w-6 h-6" />
+                <span>Cart ({cart.cartItems.length})</span>
               </Link>
             </div>
           </div>

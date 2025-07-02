@@ -39,16 +39,16 @@ export default function HomeClientWrapper({ collections }: HomeClientWrapperProp
           
           {/* Content Container */}
           <div className="relative">
-            <div className="max-w-[1920px] mx-auto px-8 py-16">
+            <div className="max-w-[1920px] mx-auto px-4 py-8 sm:px-8 sm:py-16">
               {/* Section Header */}
-              <div className="flex justify-between items-center mb-16">
-                <h2 className="text-4xl font-bold tracking-tight">Featured Products</h2>
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 sm:gap-0 mb-8 sm:mb-16">
+                <h2 className="text-2xl sm:text-4xl font-bold tracking-tight">Featured Products</h2>
                 <a 
                   href="/products" 
-                  className="inline-flex items-center gap-2 px-6 py-3 bg-black text-white font-medium rounded-lg hover:bg-gray-800 transition-colors duration-300"
+                  className="inline-flex items-center gap-2 px-4 py-2 sm:px-6 sm:py-3 bg-black text-white font-medium rounded-lg hover:bg-gray-800 transition-colors duration-300 text-sm sm:text-base"
                 >
                   View All
-                  <ChevronRight className="w-5 h-5" />
+                  <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
                 </a>
               </div>
 

@@ -2,51 +2,56 @@ import React from "react";
 
 const ContactUs: React.FC = () => {
   return (
-    <div style={styles.pageWrapper}>
-      <div style={styles.pageContainer}>
+    <div className="min-h-screen bg-gradient-to-br from-white via-gray-50/50 to-gray-100/50 flex items-center justify-center px-4 py-8 sm:px-8 sm:py-16">
+      <div className="w-full max-w-2xl bg-white rounded-xl shadow-lg p-4 sm:p-8 mx-auto">
         {/* Hero Section */}
-        <section style={styles.heroSection}>
-          <h1 style={styles.heroTitle}>
-            Get in Touch with <span style={styles.brandName}>Drape & Dime</span>
+        <section className="text-center mb-8 sm:mb-12">
+          <h1 className="text-2xl sm:text-4xl font-bold mb-2 sm:mb-4">
+            Get in Touch with <span className="text-orange-500">Drape & Dime</span>
           </h1>
-          <p style={styles.heroSubtitle}>
-            We’re here to help! Reach out for support, inquiries, or collaborations.
+          <p className="text-base sm:text-lg text-gray-600">
+            We're here to help! Reach out for support, inquiries, or collaborations.
           </p>
         </section>
 
         {/* Contact Information */}
-        <div style={styles.contentContainer}>
-          <h2 style={styles.sectionTitle}>Contact Details</h2>
-          <p style={styles.paragraph}>
-            Have questions? We’d love to hear from you! Feel free to reach us through any of the options below.
+        <div className="mb-8">
+          <h2 className="text-lg sm:text-2xl font-bold mb-2 sm:mb-4">Contact Details</h2>
+          <p className="text-sm sm:text-base text-gray-600 mb-2">
+            Have questions? We'd love to hear from you! Feel free to reach us through any of the options below.
           </p>
-
-          <div style={styles.contactContainer}>
-            <a href="mailto:drapeanddime@gmail.com" style={styles.contactItem}>
-              <img src="/gmail.svg" alt="Gmail" style={styles.icon} />
+          <div className="flex flex-col gap-3 mt-2">
+            <a href="mailto:drapeanddime@gmail.com" className="flex items-center gap-2 text-base text-gray-700 hover:text-orange-500 transition">
+              <img src="/gmail.svg" alt="Gmail" className="w-6 h-6" />
               drapeanddime@gmail.com
             </a>
-            <a href="tel:+918910607304" style={styles.contactItem}>
-              <img src="/phone.svg" alt="Phone" style={styles.icon} />
+            <a href="tel:+918910607304" className="flex items-center gap-2 text-base text-gray-700 hover:text-orange-500 transition">
+              <img src="/phone.svg" alt="Phone" className="w-6 h-6" />
               +91 8910607304
             </a>
           </div>
+        </div>
 
-          {/* Business Information */}
-          <h2 style={styles.sectionTitle}>Business Information</h2>
-          <p style={styles.paragraph}><strong>Legal Name:</strong> SAYANTAN MUKHERJEE</p>
-          <p style={styles.paragraph}><strong>Operating Address:</strong> 108 Pallisree Regent Estate Kolkata, West Bengal, 700092</p>
+        {/* Business Information */}
+        <div className="mb-8">
+          <h2 className="text-lg sm:text-2xl font-bold mb-2 sm:mb-4">Business Information</h2>
+          <p className="text-sm sm:text-base text-gray-600"><strong>Legal Name:</strong> SAYANTAN MUKHERJEE</p>
+          <p className="text-sm sm:text-base text-gray-600"><strong>Operating Address:</strong> 108 Pallisree Regent Estate Kolkata, West Bengal, 700092</p>
+        </div>
 
-          {/* Customer Support */}
-          <h2 style={styles.sectionTitle}>Customer Support</h2>
-          <p style={styles.paragraph}>
+        {/* Customer Support */}
+        <div className="mb-8">
+          <h2 className="text-lg sm:text-2xl font-bold mb-2 sm:mb-4">Customer Support</h2>
+          <p className="text-sm sm:text-base text-gray-600">
             Our support team is available Monday to Saturday, 10:00 AM - 6:00 PM IST.
           </p>
+        </div>
 
-          {/* FAQs Section */}
-          <h2 style={styles.sectionTitle}>FAQs</h2>
-          <p style={styles.paragraph}>
-            Check our <a href="/faqs" style={styles.link}>FAQs page</a> for common queries about orders, shipping, and returns.
+        {/* FAQs Section */}
+        <div>
+          <h2 className="text-lg sm:text-2xl font-bold mb-2 sm:mb-4">FAQs</h2>
+          <p className="text-sm sm:text-base text-gray-600">
+            Check our <a href="/faqs" className="text-blue-600 hover:underline font-semibold">FAQs page</a> for common queries about orders, shipping, and returns.
           </p>
         </div>
       </div>
