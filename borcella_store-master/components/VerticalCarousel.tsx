@@ -40,7 +40,7 @@ const VerticalCarousel = ({ items }: VerticalCarouselProps) => {
   const selectedItem = items[selectedIndex];
 
   return (
-    <div className="relative w-full h-[70vh] min-h-[400px] max-h-[90vh] flex flex-col items-center justify-center overflow-hidden bg-gray-100 rounded-2xl shadow-2xl">
+    <div className="relative w-full aspect-[9/16] flex flex-col items-center justify-center overflow-hidden bg-gray-100">
       {/* Background Media (Image or Video) */}
       <div className="absolute inset-0 w-full h-full z-0">
         {selectedItem.mediaType === "video" ? (
