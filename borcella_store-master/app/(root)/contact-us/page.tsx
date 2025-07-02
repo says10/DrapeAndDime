@@ -30,16 +30,16 @@ const ContactUs: React.FC = () => {
               +91 8910607304
             </a>
           </div>
-        </div>
+          </div>
 
-        {/* Business Information */}
+          {/* Business Information */}
         <div className="mb-8">
           <h2 className="text-lg sm:text-2xl font-bold mb-2 sm:mb-4">Business Information</h2>
           <p className="text-sm sm:text-base text-gray-600"><strong>Legal Name:</strong> SAYANTAN MUKHERJEE</p>
           <p className="text-sm sm:text-base text-gray-600"><strong>Operating Address:</strong> 108 Pallisree Regent Estate Kolkata, West Bengal, 700092</p>
         </div>
 
-        {/* Customer Support */}
+          {/* Customer Support */}
         <div className="mb-8">
           <h2 className="text-lg sm:text-2xl font-bold mb-2 sm:mb-4">Customer Support</h2>
           <p className="text-sm sm:text-base text-gray-600">
@@ -47,7 +47,7 @@ const ContactUs: React.FC = () => {
           </p>
         </div>
 
-        {/* FAQs Section */}
+          {/* FAQs Section */}
         <div>
           <h2 className="text-lg sm:text-2xl font-bold mb-2 sm:mb-4">FAQs</h2>
           <p className="text-sm sm:text-base text-gray-600">

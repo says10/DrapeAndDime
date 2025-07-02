@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { MinusCircle, PlusCircle, ShoppingBag, Star, Truck, Shield, RotateCcw } from "lucide-react";
 import useCart from "@/lib/hooks/useCart";
 import FormattedText from "./FormattedText";
 import { toast } from "sonner";
 import HydrationSafe from "./HydrationSafe";
+import Gallery from "./Gallery";
 
 const ProductInfo = ({ productInfo }: { productInfo: ProductType }) => {
   const [selectedColor, setSelectedColor] = useState<string>(productInfo.colors || "");
@@ -21,6 +22,10 @@ const ProductInfo = ({ productInfo }: { productInfo: ProductType }) => {
   const cart = useCart();
   const maxStock = productInfo.quantity;
   const isOutOfStock = maxStock === 0;
+
+  const cartIconRef = useRef<HTMLDivElement>(null);
+  const productImageRef = useRef<HTMLDivElement>(null);
+  const [flyImage, setFlyImage] = useState<null | { x: number; y: number; src: string }>(null);
 
   // Fetch real reviews from database
   useEffect(() => {
@@ -60,6 +65,19 @@ const ProductInfo = ({ productInfo }: { productInfo: ProductType }) => {
     if (!isOutOfStock) {
       setIsAddingToCart(true);
       try {
+        // Fly to cart animation
+        if (productImageRef.current && cartIconRef.current) {
+          const imgRect = productImageRef.current.getBoundingClientRect();
+          const cartRect = cartIconRef.current.getBoundingClientRect();
+          setFlyImage({
+            x: imgRect.left,
+            y: imgRect.top,
+            src: productInfo.media && productInfo.media[0] ? productInfo.media[0] : "/logo.png"
+          });
+          setTimeout(() => {
+            setFlyImage(null);
+          }, 900);
+        }
         cart.addItem({
           item: productInfo,
           quantity,
@@ -119,6 +137,24 @@ const ProductInfo = ({ productInfo }: { productInfo: ProductType }) => {
       </div>
     }>
       <div className="flex flex-col gap-8 p-8 bg-white/90 backdrop-blur-sm rounded-3xl shadow-lg border border-gray-100/50 h-fit">
+        {/* Fly to cart animation image */}
+        {flyImage && (
+          <img
+            src={flyImage.src}
+            alt="flying product"
+            style={{
+              position: "fixed",
+              left: flyImage.x,
+              top: flyImage.y,
+              width: 60,
+              height: 60,
+              zIndex: 9999,
+              pointerEvents: "none",
+              transition: "all 0.9s cubic-bezier(0.4,0,0.2,1)",
+              transform: `translate(${cartIconRef.current ? cartIconRef.current.getBoundingClientRect().left - flyImage.x : 0}px, ${cartIconRef.current ? cartIconRef.current.getBoundingClientRect().top - flyImage.y : 0}px) scale(0.2)`
+            }}
+          />
+        )}
         {/* Product Title & Category */}
         <div className="space-y-4">
           <div className="space-y-2">
@@ -229,6 +265,13 @@ const ProductInfo = ({ productInfo }: { productInfo: ProductType }) => {
           </div>
         </div>
 
+        {/* Gallery Section */}
+        <div className="relative" ref={productImageRef}>
+          <div className="pt-4 sm:pt-8">
+            <Gallery productMedia={productInfo.media} />
+          </div>
+        </div>
+
         {/* Add to Cart Button */}
         <button
           className={`group relative flex items-center justify-center gap-4 px-8 py-5 rounded-2xl text-xl font-bold transition-all duration-300 ${
@@ -267,6 +310,9 @@ const ProductInfo = ({ productInfo }: { productInfo: ProductType }) => {
             <span className="text-sm font-medium text-gray-700">Easy Returns</span>
           </div>
         </div>
+
+        {/* Cart Icon Ref for animation target (hidden) */}
+        <div ref={cartIconRef} style={{position: 'fixed', top: 24, right: 32, width: 40, height: 40, pointerEvents: 'none', zIndex: 999}} />
       </div>
     </HydrationSafe>
   );

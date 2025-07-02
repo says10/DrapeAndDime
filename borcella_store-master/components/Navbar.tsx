@@ -266,7 +266,7 @@ const Navbar = () => {
         </div>
         {/* Mobile Dropdown Menu (fixed centering and visibility) */}
         {dropdownMenu && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center lg:hidden">
+          <div className="fixed inset-0 z-50 flex items-start justify-center lg:hidden">
             {/* Overlay */}
             <div
               className="absolute inset-0 bg-black/80 transition-opacity animate-fadeIn"
@@ -275,7 +275,7 @@ const Navbar = () => {
               aria-label="Close menu overlay"
             />
             {/* Menu */}
-            <div className="relative w-11/12 max-w-sm max-h-[90vh] bg-white rounded-xl shadow-2xl flex flex-col py-8 px-6 space-y-4 animate-slideInRight overflow-y-auto focus:outline-none mt-8 mb-8" tabIndex={0}>
+            <div className="relative w-11/12 max-w-sm max-h-[90vh] bg-white rounded-xl shadow-2xl flex flex-col py-8 px-6 space-y-4 animate-slideInRight overflow-y-auto focus:outline-none mt-4" tabIndex={0}>
               <button
                 className="absolute top-4 right-4 p-3 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors shadow"
                 onClick={() => setDropdownMenu(false)}

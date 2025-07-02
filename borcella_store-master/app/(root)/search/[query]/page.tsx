@@ -17,10 +17,10 @@ const SearchPage = async ({ params }: { params: { query: string }}) => {
           {/* Search Header */}
           <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-6 sm:mb-12">
             <div className="flex items-center gap-2 sm:gap-3">
-              <Search className="w-6 h-6" />
+            <Search className="w-6 h-6" />
               <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
-                Search Results for "{decodedQuery}"
-              </h1>
+              Search Results for "{decodedQuery}"
+            </h1>
             </div>
           </div>
 
