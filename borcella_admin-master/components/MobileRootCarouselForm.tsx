@@ -91,7 +91,7 @@ export default function MobileRootCarouselForm() {
               />
             ) : (
               <VideoUpload
-                value={item.media ? [item.media] : []}
+                value={item.media}
                 onChange={url => handleChange(idx, "media", url)}
                 onRemove={() => handleChange(idx, "media", "")}
               />
