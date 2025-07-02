@@ -265,11 +265,11 @@ const Navbar = () => {
           <div className="fixed inset-0 z-50 flex items-start justify-end lg:hidden">
             {/* Overlay */}
             <div
-              className="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity animate-fadeIn"
+              className="absolute inset-0 bg-black/60 transition-opacity animate-fadeIn"
               onClick={() => setDropdownMenu(false)}
             />
             {/* Menu */}
-            <div className="relative w-4/5 max-w-xs h-full bg-white/95 backdrop-blur-md shadow-lg flex flex-col gap-4 p-6 animate-slideInRight">
+            <div className="relative w-4/5 max-w-xs h-full bg-white shadow-lg flex flex-col gap-4 p-6 animate-slideInRight">
               <button
                 className="absolute top-4 right-4 p-2 rounded hover:bg-gray-200 transition-colors"
                 onClick={() => setDropdownMenu(false)}
