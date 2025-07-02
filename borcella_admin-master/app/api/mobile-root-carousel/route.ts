@@ -1,28 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
-import fs from "fs";
-import path from "path";
-
-const DATA_PATH = path.join(process.cwd(), "mobile-root-carousel.json");
-
-function readData() {
-  try {
-    return JSON.parse(fs.readFileSync(DATA_PATH, "utf-8"));
-  } catch {
-    return { items: [] };
-  }
-}
-
-function writeData(data: any) {
-  fs.writeFileSync(DATA_PATH, JSON.stringify(data, null, 2));
-}
+import { connectToDB } from "@/lib/mongoDB";
+import MobileRootCarousel from "@/lib/models/MobileRootCarousel";
 
 export async function GET() {
-  const data = readData();
-  return NextResponse.json(data);
+  await connectToDB();
+  const doc = await MobileRootCarousel.findOne().sort({ updatedAt: -1 });
+  return NextResponse.json({ items: doc?.items || [] });
 }
 
 export async function POST(req: NextRequest) {
-  const body = await req.json();
-  writeData(body);
+  await connectToDB();
+  const { items } = await req.json();
+  let doc = await MobileRootCarousel.findOne();
+  if (doc) {
+    doc.items = items;
+    await doc.save();
+  } else {
+    doc = await MobileRootCarousel.create({ items });
+  }
   return NextResponse.json({ success: true });
 } 
