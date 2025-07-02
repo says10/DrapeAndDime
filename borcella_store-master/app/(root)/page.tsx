@@ -29,18 +29,18 @@ export default async function Home() {
 
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-b from-white via-gray-50 to-white">
+      {/* Mobile: Vertical Carousel (inside padded container) */}
       <div className="flex-1 w-full max-w-[1920px] mx-auto px-2 sm:px-4 md:px-8 flex flex-col justify-center items-center">
-        {/* Mobile: Vertical Carousel */}
         <div className="block sm:hidden w-full">
           <VerticalCarousel items={mobileCarouselItems} />
         </div>
-        {/* Desktop: Full-Screen Carousel */}
-        <div className="hidden sm:block w-full">
-          <Carousel 
-            collectionImages={shuffledImages} 
-            collections={collections} 
-          />
-        </div>
+      </div>
+      {/* Desktop: Full-Screen Carousel (outside padded container, truly full-width) */}
+      <div className="hidden sm:block w-full">
+        <Carousel 
+          collectionImages={shuffledImages} 
+          collections={collections} 
+        />
       </div>
     </div>
   );
