@@ -142,10 +142,10 @@ const ProductDetails = ({ params }: { params: { productId: string } }) => {
           </div>
 
           {/* Main Product Content */}
-          <div className="px-8 py-16">
-            <div className="max-w-7xl mx-auto">
+          <div className="py-8 sm:px-8">
+            <div className="w-full sm:max-w-7xl mx-auto">
               <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-lg border border-gray-100 overflow-hidden">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 p-8">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-8 p-0 sm:p-8">
                   {/* Gallery Section */}
                   <div className="relative">
                     <div className="sticky top-8 pt-8">
