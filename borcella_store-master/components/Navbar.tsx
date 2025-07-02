@@ -200,14 +200,15 @@ const Navbar = () => {
             />
           </div>
           {/* Cart & User Menu - always in row */}
-          <div className="flex items-center gap-2 min-w-0">
+          <div className="flex items-center gap-2 min-w-0 sm:gap-2 gap-1">
             {pathname !== "/" && (
               <Link
                 href="/cart"
-                className="flex items-center gap-2 border rounded-lg px-2 py-1 hover:bg-black hover:text-white transition-all duration-300 max-md:hidden text-sm"
+                className="flex items-center border rounded-lg px-2 py-1 hover:bg-black hover:text-white transition-all duration-300 text-sm"
               >
-                <ShoppingCart className="w-5 h-5 cart-navbar-icon" />
-                <span>Cart ({cart.cartItems.length})</span>
+                <ShoppingCart className="w-6 h-6 cart-navbar-icon" />
+                <span className="hidden xs:inline sm:inline md:inline lg:inline xl:inline ml-1">Cart</span>
+                <span className="ml-1">({cart.cartItems.length})</span>
               </Link>
             )}
             {user ? (
@@ -310,15 +311,7 @@ const Navbar = () => {
               >
                 Orders
               </Link>
-              <Link
-                href="/cart"
-                className="flex items-center gap-3 bg-gray-900 text-white text-lg font-semibold py-3 px-4 rounded-lg mt-4 hover:bg-gray-800 transition"
-                onClick={() => setDropdownMenu(false)}
-                tabIndex={0}
-              >
-                <ShoppingCart className="w-6 h-6" />
-                <span>Cart ({cart.cartItems.length})</span>
-              </Link>
+              {/* Cart removed from hamburger menu for mobile, now always visible in navbar */}
             </div>
           </div>
         )}
