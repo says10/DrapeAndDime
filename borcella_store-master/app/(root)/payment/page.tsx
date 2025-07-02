@@ -466,127 +466,120 @@ const Payment = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-white via-gray-50/50 to-gray-100/50">
-      {/* Add the style tag without jsx global */}
       <style dangerouslySetInnerHTML={{ __html: customScrollbarStyles }} />
-      
       <div className="relative">
-        {/* Premium Pattern Background */}
         <div className="absolute inset-0 opacity-[0.02]" style={{
           backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
         }} />
-
-        <div className="relative max-w-[1920px] mx-auto px-8 py-16">
-          {/* Page Header */}
-          <div className="text-center mb-12">
-            <h1 className="text-4xl font-bold tracking-tight mb-4">Complete Your Purchase</h1>
-            <p className="text-gray-600">Please provide your shipping details to proceed with the payment</p>
+        <div className="relative max-w-[1920px] mx-auto px-4 py-8 sm:px-8 sm:py-16">
+          <div className="text-center mb-8 sm:mb-12">
+            <h1 className="text-2xl sm:text-4xl font-bold tracking-tight mb-2 sm:mb-4">Complete Your Purchase</h1>
+            <p className="text-gray-600 text-sm sm:text-base">Please provide your shipping details to proceed with the payment</p>
           </div>
-
           {errorMessage && (
-            <div className="max-w-4xl mx-auto mb-8 p-4 bg-red-50 border border-red-200 rounded-lg flex items-center gap-3 text-red-600">
+            <div className="max-w-2xl sm:max-w-4xl mx-auto mb-6 sm:mb-8 p-3 sm:p-4 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2 sm:gap-3 text-red-600">
               <AlertCircle className="w-5 h-5 flex-shrink-0" />
-              <p className="text-sm font-medium">{errorMessage}</p>
+              <p className="text-xs sm:text-sm font-medium">{errorMessage}</p>
             </div>
           )}
-
-          <div className="max-w-7xl mx-auto">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+          <div className="max-w-3xl sm:max-w-7xl mx-auto">
+            <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 sm:gap-12">
               {/* Shipping Form */}
-              <div className="bg-white/80 backdrop-blur-sm p-8 rounded-2xl shadow-sm border border-gray-100">
-                <div className="flex items-center gap-3 mb-8">
+              <div className="bg-white/80 backdrop-blur-sm p-4 sm:p-8 rounded-2xl shadow-sm border border-gray-100">
+                <div className="flex items-center gap-2 sm:gap-3 mb-6 sm:mb-8">
                   <Package className="w-6 h-6 text-gray-800" />
-                  <h2 className="text-2xl font-semibold text-gray-800">Shipping Details</h2>
+                  <h2 className="text-lg sm:text-2xl font-semibold text-gray-800">Shipping Details</h2>
                 </div>
-                <div className="grid grid-cols-1 gap-6">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-700">Full Name *</label>
+                <div className="grid grid-cols-1 gap-4 sm:gap-6">
+                  <div className="space-y-1 sm:space-y-2">
+                    <label className="text-xs sm:text-sm font-medium text-gray-700">Full Name *</label>
                     <input
                       type="text"
                       name="name"
                       placeholder="Enter your full name"
-                      className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-200 focus:border-transparent transition-all duration-200"
+                      className="w-full px-3 py-2 sm:px-4 sm:py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-200 focus:border-transparent transition-all duration-200 text-xs sm:text-base"
                       onChange={handleChange}
                       required
                     />
                   </div>
-                  <div className="grid grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium text-gray-700">Phone Number *</label>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                    <div className="space-y-1 sm:space-y-2">
+                      <label className="text-xs sm:text-sm font-medium text-gray-700">Phone Number *</label>
                       <input
                         type="tel"
                         name="phone"
                         placeholder="Enter 10-digit phone number"
-                        className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-200 focus:border-transparent transition-all duration-200"
+                        className="w-full px-3 py-2 sm:px-4 sm:py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-200 focus:border-transparent transition-all duration-200 text-xs sm:text-base"
                         onChange={handleChange}
                         required
                       />
                     </div>
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium text-gray-700">Email *</label>
+                    <div className="space-y-1 sm:space-y-2">
+                      <label className="text-xs sm:text-sm font-medium text-gray-700">Email *</label>
                       <input
                         type="email"
                         name="email"
                         placeholder="Enter email address"
-                        className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-200 focus:border-transparent transition-all duration-200"
+                        className="w-full px-3 py-2 sm:px-4 sm:py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-200 focus:border-transparent transition-all duration-200 text-xs sm:text-base"
                         onChange={handleChange}
                         required
                       />
                     </div>
                   </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-700">Street Address *</label>
+                  <div className="space-y-1 sm:space-y-2">
+                    <label className="text-xs sm:text-sm font-medium text-gray-700">Street Address *</label>
                     <input
                       type="text"
                       name="street"
                       placeholder="Enter street address"
-                      className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-200 focus:border-transparent transition-all duration-200"
+                      className="w-full px-3 py-2 sm:px-4 sm:py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-200 focus:border-transparent transition-all duration-200 text-xs sm:text-base"
                       onChange={handleChange}
                       required
                     />
                   </div>
-                  <div className="grid grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium text-gray-700">City *</label>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                    <div className="space-y-1 sm:space-y-2">
+                      <label className="text-xs sm:text-sm font-medium text-gray-700">City *</label>
                       <input
                         type="text"
                         name="city"
                         placeholder="Enter city"
-                        className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-200 focus:border-transparent transition-all duration-200"
+                        className="w-full px-3 py-2 sm:px-4 sm:py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-200 focus:border-transparent transition-all duration-200 text-xs sm:text-base"
                         onChange={handleChange}
                         required
                       />
                     </div>
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium text-gray-700">State *</label>
+                    <div className="space-y-1 sm:space-y-2">
+                      <label className="text-xs sm:text-sm font-medium text-gray-700">State *</label>
                       <input
                         type="text"
                         name="state"
                         placeholder="Enter state"
-                        className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-200 focus:border-transparent transition-all duration-200"
+                        className="w-full px-3 py-2 sm:px-4 sm:py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-200 focus:border-transparent transition-all duration-200 text-xs sm:text-base"
                         onChange={handleChange}
                         required
                       />
                     </div>
                   </div>
-                  <div className="grid grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium text-gray-700">Postal Code *</label>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                    <div className="space-y-1 sm:space-y-2">
+                      <label className="text-xs sm:text-sm font-medium text-gray-700">Postal Code *</label>
                       <input
                         type="text"
                         name="postalCode"
                         placeholder="Enter postal code"
-                        className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-200 focus:border-transparent transition-all duration-200"
+                        className="w-full px-3 py-2 sm:px-4 sm:py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-200 focus:border-transparent transition-all duration-200 text-xs sm:text-base"
                         onChange={handleChange}
                         required
                       />
                     </div>
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium text-gray-700">Country *</label>
+                    <div className="space-y-1 sm:space-y-2">
+                      <label className="text-xs sm:text-sm font-medium text-gray-700">Country *</label>
                       <input
                         type="text"
                         name="country"
                         placeholder="Enter country"
-                        className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-200 focus:border-transparent transition-all duration-200"
+                        className="w-full px-3 py-2 sm:px-4 sm:py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-200 focus:border-transparent transition-all duration-200 text-xs sm:text-base"
                         onChange={handleChange}
                         required
                       />
@@ -594,17 +587,16 @@ const Payment = () => {
                   </div>
                 </div>
               </div>
-
               {/* Order Summary */}
-              <div className="bg-white/80 backdrop-blur-sm p-8 rounded-2xl shadow-sm border border-gray-100">
-                <div className="flex items-center gap-3 mb-8">
+              <div className="bg-white/80 backdrop-blur-sm p-4 sm:p-8 rounded-2xl shadow-sm border border-gray-100 mt-8 sm:mt-0">
+                <div className="flex items-center gap-2 sm:gap-3 mb-6 sm:mb-8">
                   <ShoppingBag className="w-6 h-6 text-gray-800" />
-                  <h2 className="text-2xl font-semibold text-gray-800">Order Summary</h2>
+                  <h2 className="text-lg sm:text-2xl font-semibold text-gray-800">Order Summary</h2>
                 </div>
-                <div className="space-y-6 max-h-[600px] overflow-y-auto pr-4 custom-scrollbar">
+                <div className="space-y-4 sm:space-y-6 max-h-[300px] sm:max-h-[600px] overflow-y-auto pr-2 sm:pr-4 custom-scrollbar">
                   {cartItems.map((cartItem) => (
-                    <div key={cartItem.item._id} className="flex gap-6 p-4 bg-gray-50/50 rounded-xl">
-                      <div className="relative w-24 h-24 flex-shrink-0">
+                    <div key={cartItem.item._id} className="flex gap-3 sm:gap-6 p-2 sm:p-4 bg-gray-50/50 rounded-xl">
+                      <div className="relative w-16 h-16 sm:w-24 sm:h-24 flex-shrink-0">
                         <Image
                           src={cartItem.item.media[0]}
                           fill
@@ -613,38 +605,37 @@ const Payment = () => {
                         />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-medium text-gray-900 truncate">{cartItem.item.title}</h3>
-                        <p className="text-sm text-gray-500 mt-1 line-clamp-2">{cartItem.item.description}</p>
-                        <div className="flex items-center justify-between mt-2">
-                          <p className="text-sm text-gray-600">Qty: {cartItem.quantity}</p>
-                          <p className="font-medium text-gray-900">₹{cartItem.item.price * cartItem.quantity}</p>
+                        <h3 className="font-medium text-gray-900 truncate text-xs sm:text-base">{cartItem.item.title}</h3>
+                        <p className="text-xs sm:text-sm text-gray-500 mt-1 line-clamp-2">{cartItem.item.description}</p>
+                        <div className="flex items-center justify-between mt-1 sm:mt-2">
+                          <p className="text-xs sm:text-sm text-gray-600">Qty: {cartItem.quantity}</p>
+                          <p className="font-medium text-gray-900 text-xs sm:text-base">₹{cartItem.item.price * cartItem.quantity}</p>
                         </div>
                       </div>
                     </div>
                   ))}
                 </div>
-                <div className="mt-8 pt-6 border-t border-gray-100">
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="text-gray-600">Subtotal</span>
-                    <span className="font-medium text-gray-900">₹{amount}</span>
+                <div className="mt-6 sm:mt-8 pt-4 sm:pt-6 border-t border-gray-100">
+                  <div className="flex items-center justify-between mb-2 sm:mb-4">
+                    <span className="text-xs sm:text-gray-600">Subtotal</span>
+                    <span className="font-medium text-gray-900 text-xs sm:text-base">₹{amount}</span>
                   </div>
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="text-gray-600">Shipping</span>
-                    <span className="font-medium text-gray-900">Free</span>
+                  <div className="flex items-center justify-between mb-2 sm:mb-4">
+                    <span className="text-xs sm:text-gray-600">Shipping</span>
+                    <span className="font-medium text-gray-900 text-xs sm:text-base">Free</span>
                   </div>
-                  <div className="flex items-center justify-between text-lg font-semibold text-gray-900">
+                  <div className="flex items-center justify-between text-base sm:text-lg font-semibold text-gray-900">
                     <span>Total</span>
                     <span>₹{discountedAmount.toFixed(2)}</span>
                   </div>
                 </div>
               </div>
             </div>
-
             {/* Payment Methods */}
-            <div className="mt-12 max-w-2xl mx-auto">
-              <div className="bg-white/80 backdrop-blur-sm p-8 rounded-2xl shadow-sm border border-gray-100 mb-8">
-                <h3 className="text-lg font-semibold text-gray-900 mb-6">Select Payment Method</h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="mt-8 sm:mt-12 max-w-xl sm:max-w-2xl mx-auto">
+              <div className="bg-white/80 backdrop-blur-sm p-4 sm:p-8 rounded-2xl shadow-sm border border-gray-100 mb-6 sm:mb-8">
+                <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-4 sm:mb-6">Select Payment Method</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                   <button
                     onClick={() => setPaymentMethod('online')}
                     className={`p-4 rounded-xl border transition-all duration-200 flex items-center gap-3 ${

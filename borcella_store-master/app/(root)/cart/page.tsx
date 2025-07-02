@@ -192,13 +192,13 @@ const Cart = () => {
             backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
           }} />
 
-          <div className="relative max-w-[1920px] mx-auto px-8 py-16">
-            <div className="flex gap-16 max-lg:flex-col">
+          <div className="relative max-w-[1920px] mx-auto px-4 py-8 sm:px-8 sm:py-16">
+            <div className="flex flex-col gap-6 lg:flex-row lg:gap-16">
               {/* Cart Items Section */}
-              <div className="w-2/3 max-lg:w-full">
-                <div className="flex items-center gap-3 mb-8">
+              <div className="w-full lg:w-2/3">
+                <div className="flex items-center gap-2 mb-6 sm:gap-3 sm:mb-8">
                   <ShoppingBag className="w-6 h-6" />
-                  <h1 className="text-3xl font-bold tracking-tight">Shopping Cart</h1>
+                  <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Shopping Cart</h1>
                 </div>
 
                 {/* Validation Warnings */}
@@ -225,32 +225,31 @@ const Cart = () => {
                 )}
 
                 {cart.cartItems.length === 0 ? (
-                  <div className="text-center py-16 bg-white rounded-xl border border-gray-100">
-                    <ShoppingBag className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                    <h2 className="text-xl font-semibold text-gray-800 mb-2">Your cart is empty</h2>
+                  <div className="text-center py-12 sm:py-16 bg-white rounded-xl border border-gray-100">
+                    <ShoppingBag className="w-14 h-14 sm:w-16 sm:h-16 text-gray-400 mx-auto mb-4" />
+                    <h2 className="text-lg sm:text-xl font-semibold text-gray-800 mb-2">Your cart is empty</h2>
                     <p className="text-gray-600 mb-6">Add some products to get started!</p>
                     <button
                       onClick={() => router.push('/home')}
-                      className="px-6 py-3 bg-gray-900 text-white rounded-xl hover:bg-gray-800 transition-colors font-semibold"
+                      className="px-4 py-2 sm:px-6 sm:py-3 bg-gray-900 text-white rounded-xl hover:bg-gray-800 transition-colors font-semibold"
                     >
                       Continue Shopping
                     </button>
                   </div>
                 ) : (
-                  <div className="space-y-4">
+                  <div className="space-y-3 sm:space-y-4">
                     {cart.cartItems.map((cartItem) => {
                       const isOutOfStock = stockValidation[cartItem.item._id] === false;
-
                       return (
                         <div
                           key={cartItem.item._id}
-                          className={`group relative flex items-center gap-6 p-6 rounded-lg transition-all duration-300 ${
+                          className={`group relative flex flex-col sm:flex-row items-center gap-4 sm:gap-6 p-4 sm:p-6 rounded-lg transition-all duration-300 ${
                             isOutOfStock 
                               ? "bg-red-50/50 border border-red-200" 
                               : "bg-white border border-gray-100 hover:border-gray-200"
                           }`}
                         >
-                          <div className="relative w-32 h-32 flex-shrink-0">
+                          <div className="relative w-20 h-20 sm:w-32 sm:h-32 flex-shrink-0 mb-2 sm:mb-0">
                             <Image
                               src={cartItem.item.media && cartItem.item.media.length > 0 && cartItem.item.media[0] ? cartItem.item.media[0] : "/logo.png"}
                               fill
@@ -258,12 +257,11 @@ const Cart = () => {
                               alt={cartItem.item.title}
                             />
                           </div>
-
-                          <div className="flex-grow">
-                            <div className="flex justify-between items-start">
-                              <div className="space-y-2">
-                                <h3 className="text-lg font-medium">{cartItem.item.title}</h3>
-                                <div className="flex gap-4 text-sm text-gray-600">
+                          <div className="flex-grow w-full">
+                            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-0">
+                              <div className="space-y-1 sm:space-y-2">
+                                <h3 className="text-base sm:text-lg font-medium">{cartItem.item.title}</h3>
+                                <div className="flex gap-2 sm:gap-4 text-xs sm:text-sm text-gray-600">
                                   {cartItem.color && (
                                     <span className="capitalize">{cartItem.color}</span>
                                   )}
@@ -271,17 +269,16 @@ const Cart = () => {
                                     <span className="capitalize">{cartItem.size}</span>
                                   )}
                                 </div>
-                                <p className="text-lg font-semibold">₹{cartItem.item.price}</p>
+                                <p className="text-base sm:text-lg font-semibold">₹{cartItem.item.price}</p>
                                 {isOutOfStock && (
-                                  <div className="flex items-center gap-2 text-sm text-red-600 font-medium">
+                                  <div className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm text-red-600 font-medium">
                                     <AlertCircle className="w-4 h-4" />
                                     Out of Stock
                                   </div>
                                 )}
                               </div>
-
-                              <div className="flex items-center gap-6">
-                                <div className="flex items-center gap-3">
+                              <div className="flex items-center gap-3 sm:gap-6 mt-2 sm:mt-0">
+                                <div className="flex items-center gap-2 sm:gap-3">
                                   <button
                                     onClick={() => handleDecreaseQuantity(cartItem)}
                                     disabled={isOutOfStock}
@@ -306,10 +303,9 @@ const Cart = () => {
                                     <PlusCircle className="w-5 h-5" />
                                   </button>
                                 </div>
-
                                 <button
                                   onClick={() => cart.removeItem(cartItem.item._id)}
-                                  className="p-2 hover:text-red-600 transition-colors opacity-0 group-hover:opacity-100"
+                                  className="p-2 hover:text-red-600 transition-colors opacity-100 sm:opacity-0 sm:group-hover:opacity-100"
                                 >
                                   <Trash className="w-5 h-5" />
                                 </button>
@@ -324,17 +320,17 @@ const Cart = () => {
               </div>
 
               {/* Order Summary Section */}
-              <div className="w-1/3 max-lg:w-full">
-                <div className="sticky top-8 bg-white rounded-xl border border-gray-100 p-6 space-y-6">
-                  <h2 className="text-xl font-semibold pb-4 border-b">
+              <div className="w-full lg:w-1/3 mt-8 lg:mt-0">
+                <div className="bg-white rounded-xl border border-gray-100 p-4 sm:p-6 space-y-4 sm:space-y-6">
+                  <h2 className="text-lg sm:text-xl font-semibold pb-2 sm:pb-4 border-b">
                     Order Summary
-                    <span className="block text-sm font-normal text-gray-500 mt-1">
+                    <span className="block text-xs sm:text-sm font-normal text-gray-500 mt-1">
                       {cart.cartItems.length} {cart.cartItems.length === 1 ? 'item' : 'items'}
                     </span>
                   </h2>
 
-                  <div className="space-y-4">
-                    <div className="flex justify-between text-lg">
+                  <div className="space-y-2 sm:space-y-4">
+                    <div className="flex justify-between text-base sm:text-lg">
                       <span className="text-gray-600">Total Amount</span>
                       <span className="font-semibold">₹{totalRounded}</span>
                     </div>
@@ -347,7 +343,7 @@ const Cart = () => {
                       Object.values(stockValidation).includes(false) || 
                       isValidating
                     }
-                    className={`w-full py-4 px-6 rounded-lg text-white font-medium flex items-center justify-center gap-2 transition-all duration-300 ${
+                    className={`w-full py-3 sm:py-4 px-4 sm:px-6 rounded-lg text-white font-medium flex items-center justify-center gap-2 transition-all duration-300 ${
                       cart.cartItems.length === 0 || 
                       Object.values(stockValidation).includes(false) || 
                       isValidating
@@ -370,13 +366,13 @@ const Cart = () => {
 
                   {/* Additional warnings */}
                   {cart.cartItems.length === 0 && (
-                    <p className="text-sm text-gray-500 text-center">
+                    <p className="text-xs sm:text-sm text-gray-500 text-center">
                       Add items to your cart to proceed
                     </p>
                   )}
                   
                   {Object.values(stockValidation).includes(false) && (
-                    <p className="text-sm text-red-600 text-center">
+                    <p className="text-xs sm:text-sm text-red-600 text-center">
                       Remove out-of-stock items to proceed
                     </p>
                   )}
