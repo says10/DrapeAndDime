@@ -82,6 +82,10 @@ const Navbar = () => {
     };
   }, [dropdownMenu]);
 
+  useEffect(() => {
+    setDropdownMenu(false);
+  }, [pathname]);
+
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setQuery(value);
@@ -265,11 +269,13 @@ const Navbar = () => {
           <div className="fixed inset-0 z-50 flex items-center justify-center lg:hidden">
             {/* Overlay */}
             <div
-              className="absolute inset-0 bg-black/70 backdrop-blur-sm transition-opacity animate-fadeIn"
+              className="absolute inset-0 bg-black/80 transition-opacity animate-fadeIn"
               onClick={() => setDropdownMenu(false)}
+              tabIndex={-1}
+              aria-label="Close menu overlay"
             />
             {/* Menu */}
-            <div className="relative w-11/12 max-w-sm h-[90vh] bg-white rounded-xl border border-gray-200 shadow-2xl flex flex-col py-8 px-6 space-y-4 animate-slideInRight overflow-y-auto">
+            <div className="relative w-11/12 max-w-sm h-[90vh] bg-white rounded-xl border border-gray-200 shadow-2xl flex flex-col py-8 px-6 space-y-4 animate-slideInRight overflow-y-auto focus:outline-none" tabIndex={0}>
               <button
                 className="absolute top-4 right-4 p-3 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors shadow"
                 onClick={() => setDropdownMenu(false)}
@@ -277,13 +283,14 @@ const Navbar = () => {
               >
                 <X className="w-7 h-7" />
               </button>
-              <Link href="/" className="block text-lg font-semibold py-2 px-3 rounded-lg hover:bg-gray-100 transition" onClick={() => setDropdownMenu(false)}>
+              <Link href="/" className="block text-lg font-semibold py-2 px-3 rounded-lg hover:bg-gray-100 transition" onClick={() => setDropdownMenu(false)} tabIndex={0}>
                 Home
               </Link>
               <Link
                 href="/products"
                 className={`block text-lg font-semibold py-2 px-3 rounded-lg hover:bg-gray-100 transition ${pathname === "/products" ? "text-red-500" : ""}`}
                 onClick={() => setDropdownMenu(false)}
+                tabIndex={0}
               >
                 BestSellers
               </Link>
@@ -291,6 +298,7 @@ const Navbar = () => {
                 href={user ? "/wishlist" : "/sign-in"}
                 className="block text-lg font-semibold py-2 px-3 rounded-lg hover:bg-gray-100 transition"
                 onClick={() => setDropdownMenu(false)}
+                tabIndex={0}
               >
                 Wishlist
               </Link>
@@ -298,6 +306,7 @@ const Navbar = () => {
                 href={user ? "/orders" : "/sign-in"}
                 className="block text-lg font-semibold py-2 px-3 rounded-lg hover:bg-gray-100 transition"
                 onClick={() => setDropdownMenu(false)}
+                tabIndex={0}
               >
                 Orders
               </Link>
@@ -305,6 +314,7 @@ const Navbar = () => {
                 href="/cart"
                 className="flex items-center gap-3 bg-gray-900 text-white text-lg font-semibold py-3 px-4 rounded-lg mt-4 hover:bg-gray-800 transition"
                 onClick={() => setDropdownMenu(false)}
+                tabIndex={0}
               >
                 <ShoppingCart className="w-6 h-6" />
                 <span>Cart ({cart.cartItems.length})</span>
