@@ -232,7 +232,7 @@ const Navbar = () => {
             />
           </div>
           {/* Cart & User Menu */}
-          <div className="relative flex gap-3 items-center">
+          <div className="relative flex gap-3 items-center justify-center h-full">
             {pathname !== "/" && (
               <Link
                 href="/cart"
@@ -260,37 +260,37 @@ const Navbar = () => {
                     <X className="w-6 h-6" />
                   </button>
                   <Link href="/" className="hover:text-red-1 transition-colors" onClick={() => setDropdownMenu(false)}>
-                  Home
-                </Link>
-                <Link
-                  href="/products"
+                    Home
+                  </Link>
+                  <Link
+                    href="/products"
                     className={`hover:text-red-1 transition-colors ${pathname === "/products" && "text-red-1"}`}
                     onClick={() => setDropdownMenu(false)}
-                >
-                  BestSellers
-                </Link>
-                <Link
-                  href={user ? "/wishlist" : "/sign-in"}
-                  className="hover:text-red-1 transition-colors"
+                  >
+                    BestSellers
+                  </Link>
+                  <Link
+                    href={user ? "/wishlist" : "/sign-in"}
+                    className="hover:text-red-1 transition-colors"
                     onClick={() => setDropdownMenu(false)}
-                >
-                  Wishlist
-                </Link>
-                <Link
-                  href={user ? "/orders" : "/sign-in"}
-                  className="hover:text-red-1 transition-colors"
+                  >
+                    Wishlist
+                  </Link>
+                  <Link
+                    href={user ? "/orders" : "/sign-in"}
+                    className="hover:text-red-1 transition-colors"
                     onClick={() => setDropdownMenu(false)}
-                >
-                  Orders
-                </Link>
-                <Link
-                  href="/cart"
-                  className="flex items-center gap-3 border rounded-lg px-3 py-2 hover:bg-black hover:text-white transition-all duration-300"
+                  >
+                    Orders
+                  </Link>
+                  <Link
+                    href="/cart"
+                    className="flex items-center gap-3 border rounded-lg px-3 py-2 hover:bg-black hover:text-white transition-all duration-300"
                     onClick={() => setDropdownMenu(false)}
-                >
-                  <ShoppingCart />
-                  <p className="text-base-bold">Cart ({cart.cartItems.length})</p>
-                </Link>
+                  >
+                    <ShoppingCart />
+                    <p className="text-base-bold">Cart ({cart.cartItems.length})</p>
+                  </Link>
                 </div>
               </div>
             )}
