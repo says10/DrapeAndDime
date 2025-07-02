@@ -9,7 +9,7 @@ import HydrationSafe from "./HydrationSafe";
 
 interface ProductInfoProps {
   productInfo: ProductType;
-  productImageRef: React.RefObject<HTMLDivElement>;
+  productImageRef: any;
   triggerFlyToCart: (imgRect: DOMRect) => void;
 }
 
@@ -66,7 +66,7 @@ const ProductInfo = ({ productInfo, productImageRef, triggerFlyToCart }: Product
     if (!isOutOfStock) {
       setIsAddingToCart(true);
       try {
-        if (productImageRef.current) {
+        if (productImageRef && productImageRef.current) {
           const imgRect = productImageRef.current.getBoundingClientRect();
           triggerFlyToCart(imgRect);
         }
