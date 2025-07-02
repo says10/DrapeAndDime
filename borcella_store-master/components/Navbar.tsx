@@ -135,74 +135,40 @@ const Navbar = () => {
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        <div className="flex flex-col sm:flex-row sm:items-center w-full sm:w-auto gap-2 sm:gap-0 justify-between px-4 py-3 max-w-7xl mx-auto">
+        {/* MOBILE & DESKTOP NAVBAR ROW */}
+        <div className="flex items-center w-full justify-between px-4 py-3 max-w-7xl mx-auto gap-2">
           {/* Logo and Hamburger */}
-          <div className="flex items-center justify-between w-full sm:w-auto">
-            <Link href="/">
-              <Image
-                src="/logo.png"
-                alt="logo"
-                width={100}
-                height={40}
-                className={`transition-all duration-300 ${pathname === "/" ? "" : ""}`}
-              />
-            </Link>
+          <div className="flex items-center gap-2 min-w-0">
             <Menu
               className={`cursor-pointer lg:hidden transition-colors block sm:hidden ${pathname === "/" ? "text-white" : "text-gray-700"}`}
               onClick={() => setDropdownMenu(!dropdownMenu)}
             />
-          </div>
-          {/* Navigation Links - Desktop */}
-          <div className={`flex gap-6 text-base-bold max-lg:hidden ${pathname === "/" ? "text-white drop-shadow" : ""}`}>
-            <Link
-              href="/home"
-              className={`hover:text-red-1 transition-colors ${
-                pathname === "/home" ? "text-red-1" : pathname === "/" ? "hover:text-red-1 text-white" : ""
-              }`}
-            >
-              Home
-            </Link>
-            <Link
-              href="/products"
-              className={`hover:text-red-1 transition-colors ${
-                pathname === "/products" ? "text-red-1" : pathname === "/" ? "hover:text-red-1 text-white" : ""
-              }`}
-            >
-              BestSellers
-            </Link>
-            <Link
-              href={user ? "/wishlist" : "/sign-in"}
-              className={`hover:text-red-1 transition-colors ${
-                pathname === "/wishlist" ? "text-red-1" : pathname === "/" ? "hover:text-red-1 text-white" : ""
-              }`}
-            >
-              Wishlist
-            </Link>
-            <Link
-              href={user ? "/orders" : "/sign-in"}
-              className={`hover:text-red-1 transition-colors ${
-                pathname === "/orders" ? "text-red-1" : pathname === "/" ? "hover:text-red-1 text-white" : ""
-              }`}
-            >
-              Orders
+            <Link href="/">
+              <Image
+                src="/logo.png"
+                alt="logo"
+                width={90}
+                height={36}
+                className="transition-all duration-300 min-w-[70px]"
+              />
             </Link>
           </div>
-          {/* Search Bar */}
-          <div className="relative w-full sm:w-auto mt-2 sm:mt-0 flex-1 max-w-md mx-0 sm:mx-4">
+          {/* Search Bar - always in row, compact on mobile */}
+          <div className="flex-1 mx-2 max-w-xs min-w-0">
             <div
-              className={`flex gap-3 border px-3 py-2 items-center rounded-lg transition-all duration-300 ${
+              className={`flex gap-2 border px-2 py-1 items-center rounded-lg transition-all duration-300 ${
                 pathname === "/"
                   ? "border-white/30 bg-white/10 backdrop-blur-sm"
                   : "border-gray-300 bg-white"
               }`}
             >
               <input
-                className={`outline-none flex-1 bg-transparent transition-colors ${
+                className={`outline-none flex-1 bg-transparent text-sm transition-colors min-w-0 ${
                   pathname === "/"
                     ? "text-white placeholder-white/70"
                     : "text-gray-900 placeholder-gray-500"
                 }`}
-                placeholder="Search products..."
+                placeholder="Search..."
                 value={query}
                 onChange={handleSearchChange}
                 onKeyPress={handleKeyPress}
@@ -229,68 +195,16 @@ const Navbar = () => {
               onSelectProduct={handleSelectProduct}
             />
           </div>
-          {/* Cart & User Menu */}
-          <div className="relative flex gap-3 items-center justify-center h-full">
+          {/* Cart & User Menu - always in row */}
+          <div className="flex items-center gap-2 min-w-0">
             {pathname !== "/" && (
               <Link
                 href="/cart"
-                className="flex items-center gap-3 border rounded-lg px-3 py-2 hover:bg-black hover:text-white transition-all duration-300 max-md:hidden"
+                className="flex items-center gap-2 border rounded-lg px-2 py-1 hover:bg-black hover:text-white transition-all duration-300 max-md:hidden text-sm"
               >
-                <ShoppingCart />
-                <p className="text-base-bold">Cart ({cart.cartItems.length})</p>
+                <ShoppingCart className="w-5 h-5" />
+                <span>Cart ({cart.cartItems.length})</span>
               </Link>
-            )}
-            {/* Mobile Menu */}
-            {dropdownMenu && (
-              <div className="fixed inset-0 z-50 flex items-start justify-end lg:hidden">
-                {/* Overlay */}
-                <div
-                  className="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity animate-fadeIn"
-                  onClick={() => setDropdownMenu(false)}
-                />
-                {/* Menu */}
-                <div className="relative w-4/5 max-w-xs h-full bg-white/95 backdrop-blur-md shadow-lg flex flex-col gap-4 p-6 animate-slideInRight">
-                  <button
-                    className="absolute top-4 right-4 p-2 rounded hover:bg-gray-200 transition-colors"
-                    onClick={() => setDropdownMenu(false)}
-                    aria-label="Close menu"
-                  >
-                    <X className="w-6 h-6" />
-                  </button>
-                  <Link href="/" className="hover:text-red-1 transition-colors" onClick={() => setDropdownMenu(false)}>
-                    Home
-                  </Link>
-                  <Link
-                    href="/products"
-                    className={`hover:text-red-1 transition-colors ${pathname === "/products" && "text-red-1"}`}
-                    onClick={() => setDropdownMenu(false)}
-                  >
-                    BestSellers
-                  </Link>
-                  <Link
-                    href={user ? "/wishlist" : "/sign-in"}
-                    className="hover:text-red-1 transition-colors"
-                    onClick={() => setDropdownMenu(false)}
-                  >
-                    Wishlist
-                  </Link>
-                  <Link
-                    href={user ? "/orders" : "/sign-in"}
-                    className="hover:text-red-1 transition-colors"
-                    onClick={() => setDropdownMenu(false)}
-                  >
-                    Orders
-                  </Link>
-                  <Link
-                    href="/cart"
-                    className="flex items-center gap-3 border rounded-lg px-3 py-2 hover:bg-black hover:text-white transition-all duration-300"
-                    onClick={() => setDropdownMenu(false)}
-                  >
-                    <ShoppingCart />
-                    <p className="text-base-bold">Cart ({cart.cartItems.length})</p>
-                  </Link>
-                </div>
-              </div>
             )}
             {user ? (
               <UserButton afterSignOutUrl="/" />
@@ -311,6 +225,93 @@ const Navbar = () => {
             )}
           </div>
         </div>
+        {/* Desktop Navigation Links (hidden on mobile) */}
+        <div className={`flex gap-6 text-base-bold max-lg:hidden ${pathname === "/" ? "text-white drop-shadow" : ""} px-4 max-w-7xl mx-auto w-full mt-2`}>
+          <Link
+            href="/home"
+            className={`hover:text-red-1 transition-colors ${
+              pathname === "/home" ? "text-red-1" : pathname === "/" ? "hover:text-red-1 text-white" : ""
+            }`}
+          >
+            Home
+          </Link>
+          <Link
+            href="/products"
+            className={`hover:text-red-1 transition-colors ${
+              pathname === "/products" ? "text-red-1" : pathname === "/" ? "hover:text-red-1 text-white" : ""
+            }`}
+          >
+            BestSellers
+          </Link>
+          <Link
+            href={user ? "/wishlist" : "/sign-in"}
+            className={`hover:text-red-1 transition-colors ${
+              pathname === "/wishlist" ? "text-red-1" : pathname === "/" ? "hover:text-red-1 text-white" : ""
+            }`}
+          >
+            Wishlist
+          </Link>
+          <Link
+            href={user ? "/orders" : "/sign-in"}
+            className={`hover:text-red-1 transition-colors ${
+              pathname === "/orders" ? "text-red-1" : pathname === "/" ? "hover:text-red-1 text-white" : ""
+            }`}
+          >
+            Orders
+          </Link>
+        </div>
+        {/* Mobile Dropdown Menu (unchanged) */}
+        {dropdownMenu && (
+          <div className="fixed inset-0 z-50 flex items-start justify-end lg:hidden">
+            {/* Overlay */}
+            <div
+              className="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity animate-fadeIn"
+              onClick={() => setDropdownMenu(false)}
+            />
+            {/* Menu */}
+            <div className="relative w-4/5 max-w-xs h-full bg-white/95 backdrop-blur-md shadow-lg flex flex-col gap-4 p-6 animate-slideInRight">
+              <button
+                className="absolute top-4 right-4 p-2 rounded hover:bg-gray-200 transition-colors"
+                onClick={() => setDropdownMenu(false)}
+                aria-label="Close menu"
+              >
+                <X className="w-6 h-6" />
+              </button>
+              <Link href="/" className="hover:text-red-1 transition-colors" onClick={() => setDropdownMenu(false)}>
+                Home
+              </Link>
+              <Link
+                href="/products"
+                className={`hover:text-red-1 transition-colors ${pathname === "/products" && "text-red-1"}`}
+                onClick={() => setDropdownMenu(false)}
+              >
+                BestSellers
+              </Link>
+              <Link
+                href={user ? "/wishlist" : "/sign-in"}
+                className="hover:text-red-1 transition-colors"
+                onClick={() => setDropdownMenu(false)}
+              >
+                Wishlist
+              </Link>
+              <Link
+                href={user ? "/orders" : "/sign-in"}
+                className="hover:text-red-1 transition-colors"
+                onClick={() => setDropdownMenu(false)}
+              >
+                Orders
+              </Link>
+              <Link
+                href="/cart"
+                className="flex items-center gap-3 border rounded-lg px-3 py-2 hover:bg-black hover:text-white transition-all duration-300"
+                onClick={() => setDropdownMenu(false)}
+              >
+                <ShoppingCart />
+                <p className="text-base-bold">Cart ({cart.cartItems.length})</p>
+              </Link>
+            </div>
+          </div>
+        )}
       </nav>
     </HydrationSafe>
   );
