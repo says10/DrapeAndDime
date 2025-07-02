@@ -130,7 +130,7 @@ const Navbar = () => {
     >
       <nav
         className={`${styles["sticky-navbar"]} ${
-          pathname === "/" ? "bg-white/95 backdrop-blur-sm" : isScrolled ? styles["scrolled"] : ""
+          isScrolled ? styles["scrolled"] : ""
         } transition-all duration-300 ease-in-out`}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
@@ -138,17 +138,17 @@ const Navbar = () => {
         <div className="flex flex-col sm:flex-row sm:items-center w-full sm:w-auto gap-2 sm:gap-0 justify-between px-4 py-3 max-w-7xl mx-auto">
           {/* Logo and Hamburger */}
           <div className="flex items-center justify-between w-full sm:w-auto">
-          <Link href="/">
-            <Image
-              src="/logo.png"
-              alt="logo"
+            <Link href="/">
+              <Image
+                src="/logo.png"
+                alt="logo"
                 width={100}
                 height={40}
-                className={`transition-all duration-300 ${pathname === "/" && !isHovered ? "brightness-0 invert" : ""}`}
-            />
-          </Link>
+                className={`transition-all duration-300 ${pathname === "/" ? "" : ""}`}
+              />
+            </Link>
             <Menu
-              className={`cursor-pointer lg:hidden transition-colors block sm:hidden ${pathname === "/" && !isHovered ? "text-white" : "text-gray-700"}`}
+              className={`cursor-pointer lg:hidden transition-colors block sm:hidden ${pathname === "/" ? "text-white" : "text-gray-700"}`}
               onClick={() => setDropdownMenu(!dropdownMenu)}
             />
           </div>
@@ -193,14 +193,14 @@ const Navbar = () => {
           <div className="relative w-full sm:w-auto mt-2 sm:mt-0 flex-1 max-w-md mx-0 sm:mx-4">
             <div
               className={`flex gap-3 border px-3 py-2 items-center rounded-lg transition-all duration-300 ${
-                pathname === "/" && !isHovered
+                pathname === "/"
                   ? "border-white/30 bg-white/10 backdrop-blur-sm"
                   : "border-gray-300 bg-white"
               }`}
             >
               <input
                 className={`outline-none flex-1 bg-transparent transition-colors ${
-                  pathname === "/" && !isHovered
+                  pathname === "/"
                     ? "text-white placeholder-white/70"
                     : "text-gray-900 placeholder-gray-500"
                 }`}
@@ -217,7 +217,7 @@ const Navbar = () => {
               >
                 <Search
                   className={`cursor-pointer h-4 w-4 ${
-                    pathname === "/" && !isHovered
+                    pathname === "/"
                       ? "text-white"
                       : "text-gray-600 hover:text-red-1"
                   }`}
