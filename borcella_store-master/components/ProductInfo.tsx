@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { MinusCircle, PlusCircle, ShoppingBag, Star, Truck, Shield, RotateCcw } from "lucide-react";
+import { MinusCircle, PlusCircle, ShoppingBag, Star, Truck, Shield, RotateCcw, Check } from "lucide-react";
 import useCart from "@/lib/hooks/useCart";
 import FormattedText from "./FormattedText";
 import { toast } from "sonner";
@@ -23,6 +23,8 @@ const ProductInfo = ({ productInfo, productImageRef, triggerFlyToCart }: Product
     totalReviews: 0,
     text: "No reviews yet"
   });
+  const [buttonPulse, setButtonPulse] = useState(false);
+  const [showCheckmark, setShowCheckmark] = useState(false);
 
   const cart = useCart();
   const maxStock = productInfo.quantity;
@@ -80,6 +82,15 @@ const ProductInfo = ({ productInfo, productImageRef, triggerFlyToCart }: Product
           description: `${productInfo.title} has been added to your cart.`,
           duration: 3000,
         });
+        setButtonPulse(true);
+        setTimeout(() => setButtonPulse(false), 500);
+        setShowCheckmark(true);
+        setTimeout(() => setShowCheckmark(false), 1200);
+        const cartIcon = document.querySelector('.cart-navbar-icon');
+        if (cartIcon) {
+          cartIcon.classList.add('cart-bounce');
+          setTimeout(() => cartIcon.classList.remove('cart-bounce'), 700);
+        }
       } catch (error) {
         toast.error("Failed to add to cart", {
           description: "Please try again later.",
@@ -245,7 +256,7 @@ const ProductInfo = ({ productInfo, productImageRef, triggerFlyToCart }: Product
             isOutOfStock
               ? "bg-gray-100 text-gray-400 cursor-not-allowed"
               : "bg-gradient-to-r from-gray-900 to-gray-800 text-white hover:from-gray-800 hover:to-gray-700 hover:shadow-2xl active:scale-[0.98] transform"
-          }`}
+          } ${buttonPulse ? 'button-pulse' : ''}`}
           onClick={handleAddToCart}
           disabled={isOutOfStock || isAddingToCart}
         >
@@ -254,6 +265,11 @@ const ProductInfo = ({ productInfo, productImageRef, triggerFlyToCart }: Product
               <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
               Adding...
             </div>
+          ) : showCheckmark ? (
+            <>
+              <Check className="w-6 h-6 checkmark-pop" />
+              Added!
+            </>
           ) : (
             <>
               <ShoppingBag className="w-6 h-6" />

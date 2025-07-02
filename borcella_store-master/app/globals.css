@@ -72,6 +72,36 @@ html, body {
   }
 }
 
+@keyframes cart-bounce {
+  0% { transform: scale(1); }
+  20% { transform: scale(1.2) rotate(-10deg); }
+  40% { transform: scale(0.9) rotate(10deg); }
+  60% { transform: scale(1.1) rotate(-5deg); }
+  80% { transform: scale(0.95) rotate(5deg); }
+  100% { transform: scale(1); }
+}
+.cart-bounce {
+  animation: cart-bounce 0.7s cubic-bezier(0.4,0,0.2,1);
+}
+
+@keyframes button-pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.08); background: #22c55e; color: #fff; }
+  100% { transform: scale(1); }
+}
+.button-pulse {
+  animation: button-pulse 0.5s cubic-bezier(0.4,0,0.2,1);
+}
+
+@keyframes checkmark-pop {
+  0% { opacity: 0; transform: scale(0.5); }
+  60% { opacity: 1; transform: scale(1.2); }
+  100% { opacity: 1; transform: scale(1); }
+}
+.checkmark-pop {
+  animation: checkmark-pop 0.4s cubic-bezier(0.4,0,0.2,1);
+}
+
 
 
 
