@@ -264,7 +264,7 @@ const Navbar = () => {
             Orders
           </Link>
         </div>
-        {/* Mobile Dropdown Menu (unchanged) */}
+        {/* Mobile Dropdown Menu (debug version) */}
         {dropdownMenu && (
           <div className="fixed inset-0 z-50 flex items-center justify-center lg:hidden">
             {/* Overlay */}
@@ -275,7 +275,8 @@ const Navbar = () => {
               aria-label="Close menu overlay"
             />
             {/* Menu */}
-            <div className="relative w-11/12 max-w-sm h-[90vh] bg-white rounded-xl border border-gray-200 shadow-2xl flex flex-col py-8 px-6 space-y-4 animate-slideInRight overflow-y-auto focus:outline-none" tabIndex={0}>
+            <div className="relative w-11/12 max-w-sm h-[90vh] bg-white border-4 border-red-500 rounded-xl shadow-2xl flex flex-col py-8 px-6 space-y-4 animate-slideInRight overflow-y-auto focus:outline-none" tabIndex={0}>
+              <div className="text-center text-red-600 font-bold">DEBUG: Dropdown menu is rendering</div>
               <button
                 className="absolute top-4 right-4 p-3 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors shadow"
                 onClick={() => setDropdownMenu(false)}
