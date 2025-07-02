@@ -205,6 +205,7 @@ const BannerForm: React.FC<BannerFormProps> = ({ initialData }) => {
           {/* Vertical Banners - Side by Side */}
           <div>
             <FormLabel className="text-lg font-semibold">Vertical Banners (9:16)</FormLabel>
+            <p className="text-xs text-blue-600 mb-2">Note: These vertical banners are displayed <b>only on the mobile version</b> of the store homepage.</p>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-4">
               {/* First Vertical Banner */}
               <div className="space-y-4">

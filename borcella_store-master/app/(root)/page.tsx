@@ -1,4 +1,5 @@
 import Carousel from "@/components/Carousel"; // Client Component for carousel
+import VerticalCarousel from "@/components/VerticalCarousel"; // New vertical carousel for mobile
 import { getCollections } from "@/lib/actions/actions"; // Import getCollections action
 
 export default async function Home() {
@@ -14,10 +15,20 @@ export default async function Home() {
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-white via-gray-50 to-white">
       <div className="w-full max-w-[1920px] mx-auto px-2 sm:px-4 md:px-8 py-4 sm:py-8">
-        <Carousel 
-          collectionImages={shuffledImages} 
-          collections={collections} 
-        />
+        {/* Mobile: Vertical Carousel */}
+        <div className="block sm:hidden">
+          <VerticalCarousel 
+            collectionImages={shuffledImages} 
+            collections={collections} 
+          />
+        </div>
+        {/* Desktop: Horizontal Carousel */}
+        <div className="hidden sm:block">
+          <Carousel 
+            collectionImages={shuffledImages} 
+            collections={collections} 
+          />
+        </div>
       </div>
     </div>
   );
