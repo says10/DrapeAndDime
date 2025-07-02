@@ -138,15 +138,15 @@ const Navbar = () => {
         <div className="flex flex-col xs:flex-row xs:items-center w-full xs:w-auto gap-2 xs:gap-0 items-center justify-between px-4 py-3 max-w-7xl mx-auto">
           {/* Logo and Hamburger */}
           <div className="flex items-center justify-between w-full xs:w-auto">
-            <Link href="/">
-              <Image
-                src="/logo.png"
-                alt="logo"
+          <Link href="/">
+            <Image
+              src="/logo.png"
+              alt="logo"
                 width={100}
                 height={40}
                 className={`transition-all duration-300 ${pathname === "/" && !isHovered ? "brightness-0 invert" : ""}`}
-              />
-            </Link>
+            />
+          </Link>
             <Menu
               className={`cursor-pointer lg:hidden transition-colors block xs:hidden ${pathname === "/" && !isHovered ? "text-white" : "text-gray-700"}`}
               onClick={() => setDropdownMenu(!dropdownMenu)}
@@ -260,37 +260,37 @@ const Navbar = () => {
                     <X className="w-6 h-6" />
                   </button>
                   <Link href="/" className="hover:text-red-1 transition-colors" onClick={() => setDropdownMenu(false)}>
-                    Home
-                  </Link>
-                  <Link
-                    href="/products"
+                  Home
+                </Link>
+                <Link
+                  href="/products"
                     className={`hover:text-red-1 transition-colors ${pathname === "/products" && "text-red-1"}`}
                     onClick={() => setDropdownMenu(false)}
-                  >
-                    BestSellers
-                  </Link>
-                  <Link
-                    href={user ? "/wishlist" : "/sign-in"}
-                    className="hover:text-red-1 transition-colors"
+                >
+                  BestSellers
+                </Link>
+                <Link
+                  href={user ? "/wishlist" : "/sign-in"}
+                  className="hover:text-red-1 transition-colors"
                     onClick={() => setDropdownMenu(false)}
-                  >
-                    Wishlist
-                  </Link>
-                  <Link
-                    href={user ? "/orders" : "/sign-in"}
-                    className="hover:text-red-1 transition-colors"
+                >
+                  Wishlist
+                </Link>
+                <Link
+                  href={user ? "/orders" : "/sign-in"}
+                  className="hover:text-red-1 transition-colors"
                     onClick={() => setDropdownMenu(false)}
-                  >
-                    Orders
-                  </Link>
-                  <Link
-                    href="/cart"
-                    className="flex items-center gap-3 border rounded-lg px-3 py-2 hover:bg-black hover:text-white transition-all duration-300"
+                >
+                  Orders
+                </Link>
+                <Link
+                  href="/cart"
+                  className="flex items-center gap-3 border rounded-lg px-3 py-2 hover:bg-black hover:text-white transition-all duration-300"
                     onClick={() => setDropdownMenu(false)}
-                  >
-                    <ShoppingCart />
-                    <p className="text-base-bold">Cart ({cart.cartItems.length})</p>
-                  </Link>
+                >
+                  <ShoppingCart />
+                  <p className="text-base-bold">Cart ({cart.cartItems.length})</p>
+                </Link>
                 </div>
               </div>
             )}

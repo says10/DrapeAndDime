@@ -85,7 +85,7 @@ const Home = ({ collectionImages, collections }: HomeProps) => {
     <>
       {/* Full-Screen Carousel */}
       {carouselVisible && (
-        <div className="relative w-full aspect-[4/3] sm:aspect-video overflow-hidden bg-gray-100">
+        <div className="relative w-full aspect-video overflow-hidden bg-gray-100">
           {/* Background Media (Image or Video) */}
           <div className="absolute inset-0 w-full h-full z-0">
             {selectedImage && isVideo(selectedImage) ? (

@@ -6,6 +6,7 @@ import {
   UsersRound,
   Video,
   TestTube,
+  Images,
 } from "lucide-react";
 
 export const navLinks = [
@@ -48,5 +49,10 @@ export const navLinks = [
     url: "/coupons",
     icon: <Tag />,
     label: "Coupons",
+  },
+  {
+    url: "/mobile-root-carousel",
+    icon: <Images />,
+    label: "Mobile Root Carousel",
   },
 ];

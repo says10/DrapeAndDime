@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
@@ -17,6 +17,23 @@ interface CarouselItem {
 export default function MobileRootCarouselForm() {
   const [items, setItems] = useState<CarouselItem[]>([]);
   const [loading, setLoading] = useState(false);
+  const [fetching, setFetching] = useState(true);
+
+  useEffect(() => {
+    async function fetchItems() {
+      setFetching(true);
+      try {
+        const res = await fetch("/api/mobile-root-carousel");
+        if (res.ok) {
+          const data = await res.json();
+          setItems(data.items || []);
+        }
+      } finally {
+        setFetching(false);
+      }
+    }
+    fetchItems();
+  }, []);
 
   const handleAddItem = () => {
     setItems([
@@ -53,6 +70,10 @@ export default function MobileRootCarouselForm() {
       setLoading(false);
     }
   };
+
+  if (fetching) {
+    return <div className="text-center py-8 text-gray-500">Loading carousel items...</div>;
+  }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
