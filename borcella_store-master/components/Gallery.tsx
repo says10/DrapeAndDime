@@ -7,14 +7,14 @@ const Gallery = ({ productMedia }: { productMedia: string[] }) => {
   const [mainImage, setMainImage] = useState(productMedia[0]);
 
   return (
-    <div className="flex flex-col gap-3 max-w-[500px]">
-      <div className="relative w-[500px] h-[500px] rounded-lg shadow-xl overflow-hidden">
+    <div className="flex flex-col gap-3 w-full max-w-[500px] mx-auto">
+      <div className="relative w-full aspect-square max-w-[500px] h-auto rounded-lg shadow-xl overflow-hidden">
         <Image
           src={mainImage}
           alt="product"
           fill
           className="object-cover"
-          sizes="(max-width: 500px) 100vw, 500px"
+          sizes="(max-width: 640px) 100vw, 500px"
           priority
         />
       </div>
@@ -22,7 +22,7 @@ const Gallery = ({ productMedia }: { productMedia: string[] }) => {
         {productMedia.map((image, index) => (
           <div 
             key={index}
-            className={`relative w-20 h-20 cursor-pointer rounded-lg overflow-hidden ${
+            className={`relative w-16 h-16 sm:w-20 sm:h-20 cursor-pointer rounded-lg overflow-hidden ${
               mainImage === image ? "ring-2 ring-black" : ""
             }`}
             onClick={() => setMainImage(image)}

@@ -2,7 +2,7 @@
 
 import useCart from "@/lib/hooks/useCart";
 import { UserButton, useUser } from "@clerk/nextjs";
-import { CircleUserRound, Menu, Search, ShoppingCart } from "lucide-react";
+import { CircleUserRound, Menu, Search, ShoppingCart, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -71,6 +71,17 @@ const Navbar = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  useEffect(() => {
+    if (dropdownMenu) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [dropdownMenu]);
+
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setQuery(value);
@@ -124,20 +135,23 @@ const Navbar = () => {
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        <div className="flex items-center justify-between px-4 py-3 max-w-7xl mx-auto">
-          {/* Logo */}
-          <Link href="/">
-            <Image
-              src="/logo.png"
-              alt="logo"
-              width={130}
-              height={100}
-              className={`transition-all duration-300 ${
-                pathname === "/" && !isHovered ? "brightness-0 invert" : ""
-              }`}
+        <div className="flex flex-col xs:flex-row xs:items-center w-full xs:w-auto gap-2 xs:gap-0 items-center justify-between px-4 py-3 max-w-7xl mx-auto">
+          {/* Logo and Hamburger */}
+          <div className="flex items-center justify-between w-full xs:w-auto">
+            <Link href="/">
+              <Image
+                src="/logo.png"
+                alt="logo"
+                width={100}
+                height={40}
+                className={`transition-all duration-300 ${pathname === "/" && !isHovered ? "brightness-0 invert" : ""}`}
+              />
+            </Link>
+            <Menu
+              className={`cursor-pointer lg:hidden transition-colors block xs:hidden ${pathname === "/" && !isHovered ? "text-white" : "text-gray-700"}`}
+              onClick={() => setDropdownMenu(!dropdownMenu)}
             />
-          </Link>
-
+          </div>
           {/* Navigation Links - Desktop */}
           {pathname !== "/" && (
             <div className="flex gap-6 text-base-bold max-lg:hidden">
@@ -175,9 +189,8 @@ const Navbar = () => {
               </Link>
             </div>
           )}
-
-          {/* Search Bar with Dropdown */}
-          <div className="relative flex-1 max-w-md mx-4">
+          {/* Search Bar */}
+          <div className="relative w-full xs:w-auto mt-2 xs:mt-0 flex-1 max-w-md mx-0 xs:mx-4">
             <div
               className={`flex gap-3 border px-3 py-2 items-center rounded-lg transition-all duration-300 ${
                 pathname === "/" && !isHovered
@@ -211,8 +224,6 @@ const Navbar = () => {
                 />
               </button>
             </div>
-
-            {/* Search Dropdown */}
             <SearchDropdown
               query={query}
               isVisible={showSearchDropdown}
@@ -220,7 +231,6 @@ const Navbar = () => {
               onSelectProduct={handleSelectProduct}
             />
           </div>
-
           {/* Cart & User Menu */}
           <div className="relative flex gap-3 items-center">
             {pathname !== "/" && (
@@ -232,50 +242,58 @@ const Navbar = () => {
                 <p className="text-base-bold">Cart ({cart.cartItems.length})</p>
               </Link>
             )}
-
             {/* Mobile Menu */}
-            <Menu
-              className={`cursor-pointer lg:hidden transition-colors ${
-                pathname === "/" && !isHovered ? "text-white" : "text-gray-700"
-              }`}
-              onClick={() => setDropdownMenu(!dropdownMenu)}
-            />
-
             {dropdownMenu && (
-              <div className="absolute top-12 right-5 flex flex-col gap-4 p-4 rounded-lg border bg-white/95 backdrop-blur-md shadow-lg text-base-bold lg:hidden z-50">
-                <Link href="/" className="hover:text-red-1 transition-colors">
-                  Home
-                </Link>
-                <Link
-                  href="/products"
-                  className={`hover:text-red-1 transition-colors ${
-                    pathname === "/products" && "text-red-1"
-                  }`}
-                >
-                  BestSellers
-                </Link>
-                <Link
-                  href={user ? "/wishlist" : "/sign-in"}
-                  className="hover:text-red-1 transition-colors"
-                >
-                  Wishlist
-                </Link>
-                <Link
-                  href={user ? "/orders" : "/sign-in"}
-                  className="hover:text-red-1 transition-colors"
-                >
-                  Orders
-                </Link>
-                <Link
-                  href="/cart"
-                  className="flex items-center gap-3 border rounded-lg px-3 py-2 hover:bg-black hover:text-white transition-all duration-300"
-                >
-                  <ShoppingCart />
-                  <p className="text-base-bold">Cart ({cart.cartItems.length})</p>
-                </Link>
+              <div className="fixed inset-0 z-50 flex items-start justify-end lg:hidden">
+                {/* Overlay */}
+                <div
+                  className="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity animate-fadeIn"
+                  onClick={() => setDropdownMenu(false)}
+                />
+                {/* Menu */}
+                <div className="relative w-4/5 max-w-xs h-full bg-white/95 backdrop-blur-md shadow-lg flex flex-col gap-4 p-6 animate-slideInRight">
+                  <button
+                    className="absolute top-4 right-4 p-2 rounded hover:bg-gray-200 transition-colors"
+                    onClick={() => setDropdownMenu(false)}
+                    aria-label="Close menu"
+                  >
+                    <X className="w-6 h-6" />
+                  </button>
+                  <Link href="/" className="hover:text-red-1 transition-colors" onClick={() => setDropdownMenu(false)}>
+                    Home
+                  </Link>
+                  <Link
+                    href="/products"
+                    className={`hover:text-red-1 transition-colors ${pathname === "/products" && "text-red-1"}`}
+                    onClick={() => setDropdownMenu(false)}
+                  >
+                    BestSellers
+                  </Link>
+                  <Link
+                    href={user ? "/wishlist" : "/sign-in"}
+                    className="hover:text-red-1 transition-colors"
+                    onClick={() => setDropdownMenu(false)}
+                  >
+                    Wishlist
+                  </Link>
+                  <Link
+                    href={user ? "/orders" : "/sign-in"}
+                    className="hover:text-red-1 transition-colors"
+                    onClick={() => setDropdownMenu(false)}
+                  >
+                    Orders
+                  </Link>
+                  <Link
+                    href="/cart"
+                    className="flex items-center gap-3 border rounded-lg px-3 py-2 hover:bg-black hover:text-white transition-all duration-300"
+                    onClick={() => setDropdownMenu(false)}
+                  >
+                    <ShoppingCart />
+                    <p className="text-base-bold">Cart ({cart.cartItems.length})</p>
+                  </Link>
+                </div>
               </div>
             )}
-
             {user ? (
               <UserButton afterSignOutUrl="/" />
             ) : pathname !== "/" ? (

@@ -4,7 +4,7 @@ const Footer = () => {
   return (
     <footer className="bg-black text-white py-4">
       <div className="max-w-7xl mx-auto px-4 text-center">
-        <ul className="flex justify-center gap-8">
+        <ul className="flex flex-wrap flex-col sm:flex-row justify-center gap-4 sm:gap-8">
           <li>
           <a href="/privacy-policy.html">Privacy Policy</a>
 

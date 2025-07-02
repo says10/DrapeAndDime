@@ -85,7 +85,7 @@ const Home = ({ collectionImages, collections }: HomeProps) => {
     <>
       {/* Full-Screen Carousel */}
       {carouselVisible && (
-        <div className="relative w-full aspect-video overflow-hidden bg-gray-100">
+        <div className="relative w-full aspect-[4/3] sm:aspect-video overflow-hidden bg-gray-100">
           {/* Background Media (Image or Video) */}
           <div className="absolute inset-0 w-full h-full z-0">
             {selectedImage && isVideo(selectedImage) ? (
@@ -114,45 +114,45 @@ const Home = ({ collectionImages, collections }: HomeProps) => {
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent z-10" />
           </div>
           {/* Overlay Content */}
-          <div className="relative z-20 flex flex-col items-center justify-center w-full h-full text-center px-4">
-            <h1 className="text-3xl md:text-5xl font-extrabold text-white drop-shadow-lg mb-4">
+          <div className="relative z-20 flex flex-col items-center justify-center w-full h-full text-center px-2 sm:px-4">
+            <h1 className="text-xl sm:text-3xl md:text-5xl font-extrabold text-white drop-shadow-lg mb-2 sm:mb-4 break-words">
               {collections[selectedIndex ?? 0]?.headline || 'Discover the Latest in Women\'s Fashion'}
             </h1>
-            <p className="text-lg md:text-2xl text-white/90 mb-8">
+            <p className="text-base sm:text-lg md:text-2xl text-white/90 mb-4 sm:mb-8 break-words">
               {collections[selectedIndex ?? 0]?.name || 'Trendy, Elegant, and Comfortable Styles for Every Woman'}
             </p>
             {selectedCollectionId && (
               <button
                 onClick={handleShopNowClick}
-                className="bg-white text-black px-8 py-3 rounded-full font-semibold 
+                className="bg-white text-black px-4 sm:px-8 py-2 sm:py-3 rounded-full font-semibold 
                   hover:bg-gray-100 transition-all duration-300 shadow-lg
-                  transform hover:-translate-y-0.5 active:translate-y-0"
+                  transform hover:-translate-y-0.5 active:translate-y-0 text-sm sm:text-base"
               >
                 View Collection
               </button>
             )}
           </div>
           {/* Logo (Top Left) */}
-          <Link href="/" className="absolute top-4 left-4 z-30">
+          <Link href="/" className="absolute top-2 left-2 sm:top-4 sm:left-4 z-30">
             <Image 
               src="/logo.png" 
               alt="Logo" 
-              width={130} 
-              height={100} 
+              width={80} 
+              height={40} 
               className="object-contain"
               priority
             />
           </Link>
           {/* Login Icon (Top Right) */}
-          <Link href="/sign-in" className="absolute top-4 right-4 z-30">
-            <CircleUserRound className="text-white w-8 h-8 cursor-pointer hover:text-gray-200 transition-colors" />
+          <Link href="/sign-in" className="absolute top-2 right-2 sm:top-4 sm:right-4 z-30">
+            <CircleUserRound className="text-white w-6 h-6 sm:w-8 sm:h-8 cursor-pointer hover:text-gray-200 transition-colors" />
           </Link>
           {/* Carousel Thumbnails */}
-          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-3 justify-center items-center w-full px-4 z-30">
+          <div className="absolute bottom-2 sm:bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2 sm:gap-3 justify-center items-center w-full px-2 sm:px-4 z-30 overflow-x-auto scrollbar-hide">
             {collectionImages.map((image, index) => (
               <div
                 key={index}
-                className={`relative w-16 h-16 md:w-24 md:h-24 cursor-pointer transition-transform duration-300 hover:scale-110 ${
+                className={`relative w-10 h-10 sm:w-16 sm:h-16 md:w-24 md:h-24 cursor-pointer transition-transform duration-300 hover:scale-110 ${
                   selectedImage === image ? 'ring-2 ring-white' : ''
                 }`}
                 onClick={() => handleImageClick(image, index)}
@@ -171,19 +171,19 @@ const Home = ({ collectionImages, collections }: HomeProps) => {
                     alt={`Collection Image ${index + 1}`}
                     fill
                     className="rounded-lg object-cover"
-                    sizes="(max-width: 96px) 100vw, 96px"
+                    sizes="(max-width: 40px) 100vw, 40px"
                   />
                 )}
               </div>
             ))}
           </div>
           {/* Explore All Button */}
-          <div className="absolute bottom-4 right-4 z-30">
+          <div className="absolute bottom-2 right-2 sm:bottom-4 sm:right-4 z-30">
             <button 
               onClick={handleExploreAllClick}
-              className="bg-white/10 backdrop-blur-sm text-white px-6 py-2 rounded-full font-semibold 
+              className="bg-white/10 backdrop-blur-sm text-white px-4 sm:px-6 py-1.5 sm:py-2 rounded-full font-semibold 
                 hover:bg-white/20 transition-all duration-300 border border-white/20
-                hover:border-white/30"
+                hover:border-white/30 text-xs sm:text-base"
             >
               Explore All
             </button>
