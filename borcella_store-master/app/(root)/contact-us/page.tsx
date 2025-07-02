@@ -25,10 +25,6 @@ const ContactUs: React.FC = () => {
               <img src="/gmail.svg" alt="Gmail" className="w-6 h-6" />
               drapeanddime@gmail.com
             </a>
-            <a href="tel:+918910607304" className="flex items-center gap-2 text-base text-gray-700 hover:text-orange-500 transition">
-              <img src="/phone.svg" alt="Phone" className="w-6 h-6" />
-              +91 8910607304
-            </a>
           </div>
           </div>
 
