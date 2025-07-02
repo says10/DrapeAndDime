@@ -6,7 +6,7 @@ import ProductInfo from "@/components/ProductInfo";
 import ReviewsList from "@/components/ReviewsList";
 import { getProductDetails, getRelatedProducts } from "@/lib/actions/actions";
 import { Package, Heart, Share2, ChevronRight, Home, Check } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -19,6 +19,8 @@ const ProductDetails = ({ params }: { params: { productId: string } }) => {
   const [isInWishlist, setIsInWishlist] = useState(false);
   const [isShareCopied, setIsShareCopied] = useState(false);
   const [loading, setLoading] = useState(true);
+  const productImageRef = useRef<HTMLDivElement>(null);
+  const [flyImage, setFlyImage] = useState<null | { x: number; y: number; src: string }>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -93,6 +95,27 @@ const ProductDetails = ({ params }: { params: { productId: string } }) => {
     // The ProductInfo component will automatically refresh its rating display
   };
 
+  // Find the cart icon in the navbar (by id or class if possible)
+  const getCartIconRect = () => {
+    const cartIcon = document.querySelector(".cart-navbar-icon");
+    if (cartIcon) {
+      return cartIcon.getBoundingClientRect();
+    }
+    // fallback: top right
+    return { left: window.innerWidth - 60, top: 24 };
+  };
+
+  const triggerFlyToCart = (imgRect: DOMRect) => {
+    setFlyImage({
+      x: imgRect.left,
+      y: imgRect.top,
+      src: productDetails?.media && productDetails.media[0] ? productDetails.media[0] : "/logo.png"
+    });
+    setTimeout(() => {
+      setFlyImage(null);
+    }, 900);
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-white via-gray-50/50 to-gray-100/50">
@@ -119,6 +142,24 @@ const ProductDetails = ({ params }: { params: { productId: string } }) => {
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-white via-gray-50/50 to-gray-100/50 font-sans">
+      {/* Fly to cart animation image */}
+      {flyImage && (
+        <img
+          src={flyImage.src}
+          alt="flying product"
+          style={{
+            position: "fixed",
+            left: flyImage.x,
+            top: flyImage.y,
+            width: 60,
+            height: 60,
+            zIndex: 9999,
+            pointerEvents: "none",
+            transition: "all 0.9s cubic-bezier(0.4,0,0.2,1)",
+            transform: `translate(${getCartIconRect().left - flyImage.x}px, ${getCartIconRect().top - flyImage.y}px) scale(0.2)`
+          }}
+        />
+      )}
       {/* Product Details Section */}
       <section className="relative pt-20 sm:pt-24">
         {/* Premium Pattern Overlay */}
@@ -145,7 +186,7 @@ const ProductDetails = ({ params }: { params: { productId: string } }) => {
               <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-lg border border-gray-100 overflow-hidden">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-8 p-0 sm:p-8">
                   {/* Gallery Section */}
-                  <div className="relative">
+                  <div className="relative" ref={productImageRef}>
                     <div className="pt-4 sm:pt-8">
                       <Gallery productMedia={productDetails.media} />
                     </div>
@@ -191,7 +232,7 @@ const ProductDetails = ({ params }: { params: { productId: string } }) => {
                         </div>
                       </div>
                       {/* Product Info */}
-                      <ProductInfo productInfo={productDetails} />
+                      <ProductInfo productInfo={productDetails} productImageRef={productImageRef} triggerFlyToCart={triggerFlyToCart} />
                     </div>
                   </div>
                 </div>

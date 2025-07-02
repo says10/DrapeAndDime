@@ -206,7 +206,7 @@ const Navbar = () => {
                 href="/cart"
                 className="flex items-center gap-2 border rounded-lg px-2 py-1 hover:bg-black hover:text-white transition-all duration-300 max-md:hidden text-sm"
               >
-                <ShoppingCart className="w-5 h-5" />
+                <ShoppingCart className="w-5 h-5 cart-navbar-icon" />
                 <span>Cart ({cart.cartItems.length})</span>
               </Link>
             )}
