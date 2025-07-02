@@ -18,7 +18,7 @@ const Shipping: React.FC = () => {
         <p className="text-sm sm:text-base text-gray-700 mb-4">Once shipped, you will receive a tracking link via email to track your order.</p>
         <h2 className="text-lg sm:text-2xl font-bold mt-6 mb-2">Undeliverable Orders</h2>
         <p className="text-sm sm:text-base text-gray-700 mb-4">If a package is returned due to incorrect details provided by the buyer, the customer will be responsible for re-shipping charges.</p>
-        <p className="text-sm sm:text-base text-gray-700 mb-4">For shipping inquiries or any assistance, feel free to contact us at <a href="mailto:drapeanddime@gmail.com" className="text-blue-600 hover:underline font-semibold"> drapeanddime@gmail.com</a> or call us at <strong>8910607304</strong>.</p>
+        <p className="text-sm sm:text-base text-gray-700 mb-4">For shipping inquiries or any assistance, feel free to contact us at <a href="mailto:drapeanddime@gmail.com" className="text-blue-600 hover:underline font-semibold"> drapeanddime@gmail.com</a>.</p>
         <h2 className="text-lg sm:text-2xl font-bold mt-6 mb-2">Disclaimer</h2>
         <p className="text-sm sm:text-base text-gray-700 mb-4">We are not liable for any delay in delivery by the courier company or postal authorities and only guarantee to hand over the consignment to the courier company or postal authorities within the stipulated time.</p>
       </div>
