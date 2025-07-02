@@ -77,21 +77,6 @@ const VerticalCarousel = ({ items }: VerticalCarouselProps) => {
           </button>
         )}
       </div>
-      {/* Logo (Top Left) */}
-      <Link href="/" className="absolute top-2 left-2 z-30">
-        <Image 
-          src="/logo.png" 
-          alt="Logo" 
-          width={60} 
-          height={30} 
-          className="object-contain"
-          priority
-        />
-      </Link>
-      {/* Login Icon (Top Right) */}
-      <Link href="/sign-in" className="absolute top-2 right-2 z-30">
-        <CircleUserRound className="text-white w-6 h-6 cursor-pointer hover:text-gray-200 transition-colors" />
-      </Link>
       {/* Vertical Thumbnails */}
       <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex flex-col gap-2 z-30 bg-white/10 rounded-lg p-1 backdrop-blur-sm">
         {items.map((item, index) => (

@@ -132,21 +132,6 @@ const Home = ({ collectionImages, collections }: HomeProps) => {
               </button>
             )}
           </div>
-          {/* Logo (Top Left) */}
-          <Link href="/" className="absolute top-2 left-2 sm:top-4 sm:left-4 z-30">
-            <Image 
-              src="/logo.png" 
-              alt="Logo" 
-              width={80} 
-              height={40} 
-              className="object-contain"
-              priority
-            />
-          </Link>
-          {/* Login Icon (Top Right) */}
-          <Link href="/sign-in" className="absolute top-2 right-2 sm:top-4 sm:right-4 z-30">
-            <CircleUserRound className="text-white w-6 h-6 sm:w-8 sm:h-8 cursor-pointer hover:text-gray-200 transition-colors" />
-          </Link>
           {/* Carousel Thumbnails */}
           <div className="absolute bottom-2 sm:bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2 sm:gap-3 justify-center items-center w-full px-2 sm:px-4 z-30 overflow-x-auto scrollbar-hide">
             {collectionImages.map((image, index) => (
