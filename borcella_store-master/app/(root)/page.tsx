@@ -37,10 +37,10 @@ export default async function Home() {
       </div>
       {/* Desktop: Full-Screen Carousel (outside padded container, truly full-width) */}
       <div className="hidden sm:block w-full">
-        <Carousel 
-          collectionImages={shuffledImages} 
-          collections={collections} 
-        />
+    <Carousel 
+      collectionImages={shuffledImages} 
+      collections={collections} 
+    />
       </div>
     </div>
   );

@@ -147,16 +147,16 @@ const Navbar = () => {
               className={`cursor-pointer lg:hidden transition-colors block sm:hidden ${pathname === "/" ? "text-white" : "text-gray-700"}`}
               onClick={() => setDropdownMenu(!dropdownMenu)}
             />
-            <Link href="/">
-              <Image
-                src="/logo.png"
-                alt="logo"
+          <Link href="/">
+            <Image
+              src="/logo.png"
+              alt="logo"
                 width={90}
                 height={36}
                 className="transition-all duration-300 min-w-[70px]"
               />
-            </Link>
-          </div>
+              </Link>
+            </div>
           {/* Search Bar - always in row, compact on mobile */}
           <div className="flex-1 mx-2 max-w-xs min-w-0">
             <div
@@ -264,7 +264,7 @@ const Navbar = () => {
             Orders
           </Link>
         </div>
-        {/* Mobile Dropdown Menu (debug version) */}
+        {/* Mobile Dropdown Menu (fixed centering and visibility) */}
         {dropdownMenu && (
           <div className="fixed inset-0 z-50 flex items-center justify-center lg:hidden">
             {/* Overlay */}
@@ -275,8 +275,7 @@ const Navbar = () => {
               aria-label="Close menu overlay"
             />
             {/* Menu */}
-            <div className="relative w-11/12 max-w-sm h-[90vh] bg-white border-4 border-red-500 rounded-xl shadow-2xl flex flex-col py-8 px-6 space-y-4 animate-slideInRight overflow-y-auto focus:outline-none" tabIndex={0}>
-              <div className="text-center text-red-600 font-bold">DEBUG: Dropdown menu is rendering</div>
+            <div className="relative w-11/12 max-w-sm max-h-[90vh] bg-white rounded-xl shadow-2xl flex flex-col py-8 px-6 space-y-4 animate-slideInRight overflow-y-auto focus:outline-none mt-8 mb-8" tabIndex={0}>
               <button
                 className="absolute top-4 right-4 p-3 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors shadow"
                 onClick={() => setDropdownMenu(false)}
