@@ -153,42 +153,40 @@ const Navbar = () => {
             />
           </div>
           {/* Navigation Links - Desktop */}
-          {pathname !== "/" && (
-            <div className="flex gap-6 text-base-bold max-lg:hidden">
-              <Link
-                href="/home"
-                className={`hover:text-red-1 transition-colors ${
-                  pathname === "/home" && "text-red-1"
-                }`}
-              >
-                Home
-              </Link>
-              <Link
-                href="/products"
-                className={`hover:text-red-1 transition-colors ${
-                  pathname === "/products" && "text-red-1"
-                }`}
-              >
-                BestSellers
-              </Link>
-              <Link
-                href={user ? "/wishlist" : "/sign-in"}
-                className={`hover:text-red-1 transition-colors ${
-                  pathname === "/wishlist" && "text-red-1"
-                }`}
-              >
-                Wishlist
-              </Link>
-              <Link
-                href={user ? "/orders" : "/sign-in"}
-                className={`hover:text-red-1 transition-colors ${
-                  pathname === "/orders" && "text-red-1"
-                }`}
-              >
-                Orders
-              </Link>
-            </div>
-          )}
+          <div className={`flex gap-6 text-base-bold max-lg:hidden ${pathname === "/" ? "text-white drop-shadow" : ""}`}>
+            <Link
+              href="/home"
+              className={`hover:text-red-1 transition-colors ${
+                pathname === "/home" ? "text-red-1" : pathname === "/" ? "hover:text-red-1 text-white" : ""
+              }`}
+            >
+              Home
+            </Link>
+            <Link
+              href="/products"
+              className={`hover:text-red-1 transition-colors ${
+                pathname === "/products" ? "text-red-1" : pathname === "/" ? "hover:text-red-1 text-white" : ""
+              }`}
+            >
+              BestSellers
+            </Link>
+            <Link
+              href={user ? "/wishlist" : "/sign-in"}
+              className={`hover:text-red-1 transition-colors ${
+                pathname === "/wishlist" ? "text-red-1" : pathname === "/" ? "hover:text-red-1 text-white" : ""
+              }`}
+            >
+              Wishlist
+            </Link>
+            <Link
+              href={user ? "/orders" : "/sign-in"}
+              className={`hover:text-red-1 transition-colors ${
+                pathname === "/orders" ? "text-red-1" : pathname === "/" ? "hover:text-red-1 text-white" : ""
+              }`}
+            >
+              Orders
+            </Link>
+          </div>
           {/* Search Bar */}
           <div className="relative w-full sm:w-auto mt-2 sm:mt-0 flex-1 max-w-md mx-0 sm:mx-4">
             <div
