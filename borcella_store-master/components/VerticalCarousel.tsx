@@ -9,10 +9,7 @@ import Link from "next/link";
 interface CarouselItem {
   media: string;
   mediaType: "image" | "video";
-  title: string;
-  subtitle: string;
-  cta: string;
-  ctaLink: string;
+  link: string;
 }
 
 interface VerticalCarouselProps {
@@ -58,7 +55,7 @@ const VerticalCarousel = ({ items }: VerticalCarouselProps) => {
         ) : (
           <Image
             src={selectedItem.media}
-            alt={selectedItem.title || "Carousel Item"}
+            alt={"Carousel Item"}
             fill
             className="object-cover object-center"
             priority
@@ -69,20 +66,14 @@ const VerticalCarousel = ({ items }: VerticalCarouselProps) => {
         {/* Overlay Gradient */}
         <div className="absolute inset-0 bg-gradient-to-l from-black/60 via-transparent to-transparent z-10" />
       </div>
-      {/* Overlay Content */}
+      {/* Overlay Content: Only View Collection button if link exists */}
       <div className="relative z-20 flex flex-col items-center justify-center w-full h-full text-center px-2 py-8">
-        <h1 className="text-xl font-extrabold text-white drop-shadow-lg mb-2 break-words">
-          {selectedItem.title}
-        </h1>
-        <p className="text-base text-white/90 mb-4 break-words">
-          {selectedItem.subtitle}
-        </p>
-        {selectedItem.cta && selectedItem.ctaLink && (
+        {selectedItem.link && (
           <button
-            onClick={() => router.push(selectedItem.ctaLink)}
+            onClick={() => router.push(selectedItem.link)}
             className="bg-white text-black px-6 py-2 rounded-full font-semibold hover:bg-gray-100 transition-all duration-300 shadow-lg text-sm"
           >
-            {selectedItem.cta}
+            View Collection
           </button>
         )}
       </div>
@@ -121,7 +112,7 @@ const VerticalCarousel = ({ items }: VerticalCarouselProps) => {
             ) : (
               <Image
                 src={item.media}
-                alt={item.title || `Carousel Image ${index + 1}`}
+                alt={`Carousel Image ${index + 1}`}
                 fill
                 className="object-cover rounded-lg"
                 sizes="40px"

@@ -11,10 +11,7 @@ import toast from "react-hot-toast";
 interface CarouselItem {
   media: string;
   mediaType: "image" | "video";
-  title: string;
-  subtitle: string;
-  cta: string;
-  ctaLink: string;
+  link: string;
 }
 
 export default function MobileRootCarouselForm() {
@@ -24,7 +21,7 @@ export default function MobileRootCarouselForm() {
   const handleAddItem = () => {
     setItems([
       ...items,
-      { media: "", mediaType: "image", title: "", subtitle: "", cta: "", ctaLink: "" },
+      { media: "", mediaType: "image", link: "" },
     ]);
   };
 
@@ -98,36 +95,11 @@ export default function MobileRootCarouselForm() {
             )}
           </div>
           <div className="mb-2">
-            <label className="block text-sm font-medium mb-1">Title</label>
+            <label className="block text-sm font-medium mb-1">Link (View Collection)</label>
             <Input
-              value={item.title}
-              onChange={e => handleChange(idx, "title", e.target.value)}
-              placeholder="Enter title"
-            />
-          </div>
-          <div className="mb-2">
-            <label className="block text-sm font-medium mb-1">Subtitle</label>
-            <Textarea
-              value={item.subtitle}
-              onChange={e => handleChange(idx, "subtitle", e.target.value)}
-              placeholder="Enter subtitle"
-              rows={2}
-            />
-          </div>
-          <div className="mb-2">
-            <label className="block text-sm font-medium mb-1">CTA Text</label>
-            <Input
-              value={item.cta}
-              onChange={e => handleChange(idx, "cta", e.target.value)}
-              placeholder="e.g., Shop Now"
-            />
-          </div>
-          <div className="mb-2">
-            <label className="block text-sm font-medium mb-1">CTA Link</label>
-            <Input
-              value={item.ctaLink}
-              onChange={e => handleChange(idx, "ctaLink", e.target.value)}
-              placeholder="e.g., /collections"
+              value={item.link}
+              onChange={e => handleChange(idx, "link", e.target.value)}
+              placeholder="e.g., /collections/123"
             />
           </div>
         </div>
