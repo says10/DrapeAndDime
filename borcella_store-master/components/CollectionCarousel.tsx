@@ -32,7 +32,7 @@ export default function CollectionCarousel({ collections }: CollectionCarouselPr
   };
 
   return (
-    <div className="collections-section relative w-full overflow-hidden bg-gray-100 py-8 px-4">
+    <div className="collections-section relative w-full overflow-hidden bg-gray-100 pt-8 pb-2 px-4">
       <div className="flex justify-between items-center mb-4">
          <h2 className="text-heading1-bold">Collections</h2>
          <div className="flex gap-2">

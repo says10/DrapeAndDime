@@ -135,9 +135,9 @@ const Navbar = () => {
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        <div className="flex flex-col xs:flex-row xs:items-center w-full xs:w-auto gap-2 xs:gap-0 items-center justify-between px-4 py-3 max-w-7xl mx-auto">
+        <div className="flex flex-col sm:flex-row sm:items-center w-full sm:w-auto gap-2 sm:gap-0 justify-between px-4 py-3 max-w-7xl mx-auto">
           {/* Logo and Hamburger */}
-          <div className="flex items-center justify-between w-full xs:w-auto">
+          <div className="flex items-center justify-between w-full sm:w-auto">
           <Link href="/">
             <Image
               src="/logo.png"
@@ -148,7 +148,7 @@ const Navbar = () => {
             />
           </Link>
             <Menu
-              className={`cursor-pointer lg:hidden transition-colors block xs:hidden ${pathname === "/" && !isHovered ? "text-white" : "text-gray-700"}`}
+              className={`cursor-pointer lg:hidden transition-colors block sm:hidden ${pathname === "/" && !isHovered ? "text-white" : "text-gray-700"}`}
               onClick={() => setDropdownMenu(!dropdownMenu)}
             />
           </div>
@@ -190,7 +190,7 @@ const Navbar = () => {
             </div>
           )}
           {/* Search Bar */}
-          <div className="relative w-full xs:w-auto mt-2 xs:mt-0 flex-1 max-w-md mx-0 xs:mx-4">
+          <div className="relative w-full sm:w-auto mt-2 sm:mt-0 flex-1 max-w-md mx-0 sm:mx-4">
             <div
               className={`flex gap-3 border px-3 py-2 items-center rounded-lg transition-all duration-300 ${
                 pathname === "/" && !isHovered
