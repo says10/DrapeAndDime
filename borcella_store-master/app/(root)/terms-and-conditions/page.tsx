@@ -11,7 +11,7 @@ const Terms: React.FC = () => {
       </p>
         <h3 className="text-lg sm:text-2xl font-bold mt-6 mb-2">1. General Terms</h3>
         <p className="text-sm sm:text-base text-gray-700 mb-4">
-        For the purpose of these Terms and Conditions, the terms "we," "us," and "our" refer to SAYANTAN MUKHERJEE, whose registered/operational office is at 108 Pallisree Regent Estate, Kolkata, West Bengal, 700092. The terms "you," "your," "user," and "visitor" refer to any natural or legal person who is visiting our website and/or agreeing to purchase from us.
+        For the purpose of these Terms and Conditions, the terms "we," "us," and "our" refer to Drape & Dime. The terms "you," "your," "user," and "visitor" refer to any natural or legal person using this website.
       </p>
         <p className="text-sm sm:text-base text-gray-700 mb-4">
         Your use of the website and/or purchase from us is governed by the following Terms and Conditions.
@@ -43,7 +43,7 @@ const Terms: React.FC = () => {
         From time to time, our website may also include links to other websites. These links are provided for your convenience to offer further information.
       </p>
         <p className="text-sm sm:text-base text-gray-700 mb-4">
-          You may not create a link to our website from another website or document without SAYANTAN MUKHERJEE's prior written consent.
+          You may not create a link to our website from another website or document without our prior written consent.
       </p>
         <h3 className="text-lg sm:text-2xl font-bold mt-6 mb-2">7. Payment and Transactions</h3>
         <p className="text-sm sm:text-base text-gray-700 mb-4">

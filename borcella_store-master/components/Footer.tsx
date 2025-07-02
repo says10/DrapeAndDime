@@ -6,8 +6,7 @@ const Footer = () => {
       <div className="max-w-7xl mx-auto px-4 text-center">
         <ul className="flex flex-wrap flex-col sm:flex-row justify-center gap-4 sm:gap-8">
           <li>
-          <a href="/privacy-policy.html">Privacy Policy</a>
-
+            <Link href="/about-us" className="hover:text-red-1">About Us</Link>
           </li>
           <li>
             <Link href="/terms-and-conditions" className="hover:text-red-1">

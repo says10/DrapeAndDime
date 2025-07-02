@@ -50,13 +50,10 @@ const Navbar = () => {
           .then((res) => {
             if (res.ok) {
               localStorage.setItem(key, "true");
-              console.log("[Navbar] User creation/check succeeded.");
-            } else {
-              console.error("[Navbar] /api/users call failed:", res.status);
             }
           })
-          .catch((err) => {
-            console.error("[Navbar] API call failed:", err);
+          .catch(() => {
+            // No need to log errors here
           });
       }
     }

@@ -117,7 +117,7 @@ const useCart = create(
           const data = await response.json();
           return data.isAvailable;
         } catch (error) {
-          console.error("Stock validation error:", error);
+          // Stock validation error
           return false;
         }
       },
@@ -152,22 +152,22 @@ export function useCartWithUser() {
   // Backend sync logic for all cart actions
   const syncBackend = async (action: string, cartItems?: CartItem[]) => {
     if (!user || cartClearing) {
-      console.log('[Cart Sync] No user or cart is clearing, skipping backend sync');
+      // [Cart Sync] No user or cart is clearing, skipping backend sync
       return;
     }
     const { userEmail, userName } = getUserInfo();
     try {
       if (action === 'clear_session') {
-        console.log('[Cart Sync] Clearing session');
+        // [Cart Sync] Clearing session
         await trackCartSession({ action });
-        console.log('[Cart Sync] Session cleared');
+        // [Cart Sync] Session cleared
       } else {
-        console.log('[Cart Sync] Updating session with cartItems:', cartItems);
+        // [Cart Sync] Updating session with cartItems
         await trackCartSession({ action: 'update_session', cartItems: cartItems || cart.cartItems, userEmail, userName });
-        console.log('[Cart Sync] Session updated');
+        // [Cart Sync] Session updated
       }
     } catch (err) {
-      console.error('[Cart Sync] Backend sync failed:', err);
+      // [Cart Sync] Backend sync failed
     }
   };
 

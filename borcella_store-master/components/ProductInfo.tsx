@@ -57,7 +57,7 @@ const ProductInfo = ({ productInfo, productImageRef, triggerFlyToCart }: Product
           });
         }
       } catch (error) {
-        console.error("Error fetching reviews:", error);
+        // Error fetching reviews
       }
     };
 
