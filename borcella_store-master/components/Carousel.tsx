@@ -85,7 +85,7 @@ const Home = ({ collectionImages, collections }: HomeProps) => {
     <>
       {/* Full-Screen Carousel */}
       {carouselVisible && (
-        <div className="relative w-full aspect-[4/3] sm:aspect-video overflow-hidden bg-gray-100">
+        <div className="relative w-full min-h-screen flex items-center justify-center overflow-hidden bg-gray-100">
           {/* Background Media (Image or Video) */}
           <div className="absolute inset-0 w-full h-full z-0">
             {selectedImage && isVideo(selectedImage) ? (
@@ -96,7 +96,6 @@ const Home = ({ collectionImages, collections }: HomeProps) => {
                 muted
                 playsInline
                 className="object-cover w-full h-full"
-                style={{ aspectRatio: '16/9' }}
               />
             ) : selectedImage ? (
               <Image
@@ -107,7 +106,6 @@ const Home = ({ collectionImages, collections }: HomeProps) => {
                 priority
                 sizes="100vw"
                 quality={100}
-                style={{ aspectRatio: '16/9' }}
               />
             ) : null}
             {/* Overlay Gradient */}
