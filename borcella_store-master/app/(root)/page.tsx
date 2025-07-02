@@ -12,9 +12,13 @@ export default async function Home() {
   const shuffledImages = collectionImages.sort(() => Math.random() - 0.5).slice(0, 8);
 
   return (
-    <Carousel 
-      collectionImages={shuffledImages} 
-      collections={collections} 
-    />
+    <div className="min-h-screen flex flex-col bg-gradient-to-b from-white via-gray-50 to-white">
+      <div className="w-full max-w-[1920px] mx-auto px-2 sm:px-4 md:px-8 py-4 sm:py-8">
+        <Carousel 
+          collectionImages={shuffledImages} 
+          collections={collections} 
+        />
+      </div>
+    </div>
   );
 }
