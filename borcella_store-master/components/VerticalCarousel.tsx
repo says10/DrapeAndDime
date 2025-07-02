@@ -6,104 +6,83 @@ import { useRouter } from "next/navigation";
 import { CircleUserRound } from "lucide-react";
 import Link from "next/link";
 
-interface CollectionType {
-  _id: string;
-  image: string;
-  name: string;
-  headline?: string;
-  ctaText?: string;
+interface CarouselItem {
+  media: string;
+  mediaType: "image" | "video";
+  title: string;
+  subtitle: string;
+  cta: string;
+  ctaLink: string;
 }
 
 interface VerticalCarouselProps {
-  collectionImages: string[];
-  collections: CollectionType[];
+  items: CarouselItem[];
 }
 
-function isVideo(url: string) {
-  return url.match(/\.(mp4|webm|ogg)$/i);
-}
-
-const VerticalCarousel = ({ collectionImages, collections }: VerticalCarouselProps) => {
-  const [selectedImage, setSelectedImage] = useState<string | null>(collectionImages[0]);
-  const [selectedCollectionId, setSelectedCollectionId] = useState<string | null>(null);
-  const [selectedIndex, setSelectedIndex] = useState<number | null>(0);
+const VerticalCarousel = ({ items }: VerticalCarouselProps) => {
+  const [selectedIndex, setSelectedIndex] = useState(0);
   const router = useRouter();
 
   // Slideshow logic: Change image every 3 seconds
   useEffect(() => {
+    if (!items.length) return;
     const interval = setInterval(() => {
-      if (selectedImage) {
-        const currentIndex = collectionImages.indexOf(selectedImage);
-        const nextIndex = (currentIndex + 1) % collectionImages.length;
-        setSelectedImage(collectionImages[nextIndex]);
-        setSelectedIndex(nextIndex);
-        if (collections && collections.length > 0) {
-          const matchedCollection = collections.find((collection) => collection.image === collectionImages[nextIndex]);
-          setSelectedCollectionId(matchedCollection?._id || null);
-        }
-      }
+      setSelectedIndex((prev) => (prev + 1) % items.length);
     }, 3000);
     return () => clearInterval(interval);
-  }, [selectedImage, collectionImages, collections]);
+  }, [items]);
 
-  // Handle image click: Match image URL to collection image URL and get corresponding collectionId
-  const handleImageClick = (image: string, index: number) => {
-    setSelectedImage(image);
-    setSelectedIndex(index);
-    if (collections && collections.length > 0) {
-      const matchedCollection = collections.find((collection) => collection.image === image);
-      setSelectedCollectionId(matchedCollection?._id || null);
-    }
-  };
+  if (!items.length) {
+    return (
+      <div className="w-full h-[70vh] flex items-center justify-center text-gray-400 bg-gray-100 rounded-2xl shadow-2xl">
+        No carousel items found.
+      </div>
+    );
+  }
 
-  // Shop Now Button Click Handler (redirect to collection page)
-  const handleShopNowClick = () => {
-    if (selectedCollectionId) {
-      router.push(`/collections/${selectedCollectionId}`);
-    }
-  };
+  const selectedItem = items[selectedIndex];
 
   return (
     <div className="relative w-full h-[70vh] min-h-[400px] max-h-[90vh] flex flex-col items-center justify-center overflow-hidden bg-gray-100 rounded-2xl shadow-2xl">
       {/* Background Media (Image or Video) */}
       <div className="absolute inset-0 w-full h-full z-0">
-        {selectedImage && isVideo(selectedImage) ? (
+        {selectedItem.mediaType === "video" ? (
           <video
-            src={selectedImage}
+            src={selectedItem.media}
             autoPlay
             loop
             muted
             playsInline
             className="object-cover w-full h-full"
           />
-        ) : selectedImage ? (
+        ) : (
           <Image
-            src={selectedImage}
-            alt="Selected Collection"
+            src={selectedItem.media}
+            alt={selectedItem.title || "Carousel Item"}
             fill
             className="object-cover object-center"
             priority
             sizes="100vw"
             quality={100}
           />
-        ) : null}
+        )}
         {/* Overlay Gradient */}
         <div className="absolute inset-0 bg-gradient-to-l from-black/60 via-transparent to-transparent z-10" />
       </div>
       {/* Overlay Content */}
       <div className="relative z-20 flex flex-col items-center justify-center w-full h-full text-center px-2 py-8">
         <h1 className="text-xl font-extrabold text-white drop-shadow-lg mb-2 break-words">
-          {collections[selectedIndex ?? 0]?.headline || 'Discover the Latest in Women\'s Fashion'}
+          {selectedItem.title}
         </h1>
         <p className="text-base text-white/90 mb-4 break-words">
-          {collections[selectedIndex ?? 0]?.name || 'Trendy, Elegant, and Comfortable Styles for Every Woman'}
+          {selectedItem.subtitle}
         </p>
-        {selectedCollectionId && (
+        {selectedItem.cta && selectedItem.ctaLink && (
           <button
-            onClick={handleShopNowClick}
+            onClick={() => router.push(selectedItem.ctaLink)}
             className="bg-white text-black px-6 py-2 rounded-full font-semibold hover:bg-gray-100 transition-all duration-300 shadow-lg text-sm"
           >
-            View Collection
+            {selectedItem.cta}
           </button>
         )}
       </div>
@@ -124,25 +103,25 @@ const VerticalCarousel = ({ collectionImages, collections }: VerticalCarouselPro
       </Link>
       {/* Vertical Thumbnails */}
       <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex flex-col gap-2 z-30 bg-white/10 rounded-lg p-1 backdrop-blur-sm">
-        {collectionImages.map((image, index) => (
+        {items.map((item, index) => (
           <div
             key={index}
             className={`relative w-10 h-10 cursor-pointer transition-transform duration-300 hover:scale-110 rounded-lg overflow-hidden border-2 ${
-              selectedImage === image ? 'border-white' : 'border-transparent'
+              selectedIndex === index ? 'border-white' : 'border-transparent'
             }`}
-            onClick={() => handleImageClick(image, index)}
+            onClick={() => setSelectedIndex(index)}
           >
-            {isVideo(image) ? (
+            {item.mediaType === "video" ? (
               <video
-                src={image}
+                src={item.media}
                 className="object-cover w-full h-full rounded-lg"
                 muted
                 playsInline
               />
             ) : (
               <Image
-                src={image}
-                alt={`Collection Image ${index + 1}`}
+                src={item.media}
+                alt={item.title || `Carousel Image ${index + 1}`}
                 fill
                 className="object-cover rounded-lg"
                 sizes="40px"

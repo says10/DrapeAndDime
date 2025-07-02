@@ -7,6 +7,7 @@ import {
   getTotalSales,
 } from "@/lib/actions/actions";
 import { CircleDollarSign, ShoppingBag, UserRound } from "lucide-react";
+import Link from "next/link";
 
 export default async function Home() {
   const totalRevenue = await getTotalSales().then((data) => data.totalRevenue);
@@ -60,6 +61,14 @@ export default async function Home() {
           <SalesChart data={graphData} />
         </CardContent>
       </Card>
+
+      <ul>
+        <li>
+          <Link href="/mobile-root-carousel" className="text-blue-600 hover:underline">
+            Manage Mobile Root Carousel (for mobile version of store root page)
+          </Link>
+        </li>
+      </ul>
     </div>
   );
 }
