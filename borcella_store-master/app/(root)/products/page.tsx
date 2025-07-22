@@ -25,6 +25,7 @@ const ProductsPage = () => {
   const [selectedBrandTags, setSelectedBrandTags] = useState<string[]>([]);
   const [selectedCollectionTags, setSelectedCollectionTags] = useState<string[]>([]);
   const [selectedGenderTags, setSelectedGenderTags] = useState<string[]>([]);
+  const [selectedSizeTags, setSelectedSizeTags] = useState<string[]>([]);
 
   // Available filter options
   const [categories, setCategories] = useState<string[]>([]);
@@ -32,6 +33,7 @@ const ProductsPage = () => {
   const [brandTags, setBrandTags] = useState<string[]>([]);
   const [collectionTags, setCollectionTags] = useState<string[]>([]);
   const [genderTags, setGenderTags] = useState<string[]>([]);
+  const [sizeTags, setSizeTags] = useState<string[]>([]);
   const [sizes, setSizes] = useState<string[]>([]);
   const [colors, setColors] = useState<string[]>([]);
 
@@ -46,11 +48,12 @@ const ProductsPage = () => {
           const uniqueCategories = [...new Set(productsData.map((p: ProductType) => p.category).filter(Boolean))] as string[];
           const allTags = productsData.flatMap((p: ProductType) => (p.tags || []).map((t: string) => t.trim())).filter(Boolean);
           const uniqueTags = [...new Set(allTags)] as string[];
-          // Brand, Collection, Gender tags by prefix
+          // Brand, Collection, Gender, Size tags by prefix
           setBrandTags(uniqueTags.filter(tag => tag.startsWith('*')));
           setCollectionTags(uniqueTags.filter(tag => tag.startsWith('#')));
           setGenderTags(uniqueTags.filter(tag => tag.startsWith('%')));
-          setTags(uniqueTags.filter(tag => !tag.startsWith('*') && !tag.startsWith('#') && !tag.startsWith('%')));
+          setSizeTags(uniqueTags.filter(tag => tag.startsWith('$')));
+          setTags(uniqueTags.filter(tag => !tag.startsWith('*') && !tag.startsWith('#') && !tag.startsWith('%') && !tag.startsWith('$')));
           
           const allSizes = new Set<string>();
           const allColors = new Set<string>();
@@ -152,6 +155,12 @@ const ProductsPage = () => {
         product.tags && selectedGenderTags.some(tag => product.tags.includes(tag))
       );
     }
+    // Size tag filter
+    if (selectedSizeTags.length > 0) {
+      filtered = filtered.filter(product =>
+        product.tags && selectedSizeTags.some(tag => product.tags.includes(tag))
+      );
+    }
 
     // Sorting
     filtered.sort((a, b) => {
@@ -181,7 +190,7 @@ const ProductsPage = () => {
     });
 
     setFilteredProducts(filtered);
-  }, [products, searchQuery, selectedCategory, selectedTags, selectedSizes, selectedColors, priceRange, sortBy, sortOrder, selectedBrandTags, selectedCollectionTags, selectedGenderTags]);
+  }, [products, searchQuery, selectedCategory, selectedTags, selectedSizes, selectedColors, priceRange, sortBy, sortOrder, selectedBrandTags, selectedCollectionTags, selectedGenderTags, selectedSizeTags]);
 
   const clearFilters = () => {
     setSearchQuery('');
@@ -225,6 +234,11 @@ const ProductsPage = () => {
   };
   const toggleGenderTag = (tag: string) => {
     setSelectedGenderTags(prev =>
+      prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]
+    );
+  };
+  const toggleSizeTag = (tag: string) => {
+    setSelectedSizeTags(prev =>
       prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]
     );
   };
@@ -319,6 +333,23 @@ const ProductsPage = () => {
                       onClick={() => toggleGenderTag(tag)}
                     >
                       {tag.replace('%', '')}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+            {/* Size Filter */}
+            {sizeTags.length > 0 && (
+              <div>
+                <div className="font-semibold mb-2">Size</div>
+                <div className="flex flex-wrap gap-2">
+                  {sizeTags.map(tag => (
+                    <button
+                      key={tag}
+                      className={`px-3 py-1 rounded-full border text-sm ${selectedSizeTags.includes(tag) ? 'bg-yellow-600 text-white border-yellow-600' : 'bg-white text-gray-700 border-gray-300'}`}
+                      onClick={() => toggleSizeTag(tag)}
+                    >
+                      {tag.replace('$', '')}
                     </button>
                   ))}
                 </div>
