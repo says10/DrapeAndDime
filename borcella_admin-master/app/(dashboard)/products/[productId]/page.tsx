@@ -55,7 +55,7 @@ const ProductDetails = ({ params }: { params: { productId: string }}) => {
         sizes: data.sizes || '',
         tags: data.tags || [],
         isAvailable: data.isAvailable,
-        collections: data.collections ? data.collections.map((col) => col._id) : []
+        collections: data.collections ? data.collections.map((col: any) => col._id) : []
       });
       setLoading(false);
     } catch (err) {
@@ -163,7 +163,7 @@ const ProductDetails = ({ params }: { params: { productId: string }}) => {
         sizes: productDetails.sizes || '',
         tags: productDetails.tags || [],
         isAvailable: productDetails.isAvailable,
-        collections: productDetails.collections ? productDetails.collections.map((col) => col._id) : []
+        collections: productDetails.collections ? productDetails.collections.map((col: any) => col._id) : []
       });
     }
     setIsEditing(false);
@@ -381,7 +381,7 @@ const ProductDetails = ({ params }: { params: { productId: string }}) => {
                     <p className="text-sm font-medium text-gray-500">Collections</p>
                     <div className="flex flex-wrap gap-2 mt-1">
                       {productDetails.collections && productDetails.collections.length > 0 ? (
-                        productDetails.collections.map((col) => (
+                        productDetails.collections.map((col: any) => (
                           <span key={col._id} className="inline-block px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-semibold">
                             {col.title}
                           </span>
