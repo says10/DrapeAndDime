@@ -11,6 +11,7 @@ import Loader from "@/components/custom ui/Loader";
 import ImageUpload from '@/components/custom ui/ImageUpload';
 import { toast } from 'sonner';
 import { Edit, Save, X, Plus, Trash } from 'lucide-react';
+import MultiSelect from '@/components/custom ui/MultiSelect';
 
 const ProductDetails = ({ params }: { params: { productId: string }}) => {
   const [loading, setLoading] = useState(true);
@@ -29,8 +30,10 @@ const ProductDetails = ({ params }: { params: { productId: string }}) => {
     colors: '',
     sizes: '',
     tags: [] as string[],
-    isAvailable: true
+    isAvailable: true,
+    collections: [] as string[]
   });
+  const [collections, setCollections] = useState<CollectionType[]>([]);
 
   const getProductDetails = useCallback(async () => {
     try { 
@@ -51,7 +54,8 @@ const ProductDetails = ({ params }: { params: { productId: string }}) => {
         colors: data.colors || '',
         sizes: data.sizes || '',
         tags: data.tags || [],
-        isAvailable: data.isAvailable
+        isAvailable: data.isAvailable,
+        collections: data.collections || []
       });
       setLoading(false);
     } catch (err) {
@@ -60,8 +64,20 @@ const ProductDetails = ({ params }: { params: { productId: string }}) => {
     }
   }, [params.productId]);
 
+  const getCollections = async () => {
+    try {
+      const res = await fetch('/api/collections', { method: 'GET' });
+      const data = await res.json();
+      setCollections(data);
+    } catch (err) {
+      console.log('[collections_GET]', err);
+      toast.error('Failed to load collections');
+    }
+  };
+
   useEffect(() => {
     getProductDetails();
+    getCollections();
   }, [getProductDetails]);
 
   const handleRestock = async () => {
@@ -146,7 +162,8 @@ const ProductDetails = ({ params }: { params: { productId: string }}) => {
         colors: productDetails.colors || '',
         sizes: productDetails.sizes || '',
         tags: productDetails.tags || [],
-        isAvailable: productDetails.isAvailable
+        isAvailable: productDetails.isAvailable,
+        collections: productDetails.collections || []
       });
     }
     setIsEditing(false);
@@ -225,6 +242,17 @@ const ProductDetails = ({ params }: { params: { productId: string }}) => {
                         placeholder="Category"
                       />
                     </div>
+                  </div>
+                  {/* Collections MultiSelect */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Collections</label>
+                    <MultiSelect
+                      placeholder="Select collections"
+                      collections={collections}
+                      value={editForm.collections || []}
+                      onChange={(_id) => setEditForm(prev => ({ ...prev, collections: [...(prev.collections || []), _id] }))}
+                      onRemove={(idToRemove) => setEditForm(prev => ({ ...prev, collections: prev.collections.filter((id) => id !== idToRemove) }))}
+                    />
                   </div>
                   
                   <div>
@@ -347,6 +375,21 @@ const ProductDetails = ({ params }: { params: { productId: string }}) => {
                   <div>
                     <p className="text-sm font-medium text-gray-500">Category</p>
                     <p className="text-lg">{productDetails.category}</p>
+                  </div>
+                  {/* Collections display */}
+                  <div className="col-span-2">
+                    <p className="text-sm font-medium text-gray-500">Collections</p>
+                    <div className="flex flex-wrap gap-2 mt-1">
+                      {productDetails.collections && productDetails.collections.length > 0 ? (
+                        productDetails.collections.map((col) => (
+                          <span key={col._id} className="inline-block px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-semibold">
+                            {col.title}
+                          </span>
+                        ))
+                      ) : (
+                        <span className="text-gray-400">No collections</span>
+                      )}
+                    </div>
                   </div>
                   <div>
                     <p className="text-sm font-medium text-gray-500">Price</p>
