@@ -21,9 +21,17 @@ const ProductsPage = () => {
   const [sortBy, setSortBy] = useState('createdAt');
   const [sortOrder, setSortOrder] = useState('desc');
 
+  // Add filter state for brand, collection, gender
+  const [selectedBrandTags, setSelectedBrandTags] = useState<string[]>([]);
+  const [selectedCollectionTags, setSelectedCollectionTags] = useState<string[]>([]);
+  const [selectedGenderTags, setSelectedGenderTags] = useState<string[]>([]);
+
   // Available filter options
   const [categories, setCategories] = useState<string[]>([]);
   const [tags, setTags] = useState<string[]>([]);
+  const [brandTags, setBrandTags] = useState<string[]>([]);
+  const [collectionTags, setCollectionTags] = useState<string[]>([]);
+  const [genderTags, setGenderTags] = useState<string[]>([]);
   const [sizes, setSizes] = useState<string[]>([]);
   const [colors, setColors] = useState<string[]>([]);
 
@@ -36,7 +44,13 @@ const ProductsPage = () => {
         // Extract filter options from products
         if (productsData && productsData.length > 0) {
           const uniqueCategories = [...new Set(productsData.map((p: ProductType) => p.category).filter(Boolean))] as string[];
-          const uniqueTags = [...new Set(productsData.flatMap((p: ProductType) => (p.tags || []).map((t: string) => t.trim())).filter(Boolean))] as string[];
+          const allTags = productsData.flatMap((p: ProductType) => (p.tags || []).map((t: string) => t.trim())).filter(Boolean);
+          const uniqueTags = [...new Set(allTags)] as string[];
+          // Brand, Collection, Gender tags by prefix
+          setBrandTags(uniqueTags.filter(tag => tag.startsWith('*')));
+          setCollectionTags(uniqueTags.filter(tag => tag.startsWith('#')));
+          setGenderTags(uniqueTags.filter(tag => tag.startsWith('%')));
+          setTags(uniqueTags.filter(tag => !tag.startsWith('*') && !tag.startsWith('#') && !tag.startsWith('%')));
           
           const allSizes = new Set<string>();
           const allColors = new Set<string>();
@@ -53,7 +67,6 @@ const ProductsPage = () => {
           });
           
           setCategories(uniqueCategories);
-          setTags(uniqueTags);
           setSizes(Array.from(allSizes));
           setColors(Array.from(allColors));
         }
@@ -121,6 +134,25 @@ const ProductsPage = () => {
       });
     }
 
+    // Brand tag filter
+    if (selectedBrandTags.length > 0) {
+      filtered = filtered.filter(product =>
+        product.tags && selectedBrandTags.some(tag => product.tags.includes(tag))
+      );
+    }
+    // Collection tag filter
+    if (selectedCollectionTags.length > 0) {
+      filtered = filtered.filter(product =>
+        product.tags && selectedCollectionTags.some(tag => product.tags.includes(tag))
+      );
+    }
+    // Gender tag filter
+    if (selectedGenderTags.length > 0) {
+      filtered = filtered.filter(product =>
+        product.tags && selectedGenderTags.some(tag => product.tags.includes(tag))
+      );
+    }
+
     // Sorting
     filtered.sort((a, b) => {
       let aValue: any, bValue: any;
@@ -149,7 +181,7 @@ const ProductsPage = () => {
     });
 
     setFilteredProducts(filtered);
-  }, [products, searchQuery, selectedCategory, selectedTags, selectedSizes, selectedColors, priceRange, sortBy, sortOrder]);
+  }, [products, searchQuery, selectedCategory, selectedTags, selectedSizes, selectedColors, priceRange, sortBy, sortOrder, selectedBrandTags, selectedCollectionTags, selectedGenderTags]);
 
   const clearFilters = () => {
     setSearchQuery('');
@@ -177,6 +209,23 @@ const ProductsPage = () => {
   const toggleColor = (color: string) => {
     setSelectedColors(prev => 
       prev.includes(color) ? prev.filter(c => c !== color) : [...prev, color]
+    );
+  };
+
+  // Add toggle functions for new filters
+  const toggleBrandTag = (tag: string) => {
+    setSelectedBrandTags(prev =>
+      prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]
+    );
+  };
+  const toggleCollectionTag = (tag: string) => {
+    setSelectedCollectionTags(prev =>
+      prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]
+    );
+  };
+  const toggleGenderTag = (tag: string) => {
+    setSelectedGenderTags(prev =>
+      prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]
     );
   };
 
@@ -223,7 +272,58 @@ const ProductsPage = () => {
         {/* Filters - show as sidebar on desktop, drawer on mobile */}
         <div className={`mb-6 sm:mb-8 ${showFilters ? '' : 'hidden sm:block'}`}> {/* Responsive filter visibility */}
           <div className="flex flex-col sm:flex-row gap-4 sm:gap-8">
-          {/* Search */}
+            {/* Brand Filter */}
+            {brandTags.length > 0 && (
+              <div>
+                <div className="font-semibold mb-2">Brand</div>
+                <div className="flex flex-wrap gap-2">
+                  {brandTags.map(tag => (
+                    <button
+                      key={tag}
+                      className={`px-3 py-1 rounded-full border text-sm ${selectedBrandTags.includes(tag) ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-700 border-gray-300'}`}
+                      onClick={() => toggleBrandTag(tag)}
+                    >
+                      {tag.replace('*', '')}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+            {/* Collection Filter */}
+            {collectionTags.length > 0 && (
+              <div>
+                <div className="font-semibold mb-2">Collection</div>
+                <div className="flex flex-wrap gap-2">
+                  {collectionTags.map(tag => (
+                    <button
+                      key={tag}
+                      className={`px-3 py-1 rounded-full border text-sm ${selectedCollectionTags.includes(tag) ? 'bg-green-600 text-white border-green-600' : 'bg-white text-gray-700 border-gray-300'}`}
+                      onClick={() => toggleCollectionTag(tag)}
+                    >
+                      {tag.replace('#', '')}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+            {/* Gender Filter */}
+            {genderTags.length > 0 && (
+              <div>
+                <div className="font-semibold mb-2">Gender</div>
+                <div className="flex flex-wrap gap-2">
+                  {genderTags.map(tag => (
+                    <button
+                      key={tag}
+                      className={`px-3 py-1 rounded-full border text-sm ${selectedGenderTags.includes(tag) ? 'bg-pink-600 text-white border-pink-600' : 'bg-white text-gray-700 border-gray-300'}`}
+                      onClick={() => toggleGenderTag(tag)}
+                    >
+                      {tag.replace('%', '')}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+            {/* Search */}
           <div className="flex-1 relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
             <input
