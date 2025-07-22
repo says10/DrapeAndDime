@@ -3,13 +3,14 @@
 import { useEffect, useState } from "react";
 import ProductCard from "@/components/ProductCard";
 import { getProducts } from "@/lib/actions/actions";
-import { Filter, SortAsc, SortDesc, Search, X } from "lucide-react";
+import { Filter, SortAsc, SortDesc, Search, X, ChevronLeft, ChevronRight } from "lucide-react";
 
 const ProductsPage = () => {
   const [products, setProducts] = useState<ProductType[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<ProductType[]>([]);
   const [loading, setLoading] = useState(true);
   const [showFilters, setShowFilters] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
 
   // Filter states
   const [searchQuery, setSearchQuery] = useState('');
@@ -270,26 +271,16 @@ const ProductsPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-white via-gray-50/50 to-gray-100/50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-        <div className="mb-6 sm:mb-8 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 sm:gap-0">
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-1 sm:mb-2">All Products</h1>
-            <p className="text-gray-600 text-sm sm:text-base">Browse our latest products</p>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 flex">
+        {/* Sidebar for filters (desktop) */}
+        <div className={`hidden sm:block transition-all duration-300 ${sidebarOpen ? 'w-64' : 'w-8'} relative`}> 
+          <div className={`absolute top-4 right-[-16px] z-20 bg-white rounded-full shadow border cursor-pointer flex items-center justify-center w-8 h-8`} onClick={() => setSidebarOpen(!sidebarOpen)}>
+            {sidebarOpen ? <ChevronLeft className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />}
           </div>
-          <button
-            className="px-4 py-2 bg-gray-900 text-white rounded-lg font-semibold text-sm flex items-center gap-2"
-            onClick={() => setShowFilters(!showFilters)}
-          >
-            <Filter className="inline-block w-4 h-4" />
-            {showFilters ? 'Hide Filters' : 'Show Filters'}
-          </button>
-        </div>
-        {/* Filters - show as sidebar on desktop, drawer on mobile */}
-        <div className={`mb-6 sm:mb-8${showFilters ? '' : ' hidden'}`}> {/* Responsive filter visibility */}
-          <div className="flex flex-col sm:flex-row gap-4 sm:gap-8">
+          <div className={`transition-all duration-300 ${sidebarOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'} bg-white rounded-xl shadow p-4 h-fit mt-2`}> 
             {/* Brand Filter */}
             {brandTags.length > 0 && (
-              <div>
+              <div className="mb-6">
                 <div className="font-semibold mb-2">Brand</div>
                 <div className="flex flex-wrap gap-2">
                   {brandTags.map(tag => (
@@ -306,7 +297,7 @@ const ProductsPage = () => {
             )}
             {/* Collection Filter */}
             {collectionTags.length > 0 && (
-              <div>
+              <div className="mb-6">
                 <div className="font-semibold mb-2">Collection</div>
                 <div className="flex flex-wrap gap-2">
                   {collectionTags.map(tag => (
@@ -323,7 +314,7 @@ const ProductsPage = () => {
             )}
             {/* Gender Filter */}
             {genderTags.length > 0 && (
-              <div>
+              <div className="mb-6">
                 <div className="font-semibold mb-2">Gender</div>
                 <div className="flex flex-wrap gap-2">
                   {genderTags.map(tag => (
@@ -340,7 +331,7 @@ const ProductsPage = () => {
             )}
             {/* Size Filter */}
             {sizeTags.length > 0 && (
-              <div>
+              <div className="mb-6">
                 <div className="font-semibold mb-2">Size</div>
                 <div className="flex flex-wrap gap-2">
                   {sizeTags.map(tag => (
@@ -355,54 +346,105 @@ const ProductsPage = () => {
                 </div>
               </div>
             )}
-            {/* Search */}
-          <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-            <input
-              type="text"
-              placeholder="Search products..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-200 focus:border-transparent"
-            />
           </div>
-
-          {/* Sort */}
-          <div className="flex gap-2">
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              className="px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-200 focus:border-transparent"
-            >
-              <option value="createdAt">Latest</option>
-              <option value="price">Price</option>
-              <option value="title">Name</option>
-            </select>
+        </div>
+        {/* Main content area */}
+        <div className="flex-1">
+          <div className="mb-6 sm:mb-8 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 sm:gap-0">
+            <div>
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-1 sm:mb-2">All Products</h1>
+              <p className="text-gray-600 text-sm sm:text-base">Browse our latest products</p>
+            </div>
+            {/* Mobile filter toggle button only */}
             <button
-              onClick={() => setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc')}
-              className="px-4 py-3 border border-gray-200 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-200 focus:border-transparent"
+              className="sm:hidden px-4 py-2 bg-gray-900 text-white rounded-lg font-semibold text-sm flex items-center gap-2"
+              onClick={() => setShowFilters(!showFilters)}
             >
-              {sortOrder === 'asc' ? <SortAsc className="w-5 h-5" /> : <SortDesc className="w-5 h-5" />}
+              <Filter className="inline-block w-4 h-4" />
+              {showFilters ? 'Hide Filters' : 'Show Filters'}
             </button>
           </div>
-
-          {/* Filter Toggle */}
-          <button
-              onClick={clearFilters}
-            className="px-4 py-3 border border-gray-200 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-200 focus:border-transparent flex items-center gap-2"
-          >
-              <X className="w-5 h-5" />
-                  Clear all
-                </button>
-              </div>
-              </div>
-        {/* Product Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
-          {filteredProducts.map((product) => (
-            <div key={product._id} className="transform transition-all duration-300 hover:scale-[1.02]">
-              <ProductCard product={product} />
+          {/* Filters for mobile only */}
+          <div className={`mb-6 sm:mb-8${showFilters ? '' : ' hidden'} sm:hidden`}> {/* Responsive filter visibility for mobile */}
+            <div className="bg-white rounded-xl shadow p-4">
+              {/* Brand Filter */}
+              {brandTags.length > 0 && (
+                <div className="mb-6">
+                  <div className="font-semibold mb-2">Brand</div>
+                  <div className="flex flex-wrap gap-2">
+                    {brandTags.map(tag => (
+                      <button
+                        key={tag}
+                        className={`px-3 py-1 rounded-full border text-sm ${selectedBrandTags.includes(tag) ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-700 border-gray-300'}`}
+                        onClick={() => toggleBrandTag(tag)}
+                      >
+                        {tag.replace('*', '')}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {/* Collection Filter */}
+              {collectionTags.length > 0 && (
+                <div className="mb-6">
+                  <div className="font-semibold mb-2">Collection</div>
+                  <div className="flex flex-wrap gap-2">
+                    {collectionTags.map(tag => (
+                      <button
+                        key={tag}
+                        className={`px-3 py-1 rounded-full border text-sm ${selectedCollectionTags.includes(tag) ? 'bg-green-600 text-white border-green-600' : 'bg-white text-gray-700 border-gray-300'}`}
+                        onClick={() => toggleCollectionTag(tag)}
+                      >
+                        {tag.replace('#', '')}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {/* Gender Filter */}
+              {genderTags.length > 0 && (
+                <div className="mb-6">
+                  <div className="font-semibold mb-2">Gender</div>
+                  <div className="flex flex-wrap gap-2">
+                    {genderTags.map(tag => (
+                      <button
+                        key={tag}
+                        className={`px-3 py-1 rounded-full border text-sm ${selectedGenderTags.includes(tag) ? 'bg-pink-600 text-white border-pink-600' : 'bg-white text-gray-700 border-gray-300'}`}
+                        onClick={() => toggleGenderTag(tag)}
+                      >
+                        {tag.replace('%', '')}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {/* Size Filter */}
+              {sizeTags.length > 0 && (
+                <div className="mb-6">
+                  <div className="font-semibold mb-2">Size</div>
+                  <div className="flex flex-wrap gap-2">
+                    {sizeTags.map(tag => (
+                      <button
+                        key={tag}
+                        className={`px-3 py-1 rounded-full border text-sm ${selectedSizeTags.includes(tag) ? 'bg-yellow-600 text-white border-yellow-600' : 'bg-white text-gray-700 border-gray-300'}`}
+                        onClick={() => toggleSizeTag(tag)}
+                      >
+                        {tag.replace('$', '')}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
-          ))}
+          </div>
+          {/* Product Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+            {filteredProducts.map((product) => (
+              <div key={product._id} className="transform transition-all duration-300 hover:scale-[1.02]">
+                <ProductCard product={product} />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>
