@@ -1,26 +1,36 @@
 import { ClerkProvider } from "@clerk/nextjs";
-import { Inter } from "next/font/google"
-import "./globals.css"
+import type { Metadata } from "next";
+import { Inter } from "next/font/google";
+import { Analytics } from "@vercel/analytics/react"
 
-const inter = Inter({ subsets: ["latin"] })
+import "./globals.css";
+import Navbar from "@/components/Navbar";
+import ToasterProvider from "@/lib/providers/ToasterProvider";
+import Footer from "@/components/Footer";
 
-export const metadata = {
-  title: "Drape & Dime",
-  description: "Premium Fashion Store",
-}
+const inter = Inter({ subsets: ["latin"] });
+
+export const metadata: Metadata = {
+  title: "Borcella - The New Era of Shopping",
+  description: "Discover the latest trends in fashion and enjoy a seamless shopping experience with Borcella. Your one-stop shop for stylish and high-quality products.",
+};
 
 export default function RootLayout({
   children,
-}: {
-  children: React.ReactNode
-}) {
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
   return (
-    <ClerkProvider>
-      <html lang="en" suppressHydrationWarning>
-        <body className={inter.className} suppressHydrationWarning>
+    <html lang="en">
+      <body className={inter.className}>
+        <ClerkProvider>
+          <ToasterProvider />
+          <Navbar />
           {children}
-        </body>
-      </html>
-    </ClerkProvider>
-  )
+          <Analytics />
+          <Footer />
+        </ClerkProvider>
+      </body>
+    </html>
+  );
 } 

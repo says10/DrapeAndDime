@@ -12,6 +12,7 @@
     "@cashfreepayments/cashfree-js": "^1.0.5",
     "@clerk/nextjs": "^4.29.7",
     "@stripe/stripe-js": "^3.0.6",
+    "@vercel/analytics": "^1.5.0",
     "lucide-react": "^0.341.0",
     "mongoose": "^8.2.0",
     "next": "^14.1.0",
