@@ -55,7 +55,7 @@ const ProductDetails = ({ params }: { params: { productId: string }}) => {
         sizes: data.sizes || '',
         tags: data.tags || [],
         isAvailable: data.isAvailable,
-        collections: data.collections || []
+        collections: data.collections ? data.collections.map((col) => col._id) : []
       });
       setLoading(false);
     } catch (err) {
@@ -163,7 +163,7 @@ const ProductDetails = ({ params }: { params: { productId: string }}) => {
         sizes: productDetails.sizes || '',
         tags: productDetails.tags || [],
         isAvailable: productDetails.isAvailable,
-        collections: productDetails.collections || []
+        collections: productDetails.collections ? productDetails.collections.map((col) => col._id) : []
       });
     }
     setIsEditing(false);
