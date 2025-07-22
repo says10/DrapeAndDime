@@ -263,14 +263,15 @@ const ProductsPage = () => {
             <p className="text-gray-600 text-sm sm:text-base">Browse our latest products</p>
           </div>
           <button
-            className="sm:hidden px-4 py-2 bg-gray-900 text-white rounded-lg font-semibold text-sm"
+            className="px-4 py-2 bg-gray-900 text-white rounded-lg font-semibold text-sm flex items-center gap-2"
             onClick={() => setShowFilters(!showFilters)}
           >
-            <Filter className="inline-block w-4 h-4 mr-2" /> Filters
+            <Filter className="inline-block w-4 h-4" />
+            {showFilters ? 'Hide Filters' : 'Show Filters'}
           </button>
         </div>
         {/* Filters - show as sidebar on desktop, drawer on mobile */}
-        <div className={`mb-6 sm:mb-8 ${showFilters ? '' : 'hidden sm:block'}`}> {/* Responsive filter visibility */}
+        <div className={`mb-6 sm:mb-8${showFilters ? '' : ' hidden'}`}> {/* Responsive filter visibility */}
           <div className="flex flex-col sm:flex-row gap-4 sm:gap-8">
             {/* Brand Filter */}
             {brandTags.length > 0 && (

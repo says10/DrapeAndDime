@@ -34,6 +34,7 @@ const ProductDetails = ({ params }: { params: { productId: string }}) => {
     collections: [] as string[]
   });
   const [collections, setCollections] = useState<CollectionType[]>([]);
+  const [showFilters, setShowFilters] = useState(false);
 
   const getProductDetails = useCallback(async () => {
     try { 
@@ -189,6 +190,39 @@ const ProductDetails = ({ params }: { params: { productId: string }}) => {
 
   return (
     <div className="p-6">
+      {/* Filter Toggle Button */}
+      <Button
+        variant={showFilters ? "default" : "outline"}
+        onClick={() => setShowFilters((prev) => !prev)}
+        className="mb-4"
+      >
+        {showFilters ? "Hide Filters" : "Show Filters"}
+      </Button>
+      {/* Filter Section */}
+      {showFilters && (
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle>Filter Products</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <Input
+                placeholder="Search by name"
+                // onChange={...}
+              />
+              <Input
+                placeholder="Category"
+                // onChange={...}
+              />
+              <Input
+                type="number"
+                placeholder="Max Price"
+                // onChange={...}
+              />
+            </div>
+          </CardContent>
+        </Card>
+      )}
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Product Details</h1>
