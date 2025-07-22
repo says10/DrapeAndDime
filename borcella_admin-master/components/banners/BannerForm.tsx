@@ -43,6 +43,7 @@ const formSchema = z.object({
   verticalBanner2Subtitle: z.string(),
   verticalBanner2Cta: z.string(),
   verticalBanner2CtaLink: z.string(),
+  isActive: z.boolean().default(false),
 });
 
 interface BannerFormProps {
@@ -71,6 +72,7 @@ const BannerForm: React.FC<BannerFormProps> = ({ initialData }) => {
           verticalBanner2Subtitle: initialData.verticalBanner2Subtitle || "",
           verticalBanner2Cta: initialData.verticalBanner2Cta || "",
           verticalBanner2CtaLink: initialData.verticalBanner2CtaLink || "",
+          isActive: initialData.isActive ?? false,
         }
       : {
           mainBanner: "",
@@ -87,6 +89,7 @@ const BannerForm: React.FC<BannerFormProps> = ({ initialData }) => {
           verticalBanner2Subtitle: "",
           verticalBanner2Cta: "",
           verticalBanner2CtaLink: "",
+          isActive: false,
         },
   });
 
@@ -161,6 +164,25 @@ const BannerForm: React.FC<BannerFormProps> = ({ initialData }) => {
       
       <Form {...form}>
         <form className="space-y-6">
+          {/* Active Toggle */}
+          <FormField
+            control={form.control}
+            name="isActive"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-center gap-3">
+                <FormLabel>Active</FormLabel>
+                <FormControl>
+                  <input
+                    type="checkbox"
+                    checked={field.value}
+                    onChange={field.onChange}
+                    className="w-5 h-5 rounded border-gray-300 focus:ring-blue-500"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
           {/* Main Banner */}
           <FormField
             control={form.control}
