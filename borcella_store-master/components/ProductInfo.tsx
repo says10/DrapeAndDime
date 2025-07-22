@@ -1,7 +1,18 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { MinusCircle, PlusCircle, ShoppingBag, Star, Truck, Shield, RotateCcw, Check } from "lucide-react";
+import {
+  MinusCircle,
+  PlusCircle,
+  ShoppingBag,
+  Star,
+  Truck,
+  Shield,
+  RotateCcw,
+  Check,
+  ChevronDown,
+  ChevronUp,
+} from "lucide-react";
 import useCart from "@/lib/hooks/useCart";
 import FormattedText from "./FormattedText";
 import { toast } from "sonner";
@@ -25,6 +36,7 @@ const ProductInfo = ({ productInfo, productImageRef, triggerFlyToCart }: Product
   });
   const [buttonPulse, setButtonPulse] = useState(false);
   const [showCheckmark, setShowCheckmark] = useState(false);
+  const [showDescription, setShowDescription] = useState(false);
 
   const cart = useCart();
   const maxStock = productInfo.quantity;
@@ -181,29 +193,56 @@ const ProductInfo = ({ productInfo, productImageRef, triggerFlyToCart }: Product
 
         {/* Price Section */}
         <div className="space-y-3">
-          <div className="flex items-baseline gap-4">
-            {productInfo.originalPrice && productInfo.originalPrice > productInfo.price && (
-              <span className="text-2xl text-gray-400 line-through font-light">
-                ₹{productInfo.originalPrice.toLocaleString()}
+          <div className="flex items-baseline justify-between">
+            <div className="flex items-baseline gap-4">
+              {productInfo.originalPrice &&
+                productInfo.originalPrice > productInfo.price && (
+                  <span className="text-2xl text-gray-400 line-through font-light">
+                    ₹{productInfo.originalPrice.toLocaleString()}
+                  </span>
+                )}
+              <span className="text-5xl font-bold text-gray-900">
+                ₹{productInfo.price.toLocaleString()}
+              </span>
+            </div>
+            <button
+              className="flex items-center gap-2 text-sm font-semibold text-gray-600 hover:text-gray-900"
+              onClick={() => setShowDescription((prev) => !prev)}
+            >
+              {showDescription ? "Hide" : "Show"} Description
+              {showDescription ? (
+                <ChevronUp className="w-4 h-4" />
+              ) : (
+                <ChevronDown className="w-4 h-4" />
+              )}
+            </button>
+          </div>
+          {productInfo.originalPrice &&
+            productInfo.originalPrice > productInfo.price && (
+              <span className="inline-block px-3 py-1 bg-red-50 text-red-700 rounded-full text-sm font-semibold">
+                Save ₹
+                {(
+                  productInfo.originalPrice - productInfo.price
+                ).toLocaleString()}
               </span>
             )}
-            <span className="text-5xl font-bold text-gray-900">
-              ₹{productInfo.price.toLocaleString()}
-            </span>
-          </div>
-          {productInfo.originalPrice && productInfo.originalPrice > productInfo.price && (
-            <span className="inline-block px-3 py-1 bg-red-50 text-red-700 rounded-full text-sm font-semibold">
-              Save ₹{(productInfo.originalPrice - productInfo.price).toLocaleString()}
-            </span>
-          )}
         </div>
 
+        {/* Description Section */}
+        {showDescription && (
+          <div className="border-t pt-4 mt-4 animate-fade-in">
+            <FormattedText text={productInfo.description} />
+          </div>
+        )}
+
         {/* Stock Status */}
-        <div className={`p-6 rounded-2xl ${
-          isOutOfStock 
-            ? "bg-red-50 border border-red-200" 
-            : "bg-green-50 border border-green-200"
-        }`}>
+        <div
+          className={`p-6 rounded-2xl ${
+            isOutOfStock 
+              ? "bg-red-50 border border-red-200" 
+              : "bg-green-50 border border-green-200"
+          }`}
+        >
           <p className={`text-lg font-semibold ${
             isOutOfStock ? "text-red-700" : "text-green-700"
           }`}>
