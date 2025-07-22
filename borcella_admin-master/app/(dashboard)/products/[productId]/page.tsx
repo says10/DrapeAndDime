@@ -71,7 +71,7 @@ const ProductDetails = ({ params }: { params: { productId: string }}) => {
         const updatedAvailability = updatedQuantity > 0;
 
         const res = await fetch(`/api/products/${params.productId}`, {
-          method: "POST",
+          method: "PUT",
           headers: {
             "Content-Type": "application/json",
           },
@@ -110,7 +110,7 @@ const ProductDetails = ({ params }: { params: { productId: string }}) => {
   const handleSaveEdit = async () => {
     try {
       const res = await fetch(`/api/products/${params.productId}`, {
-        method: "POST",
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
