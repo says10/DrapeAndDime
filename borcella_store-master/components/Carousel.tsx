@@ -9,7 +9,7 @@ import Link from "next/link";
 interface CollectionType {
   _id: string;
   image: string; // can be image or video URL
-  name: string;
+  title: string;
   headline?: string;
   ctaText?: string;
 }
@@ -119,7 +119,7 @@ const Home = ({ collectionImages, collections }: HomeProps) => {
               {collections[selectedIndex ?? 0]?.headline || 'Discover the Latest in Women\'s Fashion'}
             </h1>
             <p className="text-lg md:text-2xl text-white/90 mb-8">
-              {collections[selectedIndex ?? 0]?.name || 'Trendy, Elegant, and Comfortable Styles for Every Woman'}
+              {collections[selectedIndex ?? 0]?.title || 'Trendy, Elegant, and Comfortable Styles for Every Woman'}
             </p>
             {selectedCollectionId && (
               <button

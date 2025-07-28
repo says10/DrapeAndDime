@@ -1,0 +1,19 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://drapeanddime.shop/sitemap.xml
+
+# Disallow admin and private routes
+Disallow: /admin/
+Disallow: /api/admin/
+Disallow: /dashboard/
+Disallow: /_next/
+Disallow: /api/auth/
+
+# Allow important pages
+Allow: /products
+Allow: /collections
+Allow: /cart
+Allow: /sign-in
+Allow: /sign-up 
