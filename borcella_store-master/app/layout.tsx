@@ -61,13 +61,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <ClerkProvider>
-          <ToasterProvider />
-          <Navbar />
-          {children}
-          <Analytics />
-          <Footer />
-        </ClerkProvider>
+        <ToasterProvider />
+        <Navbar />
+        {children}
+        <Analytics />
+        <Footer />
       </body>
     </html>
   );

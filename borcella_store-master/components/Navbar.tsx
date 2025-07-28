@@ -1,7 +1,7 @@
 "use client"; // Ensure this is client-side code
 
 import useCart from "@/lib/hooks/useCart";
-import { UserButton, useUser } from "@clerk/nextjs";
+// import { UserButton, useUser } from "@clerk/nextjs";
 import { CircleUserRound, Menu, Search, ShoppingCart, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -24,7 +24,7 @@ interface Product {
 const Navbar = () => {
   const pathname = usePathname();
   const router = useRouter();
-  const { user, isLoaded } = useUser();
+  // const { user, isLoaded } = useUser();
   const cart = useCart();
 
   const [dropdownMenu, setDropdownMenu] = useState(false);
@@ -35,29 +35,30 @@ const Navbar = () => {
   // Add scroll effect for all pages
   const [isScrolled, setIsScrolled] = useState(false);
 
-  useEffect(() => {
-    if (isLoaded && user && typeof window !== "undefined") {
-      const key = `customer_created_${user.id}`;
-      if (!localStorage.getItem(key)) {
-        const email = user.emailAddresses?.[0]?.emailAddress || "";
-        fetch("/api/users", {
-          method: "GET",
-          headers: {
-            "x-user-email": email,
-            "x-user-id": user.id, // Pass user ID in header
-          },
-        })
-          .then((res) => {
-            if (res.ok) {
-              localStorage.setItem(key, "true");
-            }
-          })
-          .catch(() => {
-            // No need to log errors here
-          });
-      }
-    }
-  }, [isLoaded, user]);
+  // Temporarily disable user authentication for SEO testing
+  // useEffect(() => {
+  //   if (isLoaded && user && typeof window !== "undefined") {
+  //     const key = `customer_created_${user.id}`;
+  //     if (!localStorage.getItem(key)) {
+  //       const email = user.emailAddresses?.[0]?.emailAddress || "";
+  //       fetch("/api/users", {
+  //         method: "GET",
+  //         headers: {
+  //           "x-user-email": email,
+  //           "x-user-id": user.id, // Pass user ID in header
+  //         },
+  //       })
+  //         .then((res) => {
+  //           if (res.ok) {
+  //             localStorage.setItem(key, "true");
+  //           }
+  //         })
+  //         .catch(() => {
+  //           // No need to log errors here
+  //         });
+  //     }
+  //   }
+  // }, [isLoaded, user]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -208,23 +209,15 @@ const Navbar = () => {
                 <span className="ml-1">({cart.cartItems.length})</span>
               </Link>
             )}
-            {user ? (
-              <UserButton afterSignOutUrl="/" />
-            ) : pathname !== "/" ? (
-              <Link href="/sign-in">
-                <CircleUserRound className="w-6 h-6 hover:text-red-1 transition-colors" />
-              </Link>
-            ) : (
-              <Link href="/sign-in">
-                <CircleUserRound
-                  className={`w-6 h-6 transition-colors ${
-                    isHovered
-                      ? "text-gray-700 hover:text-red-1"
-                      : "text-white hover:text-white/80"
-                  }`}
-                />
-              </Link>
-            )}
+            <Link href="/sign-in">
+              <CircleUserRound
+                className={`w-6 h-6 transition-colors ${
+                  isHovered
+                    ? "text-gray-700 hover:text-red-1"
+                    : "text-white hover:text-white/80"
+                }`}
+              />
+            </Link>
           </div>
         </div>
         {/* Desktop Navigation Links (hidden on mobile) */}
@@ -246,7 +239,7 @@ const Navbar = () => {
             BestSellers
           </Link>
           <Link
-            href={user ? "/wishlist" : "/sign-in"}
+            href="/sign-in"
             className={`hover:text-red-1 transition-colors ${
               pathname === "/wishlist" ? "text-red-1" : pathname === "/" ? "hover:text-red-1 text-white" : ""
             }`}
@@ -254,7 +247,7 @@ const Navbar = () => {
             Wishlist
           </Link>
           <Link
-            href={user ? "/orders" : "/sign-in"}
+            href="/sign-in"
             className={`hover:text-red-1 transition-colors ${
               pathname === "/orders" ? "text-red-1" : pathname === "/" ? "hover:text-red-1 text-white" : ""
             }`}
@@ -293,7 +286,7 @@ const Navbar = () => {
                 BestSellers
               </Link>
               <Link
-                href={user ? "/wishlist" : "/sign-in"}
+                href="/sign-in"
                 className="block text-lg font-semibold py-2 px-3 rounded-lg hover:bg-gray-100 transition"
                 onClick={() => setDropdownMenu(false)}
                 tabIndex={0}
@@ -301,7 +294,7 @@ const Navbar = () => {
                 Wishlist
               </Link>
               <Link
-                href={user ? "/orders" : "/sign-in"}
+                href="/sign-in"
                 className="block text-lg font-semibold py-2 px-3 rounded-lg hover:bg-gray-100 transition"
                 onClick={() => setDropdownMenu(false)}
                 tabIndex={0}
