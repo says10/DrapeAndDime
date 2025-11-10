@@ -126,11 +126,18 @@ const useCart = create(
     }),
     {
       name: "cart-storage",
-      // Guard storage so we don't reference `localStorage` during SSR/build.
-      storage: createJSONStorage(() => (typeof window === "undefined" ? undefined : localStorage)),
+      // Provide window.localStorage on the client, otherwise a noop storage during SSR.
+      storage: createJSONStorage(() => (typeof window === "undefined" ? noopStorage : localStorage)),
     }
   )
 );
+
+// Provide a no-op storage for SSR so persist always receives a valid storage object.
+const noopStorage = {
+  getItem: (_name: string) => null as string | null,
+  setItem: (_name: string, _value: string) => {},
+  removeItem: (_name: string) => {},
+};
 
 // Custom hook for user/session logic and cart syncing
 import { useUser } from "@clerk/nextjs";
