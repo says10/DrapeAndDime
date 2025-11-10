@@ -7,6 +7,7 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import ToasterProvider from "@/lib/providers/ToasterProvider";
 import Footer from "@/components/Footer";
+import ClientErrorLogger from "@/components/ClientErrorLogger";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -61,6 +62,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
+        <ClientErrorLogger />
         <ToasterProvider />
         <Navbar />
         {children}

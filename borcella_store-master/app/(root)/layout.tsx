@@ -7,6 +7,7 @@ import "../globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import HydrationSafe from "@/components/HydrationSafe";
+import ClientErrorLogger from "@/components/ClientErrorLogger";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -23,6 +24,7 @@ export default function RootLayout({
 }) {
   return (
     <body className={inter.className}>
+      <ClientErrorLogger />
       <HydrationSafe fallback={
         <div className="min-h-screen bg-white">
           <div className="fixed top-0 left-0 w-full z-1000 bg-white/95 backdrop-blur-sm border-b border-gray-200">

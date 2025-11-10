@@ -1,3 +1,5 @@
+"use client";
+
 import { create } from "zustand";
 import { toast } from "sonner";
 import { persist, createJSONStorage } from "zustand/middleware";
@@ -124,7 +126,8 @@ const useCart = create(
     }),
     {
       name: "cart-storage",
-      storage: createJSONStorage(() => localStorage),
+      // Guard storage so we don't reference `localStorage` during SSR/build.
+      storage: createJSONStorage(() => (typeof window === "undefined" ? undefined : localStorage)),
     }
   )
 );
@@ -154,6 +157,12 @@ export function useCartWithUser() {
     if (!user || cartClearing) {
       // [Cart Sync] No user or cart is clearing, skipping backend sync
       return;
+    }
+    // Debug: surface sync invocation and sizes
+    try {
+      console.debug(`[CartSync] syncBackend called action=${action} user=${user?.id ?? 'no-user'} cartLength=${cart.cartItems?.length ?? 0}`);
+    } catch (e) {
+      // ignore logging fail
     }
     const { userEmail, userName } = getUserInfo();
     try {
@@ -265,7 +274,14 @@ export function useCartWithUser() {
               );
               if (!exists) mergedCart.push(localItem);
             });
-            cart.cartItems = mergedCart;
+            // Debug: report merging sizes before applying
+            try {
+              console.debug('[CartSync] merging carts', { backendCount: backendCart.length, localCount: cart.cartItems.length, mergedCount: mergedCart.length });
+            } catch (e) {
+              // ignore
+            }
+            // Use the store setter instead of mutating the returned object directly.
+            useCart.setState({ cartItems: mergedCart });
           });
       })();
     }
